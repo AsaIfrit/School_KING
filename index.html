@@ -76,7 +76,7 @@
             background: rgba(15, 15, 25, 0.95); z-index: 10; transition: opacity 0.4s ease;
         }
 
-        /* ================= 頂部通用機能按鈕：全螢幕極致右上化，絕不遮擋 ================= */
+        /* 頂部通用機能按鈕 */
         #fullscreen-btn {
             position: absolute; top: 2.2%; right: 2%; z-index: 60;
             width: 2.3vw; height: 2.3vw; min-width: 32px; min-height: 32px;
@@ -89,7 +89,6 @@
         #fullscreen-btn:hover { background: #ffffff; transform: scale(1.08); }
         #fullscreen-btn svg { width: 1.1vw; height: 1.1vw; min-width: 15px; min-height: 15px; fill: #388099; }
 
-        /* 左上角通用返回按鈕 */
         #global-back-btn {
             position: absolute; top: 2.2%; left: 2%; z-index: 50;
             background: rgba(255, 255, 255, 0.92); color: #388099;
@@ -101,13 +100,12 @@
         }
         #global-back-btn:hover { background: #ffffff; transform: scale(1.05); }
 
-        /* ================= 戰鬥內 UI 與暫停選單 ================= */
+        /* 戰鬥內 UI 與暫停選單 */
         #in-game-ui {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 8; display: none;
         }
 
-        /* 暫停鍵安排在全螢幕按鈕左側，並列且間隔充足，徹底消除覆蓋 */
         .btn-pause-game {
             position: absolute; top: 2.2%; right: calc(2% + 42px);
             background: rgba(255, 255, 255, 0.9); color: #388099;
@@ -130,7 +128,6 @@
         }
         .btn-mobile-attack:active { transform: scale(0.9); background: #e0f0f5; }
 
-        /* 手機虛擬搖桿 */
         #joystick-zone {
             position: absolute; bottom: 6%; left: 5%;
             width: 14vw; height: 14vw; min-width: 130px; min-height: 130px;
@@ -165,8 +162,6 @@
         #login-screen { background: #000; }
         #login-bg-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
         .top-left-logo { position: absolute; top: 4%; left: 4%; z-index: 5; width: 18vw; max-width: 320px; min-width: 160px; pointer-events: none; filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.5)); }
-        
-        /* 登入畫面右上角按鈕群，向左避讓全螢幕鍵 */
         .top-right-group { position: absolute; top: 2.2%; right: calc(2% + 42px); z-index: 15; display: flex; align-items: center; gap: 0.6vw; }
         
         .google-login-btn { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.8); color: #388099; padding: 0.35vw 0.85vw; border-radius: 14px; font-size: 0.7vw; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 0.4vw; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease; }
@@ -184,14 +179,12 @@
         .lobby-character-portrait.animate-in { animation: slideInFromLeft 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideInFromLeft { 0% { transform: translateX(-500px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 
-        /* 大廳右上角頂部貨幣欄，精確向左避讓全螢幕按鈕 */
         .lobby-top-bar { position: absolute; top: 2.2%; right: calc(2% + 42px); z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.8vw; }
         .lobby-currency-container { display: flex; gap: 1.2vw; }
         .currency-box { position: relative; background: #ffffff; border-radius: 20px; width: 10.5vw; height: 2.3vw; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border: 1px solid #eef2f5; padding: 0 1vw; }
         .currency-box-icon { position: absolute; left: -0.6vw; top: 50%; transform: translateY(-50%); width: 2.2vw; height: 2.2vw; object-fit: contain; }
         .currency-box-text { font-size: 1.15vw; font-weight: bold; color: #538199; text-align: center; width: 100%; padding-left: 1.2vw; }
 
-        /* 大廳右側主選單 */
         .lobby-right-menu { position: absolute; right: 4%; top: 16%; display: flex; flex-direction: column; align-items: flex-end; gap: 1.2vw; z-index: 12; }
         .lobby-white-btn { background: #ffffff; color: #4a8ca7; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); transition: transform 0.2s ease, box-shadow 0.2s ease; display: flex; align-items: center; justify-content: center; letter-spacing: 2px; opacity: 0; }
         .lobby-white-btn.animate-in { animation: slideInFromRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -235,7 +228,7 @@
         }
         .setting-val-text { font-size: 1.1vw; width: 3.5vw; text-align: right; color: #78909c; }
 
-        /* 關卡選擇：橫向單列無滾動條 */
+        /* 關卡選擇 */
         #stage-select-screen { 
             background: url('office.jpg') no-repeat center center / cover; 
             justify-content: center; align-items: center; padding: 0 2vw;
@@ -272,14 +265,51 @@
         .badge-first { background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; }
         .badge-locked { background: #f8fafc; color: #94a3b8; border: 1px solid #e2e8f0; }
 
-        /* 人物選單 */
+        /* ================= 4. 人物選單 (含下方「鎖定出戰」按鍵) ================= */
         #character-menu-screen {
             background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px);
             padding: 0; display: flex; justify-content: center; align-items: center;
         }
-        .char-select-main-wrapper { width: 94%; height: 85%; display: flex; justify-content: space-between; align-items: center; position: relative; }
-        .char-wheel-left-area { position: relative; width: 48%; height: 100%; display: flex; justify-content: center; align-items: center; perspective: 1200px; transform-style: preserve-3d; pointer-events: auto; overflow: visible; }
-        .char-wheel-card-img { position: absolute; width: 8.5vw; height: 33vw; object-fit: contain; cursor: pointer; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.12)); will-change: transform, opacity; transform-origin: center center; touch-action: manipulation; user-select: none; -webkit-user-drag: none; transition: transform 0.42s cubic-bezier(0.18, 0.89, 0.32, 1.05), opacity 0.42s ease, filter 0.42s ease; }
+        .char-select-main-wrapper { width: 94%; height: 88%; display: flex; justify-content: space-between; align-items: center; position: relative; }
+        
+        .char-wheel-left-area { 
+            position: relative; width: 48%; height: 100%; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            perspective: 1200px; transform-style: preserve-3d; pointer-events: auto; overflow: visible; 
+        }
+        .char-wheel-cards-stage {
+            position: relative; width: 100%; height: 82%;
+            display: flex; justify-content: center; align-items: center;
+            transform-style: preserve-3d;
+        }
+        .char-wheel-card-img { 
+            position: absolute; width: 8.5vw; height: 32vw; object-fit: contain; 
+            cursor: pointer; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.12)); 
+            will-change: transform, opacity; transform-origin: center center; 
+            touch-action: manipulation; user-select: none; -webkit-user-drag: none; 
+            transition: transform 0.42s cubic-bezier(0.18, 0.89, 0.32, 1.05), opacity 0.42s ease, filter 0.42s ease; 
+        }
+
+        /* 輪盤下方專屬「鎖定出戰」按鍵容器 */
+        .char-lock-btn-container {
+            position: relative; z-index: 100;
+            margin-top: 1.2vw; display: flex; justify-content: center;
+        }
+        .btn-char-lock {
+            padding: 0.6vw 2.4vw; font-size: 1.25vw; font-weight: bold;
+            border-radius: 22px; cursor: pointer; transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+        }
+        .btn-char-lock.active-deployed {
+            background: #e0f2fe; color: #0284c7; border: 2px solid #7dd3fc; cursor: default;
+        }
+        .btn-char-lock.ready-to-lock {
+            background: #ffffff; color: #388099; border: 2px solid #bce2ed;
+        }
+        .btn-char-lock.ready-to-lock:hover {
+            background: #388099; color: #ffffff; transform: translateY(-2px);
+        }
+
         .char-detail-panel { width: 42%; height: 94%; background: rgba(45, 45, 48, 0.88); border-radius: 28px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.12); padding: 2.8vw 2.5vw; display: flex; flex-direction: column; justify-content: space-between; color: #ffffff; box-sizing: border-box; }
         .char-detail-header { display: flex; flex-direction: column; gap: 0.6vw; }
         .char-detail-name { font-size: 2.6vw; font-weight: bold; color: #ffffff; letter-spacing: 2px; }
@@ -390,7 +420,7 @@
             <span style="font-size: 1.4vw; line-height: 1;">‹</span> <span>返回</span>
         </button>
 
-        <!-- 右上角小圓形全螢幕切換按鈕 (簡潔無文字、不擋暫停) -->
+        <!-- 右上角小圓形全螢幕切換按鈕 -->
         <button id="fullscreen-btn" onclick="playClickSound(); toggleFullscreen()" title="切換全螢幕">
             <svg id="fs-expand-icon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
             <svg id="fs-compress-icon" viewBox="0 0 24 24" style="display:none;"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
@@ -518,10 +548,16 @@
             </div>
         </div>
 
-        <!-- 4. 人選畫面 -->
+        <!-- 4. 人物選單 (輪盤正下方設置出戰鎖定鍵) -->
         <div id="character-menu-screen" class="ui-screen" style="display: none;">
             <div class="char-select-main-wrapper">
-                <div class="char-wheel-left-area" id="char-wheel-container"></div>
+                <div class="char-wheel-left-area">
+                    <div class="char-wheel-cards-stage" id="char-wheel-container"></div>
+                    <div class="char-lock-btn-container">
+                        <button id="char-deploy-lock-btn" class="btn-char-lock ready-to-lock" onclick="handleLockDeployPartner()">鎖定出戰</button>
+                    </div>
+                </div>
+                
                 <div class="char-detail-panel" id="char-detail-panel">
                     <div class="char-detail-header">
                         <div class="char-detail-name" id="char-detail-name">托帕</div>
@@ -616,10 +652,59 @@
     </div>
 
 <script>
-// ==================== 0. 音效與全螢幕系統 ====================
+// ==================== 0. 現代 Web Audio API 引擎 (手機點擊 100% 發聲) ====================
 let currentSfxVolume = 1.0;
 let currentBgmVolume = 1.0;
+let audioCtx = null;
+const audioBuffers = {};
 
+function getAudioContext() {
+    if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+    }
+    return audioCtx;
+}
+
+// 非同步預載解碼音訊至 AudioBuffer，防止行動端被封鎖
+async function loadSfxBuffer(name, url) {
+    try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const res = await fetch(url);
+        const arrayBuffer = await res.arrayBuffer();
+        const decoded = await ctx.decodeAudioData(arrayBuffer);
+        audioBuffers[name] = decoded;
+    } catch (e) {
+        // 若 fetch 本地限制則自動降級相容
+    }
+}
+
+// 快速播放解碼快取的音效
+function playWebAudioSfx(name, vol = 1.0) {
+    const ctx = getAudioContext();
+    if (!ctx || !audioBuffers[name]) {
+        // 降級音訊池防線
+        if (sndPools[name]) sndPools[name].play(vol);
+        return;
+    }
+    try {
+        const source = ctx.createBufferSource();
+        const gainNode = ctx.createGain();
+        source.buffer = audioBuffers[name];
+        gainNode.gain.value = Math.max(0, Math.min(1, currentSfxVolume * vol));
+        source.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        source.start(0);
+    } catch (e) {
+        if (sndPools[name]) sndPools[name].play(vol);
+    }
+}
+
+// 降級 HTML5 Audio 音效池 (PC 與降級保障)
 class AudioPool {
     constructor(src, size = 4) {
         this.pool = []; this.index = 0; this.size = size;
@@ -639,15 +724,23 @@ class AudioPool {
 }
 
 const sndPools = {
-    click: new AudioPool('click.mp3', 3),
+    click: new AudioPool('click.mp3', 4),
     punch: new AudioPool('punch.mp3', 6),
     punchHit: new AudioPool('punch_hited.mp3', 6),
     hardpunch: new AudioPool('hardpunch.mp3', 4),
     hardpunchHit: new AudioPool('hardpunch_hited.mp3', 4),
     victory: new AudioPool('hardpunch.mp3', 1)
 };
-function playClickSound() { sndPools.click.play(); }
-function playSnd(name) { if (sndPools[name]) sndPools[name].play(); }
+
+// 統一點擊音效接口 (優先走 Web Audio API)
+function playClickSound() { 
+    getAudioContext(); 
+    playWebAudioSfx('click', 1.0); 
+}
+function playSnd(name) { 
+    getAudioContext();
+    playWebAudioSfx(name, 1.0); 
+}
 
 const bgmList = {
     login: document.getElementById('bg-music-login'),
@@ -688,35 +781,36 @@ function adjustSfxVolume(val) {
     if (currentGameData) { currentGameData.sfxVolume = currentSfxVolume; triggerAutoSave(); }
 }
 
+// 手機第一次點擊任意處立即解鎖 AudioContext
 window.addEventListener('pointerdown', function initAudioOnce() {
+    getAudioContext();
+    loadSfxBuffer('click', 'click.mp3');
+    loadSfxBuffer('punch', 'punch.mp3');
+    loadSfxBuffer('punchHit', 'punch_hited.mp3');
+    loadSfxBuffer('hardpunch', 'hardpunch.mp3');
+    loadSfxBuffer('hardpunchHit', 'hardpunch_hited.mp3');
+    loadSfxBuffer('victory', 'hardpunch.mp3');
+
     if (document.getElementById('login-screen').style.display !== 'none' && bgmList.login.paused) {
         switchBgm('login');
     }
     window.removeEventListener('pointerdown', initAudioOnce);
 }, { once: true });
 
-// 全螢幕切換控制 (手機與 PC 瀏覽器通用)
+// 全螢幕切換
 function toggleFullscreen() {
     const doc = window.document;
     const docEl = doc.documentElement;
-
     const requestFullscreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
     const cancelFullscreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
     const isFullscreenNow = doc.fullscreenElement || doc.mozFullScreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
 
     if (!isFullscreenNow) {
-        if (requestFullscreen) {
-            requestFullscreen.call(docEl).catch(() => {
-                showToast("瀏覽器限制全螢幕，建議以橫屏體驗");
-            });
-        }
+        if (requestFullscreen) requestFullscreen.call(docEl).catch(() => showToast("瀏覽器限制全螢幕，建議以橫屏體驗"));
     } else {
-        if (cancelFullscreen) {
-            cancelFullscreen.call(doc);
-        }
+        if (cancelFullscreen) cancelFullscreen.call(doc);
     }
 }
-
 function updateFullscreenUI() {
     const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
     const expandIcon = document.getElementById('fs-expand-icon');
@@ -740,7 +834,6 @@ function updateGlobalBackButton(screenId) {
     currentScreenId = screenId;
     const backBtn = document.getElementById('global-back-btn');
     if (!backBtn) return;
-
     if (screenId === 'login-screen' || screenId === 'main-lobby-screen' || screenId === 'in-game' || screenId === 'victory-screen') {
         backBtn.style.display = 'none';
     } else {
@@ -753,9 +846,7 @@ function handleGlobalBack() {
         closeLoadScreen();
         return;
     }
-    playTransition(async () => {
-        enterMainLobby();
-    });
+    playTransition(async () => enterMainLobby());
 }
 
 window.addEventListener('keydown', (e) => {
@@ -1237,8 +1328,8 @@ async function saveToSlot(slotKey) {
 }
 function closeSaveScreen() { document.getElementById('save-screen').style.display = 'none'; enterMainLobby(); }
 
-// 人選畫面
-let selectedPartnerIndex = 0;
+// ==================== 4. 人選畫面 (瀏覽預覽與按鍵鎖定出戰) ====================
+let previewPartnerIndex = 0; // 目前輪盤正中央預覽的夥伴索引
 let wheelCardsElements = [];
 function getOwnedPartnersList() { return availablePartners.filter(p => currentGameData.ownedPartners.includes(p.name)); }
 
@@ -1249,8 +1340,9 @@ async function openCharacterMenu() {
     hideAllScreens(); 
     document.getElementById('character-menu-screen').style.display = 'flex';
     
+    // 預設將輪盤中央對準當前已鎖定出戰的夥伴
     const curIdx = ownedList.findIndex(p => p.name === currentGameData.selectedPartner);
-    selectedPartnerIndex = curIdx !== -1 ? curIdx : 0;
+    previewPartnerIndex = curIdx !== -1 ? curIdx : 0;
 
     const container = document.getElementById('char-wheel-container'); 
     container.innerHTML = '';
@@ -1261,33 +1353,69 @@ async function openCharacterMenu() {
         img.className = 'char-wheel-card-img'; 
         img.draggable = false;
         img.src = partner.blockImage;
-        img.addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); selectPartnerByIndex(index); });
+        img.addEventListener('pointerdown', (e) => { 
+            e.stopPropagation(); e.preventDefault(); 
+            previewPartnerByIndex(index); 
+        });
         container.appendChild(img);
         wheelCardsElements.push(img);
     });
 
     updateWheelPositions();
     updateCharacterInfoPanel();
+    updateLockDeployButton();
     updateGlobalBackButton('character-menu-screen');
 }
 
-function selectPartnerByIndex(targetIndex) {
+// 點擊輪盤只切換「預覽」，不強迫鎖定出戰
+function previewPartnerByIndex(targetIndex) {
     const ownedList = getOwnedPartnersList();
     if (!ownedList[targetIndex]) return;
     playClickSound();
-    selectedPartnerIndex = targetIndex;
-    currentGameData.selectedPartner = ownedList[targetIndex].name;
+    previewPartnerIndex = targetIndex;
     updateCharacterInfoPanel();
     updateWheelPositions();
-    triggerAutoSave();
+    updateLockDeployButton();
 }
 
 function updateCharacterInfoPanel() {
-    const partner = availablePartners.find(p => p.name === currentGameData.selectedPartner);
+    const ownedList = getOwnedPartnersList();
+    const partner = ownedList[previewPartnerIndex];
     if (!partner) return;
     document.getElementById('char-detail-name').innerText = partner.name;
     document.getElementById('char-detail-tag').innerText = partner.tag || '校園戰鬥夥伴';
     document.getElementById('char-detail-desc').innerHTML = (partner.desc || '暫無角色介紹').replace(/\n/g, '<br>');
+}
+
+// 更新輪盤下方的鎖定鍵狀態
+function updateLockDeployButton() {
+    const ownedList = getOwnedPartnersList();
+    const currentPreviewPartner = ownedList[previewPartnerIndex];
+    const lockBtn = document.getElementById('char-deploy-lock-btn');
+    if (!currentPreviewPartner || !lockBtn) return;
+
+    if (currentPreviewPartner.name === currentGameData.selectedPartner) {
+        lockBtn.className = 'btn-char-lock active-deployed';
+        lockBtn.innerText = '✓ 當前出戰中';
+    } else {
+        lockBtn.className = 'btn-char-lock ready-to-lock';
+        lockBtn.innerText = '鎖定出戰';
+    }
+}
+
+// 按下鎖定鍵綁定出戰角色
+function handleLockDeployPartner() {
+    const ownedList = getOwnedPartnersList();
+    const partnerToDeploy = ownedList[previewPartnerIndex];
+    if (!partnerToDeploy) return;
+
+    if (partnerToDeploy.name === currentGameData.selectedPartner) return; // 已經出戰中
+
+    playClickSound();
+    currentGameData.selectedPartner = partnerToDeploy.name;
+    updateLockDeployButton();
+    showToast(`已鎖定【${partnerToDeploy.name}】為出戰夥伴！`);
+    triggerAutoSave();
 }
 
 function updateWheelPositions() {
@@ -1296,7 +1424,7 @@ function updateWheelPositions() {
     if (total === 0) return;
 
     wheelCardsElements.forEach((img, idx) => {
-        let diff = (idx - selectedPartnerIndex) % total;
+        let diff = (idx - previewPartnerIndex) % total;
         if (diff > total / 2) diff -= total;
         if (diff < -total / 2) diff += total;
 
