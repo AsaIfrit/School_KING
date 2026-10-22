@@ -295,9 +295,9 @@
             z-index: 25;
         }
 
-        /* ================= 5. 全新二次元互動商店介面 (參考附圖設計) ================= */
+        /* ================= 5. 全新商店介面 (背景 shop.jpg + 1920x1080 滿版 NPC 立繪) ================= */
         #shop-screen {
-            background: #ffffff;
+            background: url('shop.jpg') no-repeat center center / cover;
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: space-between; align-items: center;
             padding: 0; overflow: hidden;
@@ -309,11 +309,10 @@
             z-index: 8; cursor: pointer;
         }
 
-        /* NPC 立繪 */
+        /* NPC 滿版 1920x1080 立繪，對齊畫面完全不失真縮放 */
         .shop-npc-portrait {
-            position: absolute; left: 0; bottom: 0; width: 48%; height: 96%;
-            object-fit: contain; object-position: bottom left;
-            pointer-events: none; z-index: 6; opacity: 0;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: contain; pointer-events: none; z-index: 6; opacity: 0;
         }
         .shop-npc-portrait.animate-in {
             animation: slideInFromLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -321,7 +320,7 @@
 
         /* NPC 打字對話框 (圓角白框) */
         #shop-dialog-bubble {
-            position: absolute; left: 5%; bottom: 15%; width: 34%; min-height: 4.8vw;
+            position: absolute; left: 6.8%; bottom: 15.5%; width: 33%; min-height: 4.8vw;
             background: #ffffff; border-radius: 20px;
             box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
             border: 2px solid #eef2f5;
@@ -337,8 +336,9 @@
         /* 商店右側功能面板 (由右向左滑入) */
         .shop-right-panel-wrapper {
             position: absolute; right: 4.5%; width: 44%; height: 82%;
-            background: #ffffff; border-radius: 28px;
-            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
+            background: rgba(255, 255, 255, 0.94); border-radius: 28px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
             border: 2px solid #eef2f5;
             padding: 2.2vw 2.5vw; display: flex; flex-direction: column;
             justify-content: space-between; z-index: 10; opacity: 0;
@@ -351,7 +351,7 @@
         .shop-header-sub { font-size: 1.1vw; font-weight: bold; color: #538199; margin-top: 0.3vw; }
         .shop-goods-list { display: flex; flex-direction: column; gap: 1.1vw; margin-top: 1vw; }
         .shop-goods-card {
-            background: #fbfdfe; border: 1.5px solid #dbe8ed; border-radius: 18px;
+            background: #ffffff; border: 1.5px solid #dbe8ed; border-radius: 18px;
             padding: 1vw 1.5vw; display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
@@ -372,7 +372,7 @@
             top: 5%; opacity: 1;
         }
 
-        /* 勝利結算畫面 (翻新為大廳統一的白色圓角面板) */
+        /* 勝利結算畫面 (大廳統一的白色圓角面板) */
         #victory-screen {
             display: none; cursor: pointer; background: rgba(0, 0, 0, 0.45);
             backdrop-filter: blur(8px); z-index: 30;
@@ -591,12 +591,12 @@
             <button class="esc-exit-btn" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">按 ESC 返回大廳</button>
         </div>
 
-        <!-- 5. 全新二次元互動商店介面 (參考附圖) -->
+        <!-- 5. 全新商店介面 (背景 shop.jpg + 1920x1080 滿版 NPC 立繪) -->
         <div id="shop-screen" class="ui-screen" style="display: none;">
             <!-- 左側點擊觸發 NPC 對話熱區 -->
             <div class="shop-npc-interactive-zone" onclick="triggerNpcDialogue()"></div>
 
-            <!-- 左側 NPC 角色立繪 -->
+            <!-- 左側 NPC 角色立繪 (1920x1080 原圖比例完全對應) -->
             <img id="shop-npc-img" class="shop-npc-portrait" src="shopNPC_01.png" alt="Shop NPC">
 
             <!-- 點擊立繪後出現的打字機氣泡對話框 -->
@@ -995,7 +995,8 @@ let typingInterval = null;
 let dialogueFadeTimeout = null;
 
 async function openShop() { 
-    await preloadMultipleAssets(['shopNPC_01.png', 'gold.png', 'gem.png']);
+    // 預載商店專屬背景 shop.jpg 與滿版 NPC 立繪
+    await preloadMultipleAssets(['shop.jpg', 'shopNPC_01.png', 'gold.png', 'gem.png']);
     hideAllScreens(); 
     switchBgm('shop'); 
     
@@ -1012,7 +1013,6 @@ async function openShop() {
     npcImg.classList.add('animate-in');
     rightPanel.classList.add('animate-in');
 
-    // 關閉先前的對話氣泡
     const bubble = document.getElementById('shop-dialog-bubble');
     bubble.style.opacity = '0';
 }
@@ -1030,11 +1030,9 @@ function triggerNpcDialogue() {
     const bubble = document.getElementById('shop-dialog-bubble');
     const textEl = document.getElementById('shop-dialog-text');
     
-    // 清除既有計時器
     if (typingInterval) clearInterval(typingInterval);
     if (dialogueFadeTimeout) clearTimeout(dialogueFadeTimeout);
 
-    // 隨機選句
     const sentence = npcDialogues[Math.floor(Math.random() * npcDialogues.length)];
     textEl.innerText = '';
     bubble.style.opacity = '1';
@@ -1046,7 +1044,6 @@ function triggerNpcDialogue() {
             charIndex++;
         } else {
             clearInterval(typingInterval);
-            // 打字完畢後停留 2.2 秒，淡出消失
             dialogueFadeTimeout = setTimeout(() => {
                 bubble.style.opacity = '0';
             }, 2200);
@@ -1232,7 +1229,7 @@ function updateWheelPositions() {
     });
 }
 
-// ==================== 5. 戰鬥核心系統 (3波敵人、橫幅滑動、最後一擊特寫) ====================
+// ==================== 5. 戰鬥核心系統 ====================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const playerSpriteImg = document.getElementById('player-gif-sprite');
@@ -1265,12 +1262,11 @@ let hitStopFrames = 0;
 function triggerScreenShake(intensity, frames) { screenShake.intensity = intensity; screenShake.time = frames; }
 function triggerHitStop(frames) { hitStopFrames = Math.max(hitStopFrames, frames); }
 
-// 波次管理與最後一擊特寫狀態
 let currentWave = 1;
 const TOTAL_WAVES = 3;
-let waveState = 'fighting'; // 'fighting', 'waiting_banner', 'banner_sliding', 'victory_slowmo'
+let waveState = 'fighting';
 let bannerTimer = 0;
-let bannerX = 2200; // 橫幅 X 座標
+let bannerX = 2200;
 let slomoTimer = 0;
 let lastKillPos = { x: 1920, y: 1080 };
 
@@ -1385,7 +1381,7 @@ function spawnEnemyWave() {
         x: t.x, y: t.y, width: 128, height: 128, size: 64, hp: 30, maxHp: 30,
         kbVx: 0, kbVy: 0, kbTime: 0, invuln: 0, jumpTimer: t.delay, isJumping: false,
         jumpTargetX: 0, jumpTargetY: 0, jumpStartX: 0, jumpStartY: 0, jumpProgress: 0,
-        facingRight: false, spawnAlpha: 0.0 // 淡入生成
+        facingRight: false, spawnAlpha: 0.0
     }));
 }
 
@@ -1424,7 +1420,6 @@ async function startLevel(levelNum, mapFileName) {
     hitStopFrames = 0;
     floatingTexts = []; dyingEnemies = []; activePunchGifs = []; chargeParticles = []; droppedCoins = [];
     
-    // 初始化波次
     currentWave = 1;
     waveState = 'fighting';
     spawnEnemyWave();
@@ -1580,16 +1575,14 @@ function quitLevel() {
     playTransition(async () => enterMainLobby());
 }
 
-// 遊戲主循環
 let slomoFrameCounter = 0;
 function gameLoop() {
     if (!isPlaying || isPaused) return;
 
-    // 最後一擊慢動作卡幀邏輯 (每隔 3 幀才更新一次，並拉近鏡頭特寫)
     if (waveState === 'victory_slowmo') {
         slomoTimer--;
         slomoFrameCounter++;
-        camera.zoom += (1.42 - camera.zoom) * 0.08; // 平滑鏡頭拉近特寫
+        camera.zoom += (1.42 - camera.zoom) * 0.08;
 
         if (slomoFrameCounter % 3 === 0) {
             updateLogic();
@@ -1627,7 +1620,6 @@ function updateLogic() {
     if (player.punchAnimTimer > 0) player.punchAnimTimer--;
     if (player.invuln > 0) player.invuln--;
 
-    // 蓄力與移動
     if (isAttackHeld && player.punchAnimTimer <= 0 && waveState !== 'victory_slowmo') {
         player.chargeTime++;
         player.speed = player.baseSpeed * 0.72;
@@ -1684,13 +1676,11 @@ function updateLogic() {
     
     clampToWalkableArea(player, 45);
 
-    // 鏡頭焦點跟隨（特寫時聚焦於最後擊殺點）
     let focusTargetX = (waveState === 'victory_slowmo') ? lastKillPos.x : player.x;
     let focusTargetY = (waveState === 'victory_slowmo') ? lastKillPos.y : player.y;
     camera.x = Math.max(0, Math.min(focusTargetX - camera.width / 2, camera.mapWidth - camera.width));
     camera.y = Math.max(0, Math.min(focusTargetY - camera.height / 2, camera.mapHeight - camera.height));
 
-    // 金幣物理更新
     for (let i = droppedCoins.length - 1; i >= 0; i--) {
         const c = droppedCoins[i];
         if (c.state === 'air') {
@@ -1720,10 +1710,9 @@ function updateLogic() {
         }
     }
 
-    // 敵人邏輯與受擊
     for (let i = enemies.length - 1; i >= 0; i--) {
         let e = enemies[i];
-        if (e.spawnAlpha < 1.0) e.spawnAlpha = Math.min(1.0, e.spawnAlpha + 0.05); // 淡入
+        if (e.spawnAlpha < 1.0) e.spawnAlpha = Math.min(1.0, e.spawnAlpha + 0.05);
         if (e.invuln > 0) e.invuln--;
 
         if (e.kbTime > 0) {
@@ -1759,7 +1748,6 @@ function updateLogic() {
 
         clampToWalkableArea(e, e.size * 0.7);
 
-        // 碰觸主角扣血
         if (player.invuln <= 0 && Math.hypot(player.x - e.x, player.y - e.y) < player.size + e.size && waveState !== 'victory_slowmo') {
             player.hp -= 10; player.invuln = 30;
             let angle = Math.atan2(player.y - e.y, player.x - e.x);
@@ -1768,7 +1756,6 @@ function updateLogic() {
             spawnDamageText(10, player.x, player.y, true);
         }
 
-        // 敵人陣亡
         if (e.hp <= 0) {
             spawnDroppedCoins(e.x, e.y, 3);
             lastKillPos = { x: e.x, y: e.y };
@@ -1789,23 +1776,19 @@ function updateLogic() {
 
             enemies.splice(i, 1);
 
-            // 檢查是否消滅本波所有敵人
             if (enemies.length === 0) {
                 if (currentWave < TOTAL_WAVES) {
-                    // 1 秒後進入橫幅提示狀態
                     waveState = 'waiting_banner';
                     bannerTimer = 60; 
                 } else {
-                    // 全關卡最後一隻敵人死亡：進入 2 秒卡幀慢動作特寫！
                     waveState = 'victory_slowmo';
-                    slomoTimer = 120; // 60 FPS 下約 2 秒
+                    slomoTimer = 120;
                     triggerScreenShake(20, 24);
                 }
             }
         }
     }
 
-    // 亡魂退場動畫
     for (let i = dyingEnemies.length - 1; i >= 0; i--) {
         let de = dyingEnemies[i]; de.life--;
         let p = 1 - (de.life / de.maxLife);
@@ -1814,33 +1797,29 @@ function updateLogic() {
         if (de.life <= 0) dyingEnemies.splice(i, 1);
     }
 
-    // 飄字更新
     for (let i = floatingTexts.length - 1; i >= 0; i--) {
         let ft = floatingTexts[i]; ft.vy += 0.2; ft.x += ft.vx; ft.y += ft.vy; ft.life--;
         if (ft.life <= 0) floatingTexts.splice(i, 1);
     }
 
-    // 波次橫幅滑動更新邏輯
     if (waveState === 'waiting_banner') {
         bannerTimer--;
         if (bannerTimer <= 0) {
             waveState = 'banner_sliding';
-            bannerX = 2200; // 自畫面右側外啟動
+            bannerX = 2200;
             bannerTimer = 0;
         }
     } else if (waveState === 'banner_sliding') {
         bannerTimer++;
-        // 橫幅滑動軌跡：快速滑至中央 (960)，減速滑行 2 秒 (120 幀)，隨後快速滑離左側 (-600)
         if (bannerX > 1100) {
-            bannerX -= 32; // 快速進場
+            bannerX -= 32;
         } else if (bannerX > 820) {
-            bannerX -= 2.3; // 中央減速滑動 2 秒
+            bannerX -= 2.3;
         } else {
-            bannerX -= 34; // 快速退場
+            bannerX -= 34;
         }
 
         if (bannerX < -500) {
-            // 橫幅滑出完畢，刷新下一波敵人！
             currentWave++;
             waveState = 'fighting';
             spawnEnemyWave();
@@ -1873,7 +1852,6 @@ function renderGame() {
     ctx.clearRect(0, 0, 1920, 1080);
     
     ctx.save();
-    // 支援最後一擊鏡頭特寫縮放
     if (camera.zoom !== 1.0) {
         ctx.translate(960, 540);
         ctx.scale(camera.zoom, camera.zoom);
@@ -1901,7 +1879,6 @@ function renderGame() {
         ctx.restore();
     }
 
-    // 金幣
     for (let c of droppedCoins) {
         const coinSize = 34;
         const screenX = c.x - renderCamX;
@@ -1927,7 +1904,6 @@ function renderGame() {
         ctx.restore();
     }
 
-    // 敵人繪製 (支援透明度淡入)
     for (let e of enemies) {
         drawShadow(e.x, e.y, e.size, renderCamX, renderCamY);
 
@@ -1949,7 +1925,6 @@ function renderGame() {
         ctx.restore();
     }
 
-    // 死亡消散
     for (let de of dyingEnemies) {
         ctx.save();
         ctx.translate(de.x - renderCamX, de.y - renderCamY);
@@ -1968,7 +1943,6 @@ function renderGame() {
         ctx.restore();
     }
 
-    // 主角 GIF DOM 同步
     let targetGif = 'maincharacter_idle.gif';
     let currentFacingRight = player.facingRight;
 
@@ -2001,7 +1975,6 @@ function renderGame() {
     const flipStr = currentFacingRight ? 'scaleX(-1)' : 'scaleX(1)';
     playerSpriteImg.style.transform = `translate3d(${screenPosX}px, ${screenPosY}px, 0) ${flipStr}`;
 
-    // 主角蓄力光圈
     if (player.chargeTime >= 30) {
         const progress = Math.min(1.0, (player.chargeTime - 30) / 30.0);
         ctx.beginPath(); 
@@ -2011,7 +1984,6 @@ function renderGame() {
         ctx.stroke();
     }
 
-    // 揮拳特效 DOM
     for (let pObj of activePunchGifs) {
         const pSize = pObj.baseSize * pObj.scale * scaleX * camera.zoom;
         let sX = (pObj.worldX - renderCamX) * scaleX - pSize / 2;
@@ -2025,7 +1997,6 @@ function renderGame() {
         pObj.element.style.transform = `translate3d(${sX}px, ${sY}px, 0) rotate(${pObj.angle}rad)`;
     }
 
-    // 傷害飄字
     for (let ft of floatingTexts) {
         const progress = ft.life / ft.maxLife; 
         const scale = (ft.isCrit ? 1.8 : 1.4) * (0.25 + 0.75 * progress) * 1.5;
@@ -2045,15 +2016,13 @@ function renderGame() {
         ctx.restore();
     }
 
-    ctx.restore(); // 恢復鏡頭縮放
+    ctx.restore();
 
-    // 繪製「下一波敵人即將出現！」滑動橫幅
     if (waveState === 'banner_sliding') {
         ctx.save();
         ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
         ctx.shadowBlur = 16;
         ctx.fillStyle = '#ffffff';
-        // 圓角白色提示框橫幅
         const bW = 680; const bH = 80;
         ctx.beginPath();
         ctx.roundRect(bannerX - bW / 2, 280, bW, bH, [24]);
@@ -2071,7 +2040,6 @@ function renderGame() {
         ctx.restore();
     }
 
-    // 戰鬥常駐 HUD
     if (document.getElementById('victory-screen').style.display !== 'flex') {
         ctx.fillStyle = 'white'; ctx.font = 'bold 28px jf-openhuninn, sans-serif';
         ctx.fillText(`血量: ${player.hp} / ${player.maxHp}`, 40, 50);
