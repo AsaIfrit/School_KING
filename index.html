@@ -15,6 +15,13 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <style>
+        :root {
+            /* 全螢幕按鈕尺寸與定位計算：保證相鄰元素與全螢幕按鈕永遠有至少 24px 間距 */
+            --fs-btn-size: clamp(34px, 2.4vw, 44px);
+            --fs-right: max(16px, 2%);
+            --top-right-offset: calc(var(--fs-right) + var(--fs-btn-size) + 24px);
+        }
+
         @font-face {
             font-family: 'jf-openhuninn';
             src: url('https://cdn.jsdelivr.net/gh/justfont/open-huninn-font@1.1/font/jf-openhuninn-1.1.ttf') format('truetype');
@@ -31,13 +38,12 @@
         }
 
         body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            height: 100dvh;
+            margin: 0; padding: 0; width: 100%; height: 100dvh;
             background-color: #000; overflow: hidden;
             display: flex; justify-content: center; align-items: center; color: #fff;
         }
 
-        /* 完美 16:9 全尺寸智慧自適應容器 */
+        /* 16:9 智慧自適應容器 */
         #game-container {
             position: relative;
             width: min(100vw, calc(100dvh * 16 / 9));
@@ -54,18 +60,14 @@
         #player-gif-sprite {
             position: absolute; width: 140px; height: 140px;
             pointer-events: none; z-index: 5; display: none;
-            left: 0; top: 0;
-            will-change: transform;
+            left: 0; top: 0; will-change: transform;
             transform-origin: center center;
         }
 
         /* 出拳 GIF 動態 DOM 樣式 */
         .punch-gif-sprite {
-            position: absolute;
-            pointer-events: none;
-            z-index: 7;
-            left: 0; top: 0;
-            will-change: transform;
+            position: absolute; pointer-events: none;
+            z-index: 7; left: 0; top: 0; will-change: transform;
             transform-origin: center center;
         }
 
@@ -76,10 +78,10 @@
             background: rgba(15, 15, 25, 0.95); z-index: 10; transition: opacity 0.4s ease;
         }
 
-        /* 頂部通用機能按鈕 */
+        /* 右上角全螢幕按鈕 */
         #fullscreen-btn {
-            position: absolute; top: 2.2%; right: 2%; z-index: 60;
-            width: 2.3vw; height: 2.3vw; min-width: 32px; min-height: 32px;
+            position: absolute; top: max(16px, 2.2%); right: var(--fs-right); z-index: 60;
+            width: var(--fs-btn-size); height: var(--fs-btn-size);
             background: rgba(255, 255, 255, 0.92); color: #388099;
             border: 1.5px solid #dcdcdc; border-radius: 50%;
             padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -87,30 +89,30 @@
             transition: transform 0.2s ease, background-color 0.2s;
         }
         #fullscreen-btn:hover { background: #ffffff; transform: scale(1.08); }
-        #fullscreen-btn svg { width: 1.1vw; height: 1.1vw; min-width: 15px; min-height: 15px; fill: #388099; }
+        #fullscreen-btn svg { width: 50%; height: 50%; fill: #388099; }
 
         #global-back-btn {
-            position: absolute; top: 2.2%; left: 2%; z-index: 50;
+            position: absolute; top: max(16px, 2.2%); left: max(16px, 2%); z-index: 50;
             background: rgba(255, 255, 255, 0.92); color: #388099;
             border: 1.5px solid #dcdcdc; border-radius: 20px;
-            padding: 0.45vw 1.2vw; font-size: 1.1vw; font-weight: bold;
+            padding: 0.45vw 1.2vw; font-size: clamp(13px, 1.1vw, 18px); font-weight: bold;
             cursor: pointer; display: none; align-items: center; gap: 0.4vw;
             box-shadow: 0 4px 12px rgba(0,0,0,0.12); backdrop-filter: blur(5px);
             transition: all 0.2s ease;
         }
         #global-back-btn:hover { background: #ffffff; transform: scale(1.05); }
 
-        /* 戰鬥內 UI 與暫停選單 */
+        /* 戰鬥內 UI 與暫停 */
         #in-game-ui {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 8; display: none;
         }
 
         .btn-pause-game {
-            position: absolute; top: 2.2%; right: calc(2% + 42px);
+            position: absolute; top: max(16px, 2.2%); right: var(--top-right-offset);
             background: rgba(255, 255, 255, 0.9); color: #388099;
             border: 1.5px solid #dcdcdc; border-radius: 16px;
-            padding: 0.4vw 1.1vw; font-size: 1vw; font-weight: bold;
+            padding: 0.45vw 1.2vw; font-size: clamp(13px, 1.05vw, 18px); font-weight: bold;
             cursor: pointer; pointer-events: auto;
             box-shadow: 0 3px 8px rgba(0,0,0,0.15); transition: all 0.2s ease;
         }
@@ -118,10 +120,10 @@
 
         .btn-mobile-attack {
             position: absolute; bottom: 8%; right: 6%;
-            width: 8vw; height: 8vw; min-width: 76px; min-height: 76px;
+            width: clamp(72px, 8vw, 110px); height: clamp(72px, 8vw, 110px);
             background: rgba(255, 255, 255, 0.88); color: #388099;
             border: 3px solid #b2d3de; border-radius: 50%;
-            font-size: 2.2vw; font-weight: bold;
+            font-size: clamp(24px, 2.2vw, 36px); font-weight: bold;
             display: flex; justify-content: center; align-items: center;
             cursor: pointer; pointer-events: auto;
             box-shadow: 0 6px 15px rgba(0,0,0,0.25); transition: transform 0.1s ease;
@@ -133,59 +135,65 @@
             width: 14vw; height: 14vw; min-width: 130px; min-height: 130px;
             border-radius: 50%; background: rgba(255, 255, 255, 0.15);
             border: 2px dashed rgba(255, 255, 255, 0.35);
-            pointer-events: auto; display: none; touch-action: none;
-            z-index: 9;
+            pointer-events: auto; display: none; touch-action: none; z-index: 9;
         }
         #joystick-knob {
             position: absolute; top: 50%; left: 50%;
             width: 5.5vw; height: 5.5vw; min-width: 50px; min-height: 50px;
-            margin-left: -2.75vw; margin-top: -2.75vw;
+            margin-left: max(-25px, -2.75vw); margin-top: max(-25px, -2.75vw);
             border-radius: 50%; background: rgba(255, 255, 255, 0.8);
-            border: 2px solid #388099;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            pointer-events: none;
-            transform: translate3d(0, 0, 0);
+            border: 2px solid #388099; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            pointer-events: none; transform: translate3d(0, 0, 0);
         }
 
-        #pause-screen {
-            background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); z-index: 20;
-        }
+        #pause-screen { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); z-index: 20; }
         .pause-panel {
             background: #ffffff; border-radius: 24px; padding: 3vw 5vw;
             box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid #eef2f5;
-            display: flex; flex-direction: column; align-items: center; gap: 1.5vw;
+            display: flex; flex-direction: column; align-items: center; gap: max(20px, 1.5vw);
             min-width: 28vw;
         }
-        .pause-title { font-size: 2.8vw; font-weight: bold; color: #388099; margin-bottom: 0.8vw; letter-spacing: 2px; }
+        .pause-title { font-size: 2.8vw; font-weight: bold; color: #388099; letter-spacing: 2px; }
 
-        /* 登入畫面樣式 */
+        /* 1. 登入畫面 */
         #login-screen { background: #000; }
         #login-bg-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
         .top-left-logo { position: absolute; top: 4%; left: 4%; z-index: 5; width: 18vw; max-width: 320px; min-width: 160px; pointer-events: none; filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.5)); }
-        .top-right-group { position: absolute; top: 2.2%; right: calc(2% + 42px); z-index: 15; display: flex; align-items: center; gap: 0.6vw; }
         
-        .google-login-btn { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.8); color: #388099; padding: 0.35vw 0.85vw; border-radius: 14px; font-size: 0.7vw; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 0.4vw; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease; }
+        /* Google 登入按鍵：永久保持距離右上角全螢幕 24px 以上 */
+        .top-right-group { position: absolute; top: max(16px, 2.2%); right: var(--top-right-offset); z-index: 15; display: flex; align-items: center; }
+        .google-login-btn { 
+            background: rgba(255, 255, 255, 0.92); border: 1.5px solid #dcdcdc; color: #388099; 
+            padding: 0.4vw 1vw; border-radius: 16px; font-size: clamp(12px, 0.85vw, 15px); 
+            font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; 
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15); transition: all 0.2s ease; 
+        }
         .google-login-btn:hover { background: #ffffff; transform: translateY(-1px); }
-        .google-login-btn svg { width: 0.8vw !important; height: 0.8vw !important; min-width: 10px; min-height: 10px; }
+        .google-login-btn svg { width: 16px; height: 16px; min-width: 16px; }
 
-        .bottom-right-btn-group { position: absolute; right: 8%; bottom: 8%; z-index: 5; display: flex; flex-direction: column; gap: 1.2vw; width: 16vw; min-width: 180px; }
-        .btn-custom { width: 100%; padding: 0.8vw 1.5vw; font-size: 1.4vw; font-weight: bold; color: #388099; background-color: #ffffff; border: 1.5px solid #dcdcdc; border-radius: 30px; cursor: pointer; text-align: center; box-shadow: 4px 6px 0px rgba(100, 100, 100, 0.4); transition: all 0.15s ease; }
+        .bottom-right-btn-group { 
+            position: absolute; right: 8%; bottom: 8%; z-index: 5; 
+            display: flex; flex-direction: column; gap: max(20px, 1.2vw); 
+            width: 16vw; min-width: 180px; 
+        }
+        .btn-custom { width: 100%; padding: 0.8vw 1.5vw; font-size: clamp(16px, 1.4vw, 24px); font-weight: bold; color: #388099; background-color: #ffffff; border: 1.5px solid #dcdcdc; border-radius: 30px; cursor: pointer; text-align: center; box-shadow: 4px 6px 0px rgba(100, 100, 100, 0.4); transition: all 0.15s ease; }
         .btn-custom:hover { transform: translateY(-2px); box-shadow: 4px 8px 0px rgba(100, 100, 100, 0.5); background-color: #f9f9f9; }
         .btn-continue { background-color: #ffffff; color: #2e86de; border: 2px solid #a5d8ff; }
 
-        /* 大廳樣式 */
+        /* 2. 大廳樣式 */
         #main-lobby-screen { background: url('office.jpg') no-repeat center center / cover; justify-content: flex-start; align-items: flex-start; padding: 0; }
         .lobby-character-portrait { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; z-index: 6; opacity: 0; }
         .lobby-character-portrait.animate-in { animation: slideInFromLeft 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideInFromLeft { 0% { transform: translateX(-500px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 
-        .lobby-top-bar { position: absolute; top: 2.2%; right: calc(2% + 42px); z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.8vw; }
-        .lobby-currency-container { display: flex; gap: 1.2vw; }
-        .currency-box { position: relative; background: #ffffff; border-radius: 20px; width: 10.5vw; height: 2.3vw; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border: 1px solid #eef2f5; padding: 0 1vw; }
-        .currency-box-icon { position: absolute; left: -0.6vw; top: 50%; transform: translateY(-50%); width: 2.2vw; height: 2.2vw; object-fit: contain; }
-        .currency-box-text { font-size: 1.15vw; font-weight: bold; color: #538199; text-align: center; width: 100%; padding-left: 1.2vw; }
+        /* 大廳頂部金幣/寶石庫存：永久保持與全螢幕按鈕 24px 以上距離，彼此間距 > 20px */
+        .lobby-top-bar { position: absolute; top: max(16px, 2.2%); right: var(--top-right-offset); z-index: 12; display: flex; align-items: center; }
+        .lobby-currency-container { display: flex; gap: max(20px, 1.2vw); }
+        .currency-box { position: relative; background: #ffffff; border-radius: 20px; width: clamp(120px, 10.5vw, 170px); height: clamp(34px, 2.3vw, 44px); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border: 1px solid #eef2f5; padding: 0 1vw; }
+        .currency-box-icon { position: absolute; left: -8px; top: 50%; transform: translateY(-50%); width: clamp(24px, 2.2vw, 36px); height: clamp(24px, 2.2vw, 36px); object-fit: contain; }
+        .currency-box-text { font-size: clamp(14px, 1.15vw, 20px); font-weight: bold; color: #538199; text-align: center; width: 100%; padding-left: 1.2vw; }
 
-        .lobby-right-menu { position: absolute; right: 4%; top: 16%; display: flex; flex-direction: column; align-items: flex-end; gap: 1.2vw; z-index: 12; }
+        .lobby-right-menu { position: absolute; right: 4%; top: 16%; display: flex; flex-direction: column; align-items: flex-end; gap: max(20px, 1.2vw); z-index: 12; }
         .lobby-white-btn { background: #ffffff; color: #4a8ca7; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); transition: transform 0.2s ease, box-shadow 0.2s ease; display: flex; align-items: center; justify-content: center; letter-spacing: 2px; opacity: 0; }
         .lobby-white-btn.animate-in { animation: slideInFromRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .btn-campus.animate-in { animation-delay: 0s; }
@@ -194,17 +202,15 @@
         .btn-settings-main.animate-in { animation-delay: 0.45s; }
         @keyframes slideInFromRight { 0% { transform: translateX(500px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
         
-        .btn-campus { width: 23vw; height: 4.8vw; font-size: 2.1vw; border-radius: 26px; }
-        .btn-character { width: 17vw; height: 3.8vw; font-size: 1.55vw; border-radius: 22px; }
-        .btn-shop-main { width: 17vw; height: 3.8vw; font-size: 1.6vw; border-radius: 22px; }
-        .btn-settings-main { width: 17vw; height: 3.8vw; font-size: 1.55vw; border-radius: 22px; }
+        .btn-campus { width: 23vw; height: 4.8vw; min-width: 200px; min-height: 48px; font-size: clamp(18px, 2.1vw, 28px); border-radius: 26px; }
+        .btn-character, .btn-shop-main, .btn-settings-main { width: 17vw; height: 3.8vw; min-width: 160px; min-height: 40px; font-size: clamp(15px, 1.55vw, 22px); border-radius: 22px; }
 
-        .lobby-left-bottom-group { position: absolute; left: 3%; bottom: 4%; display: flex; gap: 0.8vw; z-index: 12; }
-        .btn-sub-action { background: rgba(255, 255, 255, 0.9); color: #388099; border: none; padding: 0.6vw 1.5vw; border-radius: 18px; font-size: 1vw; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); backdrop-filter: blur(5px); }
+        .lobby-left-bottom-group { position: absolute; left: 3%; bottom: 4%; display: flex; gap: max(20px, 0.8vw); z-index: 12; }
+        .btn-sub-action { background: rgba(255, 255, 255, 0.9); color: #388099; border: none; padding: 0.6vw 1.5vw; border-radius: 18px; font-size: clamp(13px, 1vw, 16px); font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); backdrop-filter: blur(5px); }
 
         .title { font-size: 2.8vw; font-weight: bold; color: #388099; margin-bottom: 0.5vw; letter-spacing: 2px; }
         .subtitle { font-size: 1.4vw; font-weight: bold; color: #538199; margin-bottom: 1.2vw; }
-        .btn { padding: 0.7vw 1.8vw; font-size: 1.2vw; font-weight: bold; color: #388099; background: #ffffff; border: 1.5px solid #dcdcdc; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); text-align: center; }
+        .btn { padding: 0.7vw 1.8vw; font-size: clamp(14px, 1.2vw, 18px); font-weight: bold; color: #388099; background: #ffffff; border: 1.5px solid #dcdcdc; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); text-align: center; }
         .btn-primary { background: #388099; color: #ffffff; border-color: #388099; }
         .btn-primary:hover { background: #2f6c82; }
         .btn-danger { color: #ff4757; border-color: #ffccd1; }
@@ -214,103 +220,51 @@
         .settings-panel-box {
             width: 46vw; min-width: 440px; background: rgba(255, 255, 255, 0.95);
             border-radius: 28px; padding: 2.6vw 3.5vw; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
-            border: 2px solid #eef2f5; display: flex; flex-direction: column; gap: 1.8vw;
+            border: 2px solid #eef2f5; display: flex; flex-direction: column; gap: max(20px, 1.8vw);
         }
         .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.3vw; font-weight: bold; color: #388099; }
-        .setting-slider-group { display: flex; align-items: center; gap: 1vw; width: 55%; }
-        .setting-slider {
-            width: 100%; height: 8px; -webkit-appearance: none; appearance: none;
-            background: #dbe6ea; border-radius: 4px; outline: none; cursor: pointer;
-        }
-        .setting-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; appearance: none; width: 20px; height: 20px;
-            border-radius: 50%; background: #388099; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
+        .setting-slider-group { display: flex; align-items: center; gap: max(16px, 1vw); width: 55%; }
+        .setting-slider { width: 100%; height: 8px; -webkit-appearance: none; appearance: none; background: #dbe6ea; border-radius: 4px; outline: none; cursor: pointer; }
+        .setting-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #388099; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
         .setting-val-text { font-size: 1.1vw; width: 3.5vw; text-align: right; color: #78909c; }
 
         /* 關卡選擇 */
-        #stage-select-screen { 
-            background: url('office.jpg') no-repeat center center / cover; 
-            justify-content: center; align-items: center; padding: 0 2vw;
-        }
+        #stage-select-screen { background: url('office.jpg') no-repeat center center / cover; justify-content: center; align-items: center; padding: 0 2vw; }
         .stage-scroll-container {
-            width: 92%; max-width: 92%;
-            display: flex; gap: 1.8vw; margin-top: 1.5vw;
-            overflow-x: auto; overflow-y: hidden;
-            padding: 1vw 1.5vw 1.8vw 1.5vw;
-            flex-wrap: nowrap;
-            touch-action: pan-x; cursor: grab;
-            scrollbar-width: none; -ms-overflow-style: none;
+            width: 92%; max-width: 92%; display: flex; gap: max(20px, 1.8vw); margin-top: 1.5vw;
+            overflow-x: auto; overflow-y: hidden; padding: 1vw 1.5vw 1.8vw 1.5vw; flex-wrap: nowrap;
+            touch-action: pan-x; cursor: grab; scrollbar-width: none;
         }
         .stage-scroll-container:active { cursor: grabbing; }
-        .stage-scroll-container::-webkit-scrollbar { display: none; width: 0; height: 0; }
+        .stage-scroll-container::-webkit-scrollbar { display: none; }
 
         .stage-card {
-            flex: 0 0 17.5vw; width: 17.5vw; height: 21vw;
-            background: #ffffff; border-radius: 24px;
-            color: #388099; padding: 1.4vw 1.2vw; display: flex; flex-direction: column;
-            justify-content: space-between; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-            border: 1px solid #eef2f5; cursor: pointer; transition: transform 0.2s;
-            pointer-events: auto;
+            flex: 0 0 17.5vw; width: 17.5vw; min-width: 170px; height: 21vw; min-height: 230px;
+            background: #ffffff; border-radius: 24px; color: #388099; padding: 1.4vw 1.2vw;
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12); border: 1px solid #eef2f5; cursor: pointer; transition: transform 0.2s;
         }
         .stage-card:hover { transform: translateY(-4px); }
         .stage-card.locked { opacity: 0.65; cursor: not-allowed; }
         
-        .stage-reward-badge {
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            padding: 0.4vw 0.8vw; border-radius: 12px; font-weight: bold; font-size: 0.95vw;
-            width: 100%; box-sizing: border-box; text-align: center;
-        }
+        .stage-reward-badge { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0.4vw 0.8vw; border-radius: 12px; font-weight: bold; font-size: clamp(12px, 0.95vw, 15px); width: 100%; box-sizing: border-box; text-align: center; }
         .badge-cleared { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
         .badge-first { background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; }
         .badge-locked { background: #f8fafc; color: #94a3b8; border: 1px solid #e2e8f0; }
 
-        /* ================= 4. 人物選單 (含下方「鎖定出戰」按鍵) ================= */
-        #character-menu-screen {
-            background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px);
-            padding: 0; display: flex; justify-content: center; align-items: center;
-        }
+        /* 人物選單 */
+        #character-menu-screen { background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); padding: 0; display: flex; justify-content: center; align-items: center; }
         .char-select-main-wrapper { width: 94%; height: 88%; display: flex; justify-content: space-between; align-items: center; position: relative; }
-        
-        .char-wheel-left-area { 
-            position: relative; width: 48%; height: 100%; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            perspective: 1200px; transform-style: preserve-3d; pointer-events: auto; overflow: visible; 
-        }
-        .char-wheel-cards-stage {
-            position: relative; width: 100%; height: 82%;
-            display: flex; justify-content: center; align-items: center;
-            transform-style: preserve-3d;
-        }
-        .char-wheel-card-img { 
-            position: absolute; width: 8.5vw; height: 32vw; object-fit: contain; 
-            cursor: pointer; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.12)); 
-            will-change: transform, opacity; transform-origin: center center; 
-            touch-action: manipulation; user-select: none; -webkit-user-drag: none; 
-            transition: transform 0.42s cubic-bezier(0.18, 0.89, 0.32, 1.05), opacity 0.42s ease, filter 0.42s ease; 
-        }
+        .char-wheel-left-area { position: relative; width: 48%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; perspective: 1200px; transform-style: preserve-3d; }
+        .char-wheel-cards-stage { position: relative; width: 100%; height: 82%; display: flex; justify-content: center; align-items: center; transform-style: preserve-3d; }
+        .char-wheel-card-img { position: absolute; width: 8.5vw; height: 32vw; object-fit: contain; cursor: pointer; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.12)); will-change: transform, opacity; transform-origin: center center; transition: transform 0.42s cubic-bezier(0.18, 0.89, 0.32, 1.05), opacity 0.42s ease; }
+        .char-lock-btn-container { position: relative; z-index: 100; margin-top: 1.2vw; display: flex; justify-content: center; }
+        .btn-char-lock { padding: 0.6vw 2.4vw; font-size: clamp(14px, 1.25vw, 20px); font-weight: bold; border-radius: 22px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12); }
+        .btn-char-lock.active-deployed { background: #e0f2fe; color: #0284c7; border: 2px solid #7dd3fc; cursor: default; }
+        .btn-char-lock.ready-to-lock { background: #ffffff; color: #388099; border: 2px solid #bce2ed; }
+        .btn-char-lock.ready-to-lock:hover { background: #388099; color: #ffffff; transform: translateY(-2px); }
 
-        /* 輪盤下方專屬「鎖定出戰」按鍵容器 */
-        .char-lock-btn-container {
-            position: relative; z-index: 100;
-            margin-top: 1.2vw; display: flex; justify-content: center;
-        }
-        .btn-char-lock {
-            padding: 0.6vw 2.4vw; font-size: 1.25vw; font-weight: bold;
-            border-radius: 22px; cursor: pointer; transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
-        }
-        .btn-char-lock.active-deployed {
-            background: #e0f2fe; color: #0284c7; border: 2px solid #7dd3fc; cursor: default;
-        }
-        .btn-char-lock.ready-to-lock {
-            background: #ffffff; color: #388099; border: 2px solid #bce2ed;
-        }
-        .btn-char-lock.ready-to-lock:hover {
-            background: #388099; color: #ffffff; transform: translateY(-2px);
-        }
-
-        .char-detail-panel { width: 42%; height: 94%; background: rgba(45, 45, 48, 0.88); border-radius: 28px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.12); padding: 2.8vw 2.5vw; display: flex; flex-direction: column; justify-content: space-between; color: #ffffff; box-sizing: border-box; }
+        .char-detail-panel { width: 42%; height: 94%; background: rgba(45, 45, 48, 0.88); border-radius: 28px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.12); padding: 2.8vw 2.5vw; display: flex; flex-direction: column; justify-content: space-between; color: #ffffff; }
         .char-detail-header { display: flex; flex-direction: column; gap: 0.6vw; }
         .char-detail-name { font-size: 2.6vw; font-weight: bold; color: #ffffff; letter-spacing: 2px; }
         .char-detail-tag { display: inline-block; align-self: flex-start; padding: 0.3vw 0.8vw; background: rgba(255, 255, 255, 0.15); border-radius: 8px; font-size: 0.95vw; color: #b0bec5; }
@@ -326,22 +280,17 @@
         
         .shop-right-panel-wrapper { 
             position: absolute; right: 4.5%; top: 50%; transform: translateY(-50%); 
-            width: 44%; height: 82%; 
-            background: rgba(255, 255, 255, 0.94); border-radius: 28px; 
+            width: 44%; height: 82%; background: rgba(255, 255, 255, 0.94); border-radius: 28px; 
             backdrop-filter: blur(10px); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12); 
-            border: 2px solid #eef2f5; padding: 2.2vw 2.5vw; 
-            display: flex; flex-direction: column; justify-content: space-between; 
+            border: 2px solid #eef2f5; padding: 2.2vw 2.5vw; display: flex; flex-direction: column; justify-content: space-between; 
             z-index: 10; opacity: 0; 
         }
         .shop-right-panel-wrapper.animate-in { animation: slideInFromRightCentered 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes slideInFromRightCentered { 
-            0% { transform: translate(500px, -50%); opacity: 0; } 
-            100% { transform: translate(0, -50%); opacity: 1; } 
-        }
+        @keyframes slideInFromRightCentered { 0% { transform: translate(500px, -50%); opacity: 0; } 100% { transform: translate(0, -50%); opacity: 1; } }
 
         .shop-header-title { font-size: 2.2vw; font-weight: bold; color: #388099; }
-        .shop-header-sub { font-size: 1.15vw; font-weight: bold; color: #538199; margin-top: 0.4vw; display: flex; align-items: center; gap: 1vw; }
-        .shop-goods-list { display: flex; flex-direction: column; gap: 1.2vw; margin-top: 1.2vw; }
+        .shop-header-sub { font-size: 1.15vw; font-weight: bold; color: #538199; margin-top: 0.4vw; display: flex; align-items: center; gap: max(16px, 1vw); }
+        .shop-goods-list { display: flex; flex-direction: column; gap: max(16px, 1.2vw); margin-top: 1.2vw; }
         .shop-goods-card { background: #ffffff; border: 1.5px solid #dbe8ed; border-radius: 18px; padding: 1.1vw 1.6vw; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .goods-title { font-size: 1.3vw; font-weight: bold; color: #388099; }
         .goods-sub { font-size: 0.95vw; color: #78909c; margin-top: 0.25vw; }
@@ -351,33 +300,25 @@
         #game-toast.show { top: 5%; opacity: 1; }
 
         /* 結算畫面 */
-        #victory-screen { 
-            display: none; background: rgba(0, 0, 0, 0.45); 
-            backdrop-filter: blur(8px); z-index: 30; 
-        }
+        #victory-screen { display: none; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(8px); z-index: 30; }
         .victory-panel { 
             background: #ffffff; border-radius: 28px; padding: 2.8vw 5.2vw; 
             box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18); border: 2px solid #eef2f5; 
-            display: flex; flex-direction: column; align-items: center; gap: 1.4vw; 
-            min-width: 34vw;
-            animation: slideInFromRightToCenter 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+            display: flex; flex-direction: column; align-items: center; gap: max(20px, 1.4vw); 
+            min-width: 34vw; animation: slideInFromRightToCenter 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
         }
-        @keyframes slideInFromRightToCenter { 
-            0% { transform: translateX(650px); opacity: 0; } 
-            100% { transform: translateX(0); opacity: 1; } 
-        }
+        @keyframes slideInFromRightToCenter { 0% { transform: translateX(650px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 
         .victory-title { font-size: 3vw; font-weight: bold; color: #388099; letter-spacing: 2px; }
         .defeat-title { font-size: 2.8vw; font-weight: bold; color: #ef4444; letter-spacing: 2px; }
-        
-        .victory-reward-group { display: flex; gap: 1.4vw; }
+        .victory-reward-group { display: flex; gap: max(20px, 1.4vw); }
         .victory-box { background: #fbfdfe; border: 1.5px solid #dbe8ed; border-radius: 18px; padding: 0.8vw 2.2vw; font-size: 1.4vw; font-weight: bold; display: flex; align-items: center; gap: 0.8vw; min-width: 10vw; justify-content: center; }
         .first-clear-badge { background: #f0f9ff; color: #0284c7; border: 1.5px solid #bae6fd; border-radius: 20px; padding: 0.6vw 1.8vw; font-size: 1.15vw; font-weight: bold; display: flex; align-items: center; gap: 0.6vw; }
 
         /* 存讀檔 */
         #load-screen-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; display: none; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.25); }
-        .load-game-card { width: 48vw; min-width: 420px; background: #ffffff; border-radius: 20px; padding: 2.5vw 3vw 1.8vw 3vw; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); color: #388099; display: flex; flex-direction: column; gap: 1.2vw; }
-        .load-slot-list { display: flex; flex-direction: column; gap: 1vw; }
+        .load-game-card { width: 48vw; min-width: 420px; background: #ffffff; border-radius: 20px; padding: 2.5vw 3vw 1.8vw 3vw; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); color: #388099; display: flex; flex-direction: column; gap: max(20px, 1.2vw); }
+        .load-slot-list { display: flex; flex-direction: column; gap: max(16px, 1vw); }
         .load-slot-item { background: #ffffff; border: 1.5px solid #dbe6ea; border-radius: 14px; padding: 0.9vw 1.8vw; display: flex; justify-content: space-between; align-items: center; }
         .load-btn-action { background: transparent; border: none; color: #388099; font-size: 1.3vw; font-weight: 600; cursor: pointer; }
         .cloud-sync-status { font-size: 0.95vw; color: #78909c; }
@@ -385,7 +326,7 @@
 
         #save-screen { background: url('office.jpg') no-repeat center center / cover; }
         .panel-container { width: 75%; height: 65%; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); border-radius: 24px; padding: 2.2vw; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #eef2f5; }
-        .slot-grid { display: grid; grid-template-columns: 1fr; gap: 1.2vw; }
+        .slot-grid { display: grid; grid-template-columns: 1fr; gap: max(16px, 1.2vw); }
         .slot-item { background: #ffffff; padding: 1.2vw 2vw; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eef2f5; color: #388099; }
 
         /* 轉場層 */
@@ -395,7 +336,7 @@
         @keyframes pulseGlow { 0% { transform: translateY(0px); opacity: 0.85; } 100% { transform: translateY(-2px); opacity: 1; box-shadow: 0 8px 22px rgba(72, 202, 228, 0.45); } }
         .loading-dots { display: inline-block; width: 1.6vw; text-align: left; }
 
-        .ui-inline-icon { width: 1.5vw; height: 1.5vw; object-fit: contain; vertical-align: middle; display: inline-block; }
+        .ui-inline-icon { width: 1.5vw; height: 1.5vw; min-width: 18px; min-height: 18px; object-fit: contain; vertical-align: middle; display: inline-block; }
 
         #orientation-warning { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #ff4757; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; font-size: 24px; text-align: center; }
         @media screen and (orientation: portrait) { #orientation-warning { display: flex; } }
@@ -415,12 +356,12 @@
     <audio id="bg-music-battle" src="Victory Pixel.mp3" loop preload="auto"></audio>
 
     <div id="game-container">
-        <!-- 全局通用左上角返回按鈕 -->
+        <!-- 左上角返回按鈕 -->
         <button id="global-back-btn" onclick="playClickSound(); handleGlobalBack()">
             <span style="font-size: 1.4vw; line-height: 1;">‹</span> <span>返回</span>
         </button>
 
-        <!-- 右上角小圓形全螢幕切換按鈕 -->
+        <!-- 右上角全螢幕切換按鈕 -->
         <button id="fullscreen-btn" onclick="playClickSound(); toggleFullscreen()" title="切換全螢幕">
             <svg id="fs-expand-icon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
             <svg id="fs-compress-icon" viewBox="0 0 24 24" style="display:none;"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
@@ -474,7 +415,7 @@
 
             <div id="load-screen-modal">
                 <div class="load-game-card">
-                    <div class="load-game-title" style="font-size: 1.8vw; font-weight: bold;">讀取進度</div>
+                    <div style="font-size: 1.8vw; font-weight: bold;">讀取進度</div>
                     <div class="load-slot-list" id="load-slots-container"></div>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1vw;">
                         <span id="cloud-status-text" class="cloud-sync-status">目前模式: 本地端儲存 (未登入)</span>
@@ -548,7 +489,7 @@
             </div>
         </div>
 
-        <!-- 4. 人物選單 (輪盤正下方設置出戰鎖定鍵) -->
+        <!-- 4. 人物選單 -->
         <div id="character-menu-screen" class="ui-screen" style="display: none;">
             <div class="char-select-main-wrapper">
                 <div class="char-wheel-left-area">
@@ -601,7 +542,7 @@
                                 <div class="goods-sub">獲得全新戰鬥夥伴</div>
                             </div>
                             <button class="btn" style="padding: 0.6vw 1.5vw; font-size: 1.1vw; min-width: 10vw; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="drawGacha()">
-                                單抽 (10 <img src="gem.png" style="width: 1.2vw; height: 1.2vw; object-fit: contain;">)
+                                單抽 (10 <img src="gem.png" class="ui-inline-icon">)
                             </button>
                         </div>
                     </div>
@@ -646,13 +587,13 @@
                     </div>
                 </div>
 
-                <div id="settlement-btn-group" style="display: flex; gap: 1.2vw; margin-top: 0.5vw; width: 100%; justify-content: center;"></div>
+                <div id="settlement-btn-group" style="display: flex; gap: max(20px, 1.2vw); margin-top: 0.5vw; width: 100%; justify-content: center;"></div>
             </div>
         </div>
     </div>
 
 <script>
-// ==================== 0. 現代 Web Audio API 引擎 (手機點擊 100% 發聲) ====================
+// ==================== 0. 音效與音樂控制 ====================
 let currentSfxVolume = 1.0;
 let currentBgmVolume = 1.0;
 let audioCtx = null;
@@ -669,25 +610,19 @@ function getAudioContext() {
     return audioCtx;
 }
 
-// 非同步預載解碼音訊至 AudioBuffer，防止行動端被封鎖
 async function loadSfxBuffer(name, url) {
     try {
         const ctx = getAudioContext();
         if (!ctx) return;
         const res = await fetch(url);
         const arrayBuffer = await res.arrayBuffer();
-        const decoded = await ctx.decodeAudioData(arrayBuffer);
-        audioBuffers[name] = decoded;
-    } catch (e) {
-        // 若 fetch 本地限制則自動降級相容
-    }
+        audioBuffers[name] = await ctx.decodeAudioData(arrayBuffer);
+    } catch (e) { /* 靜默降級 */ }
 }
 
-// 快速播放解碼快取的音效
 function playWebAudioSfx(name, vol = 1.0) {
     const ctx = getAudioContext();
     if (!ctx || !audioBuffers[name]) {
-        // 降級音訊池防線
         if (sndPools[name]) sndPools[name].play(vol);
         return;
     }
@@ -704,7 +639,6 @@ function playWebAudioSfx(name, vol = 1.0) {
     }
 }
 
-// 降級 HTML5 Audio 音效池 (PC 與降級保障)
 class AudioPool {
     constructor(src, size = 4) {
         this.pool = []; this.index = 0; this.size = size;
@@ -732,15 +666,8 @@ const sndPools = {
     victory: new AudioPool('hardpunch.mp3', 1)
 };
 
-// 統一點擊音效接口 (優先走 Web Audio API)
-function playClickSound() { 
-    getAudioContext(); 
-    playWebAudioSfx('click', 1.0); 
-}
-function playSnd(name) { 
-    getAudioContext();
-    playWebAudioSfx(name, 1.0); 
-}
+function playClickSound() { getAudioContext(); playWebAudioSfx('click', 1.0); }
+function playSnd(name) { getAudioContext(); playWebAudioSfx(name, 1.0); }
 
 const bgmList = {
     login: document.getElementById('bg-music-login'),
@@ -781,15 +708,12 @@ function adjustSfxVolume(val) {
     if (currentGameData) { currentGameData.sfxVolume = currentSfxVolume; triggerAutoSave(); }
 }
 
-// 手機第一次點擊任意處立即解鎖 AudioContext
 window.addEventListener('pointerdown', function initAudioOnce() {
     getAudioContext();
-    loadSfxBuffer('click', 'click.mp3');
-    loadSfxBuffer('punch', 'punch.mp3');
-    loadSfxBuffer('punchHit', 'punch_hited.mp3');
-    loadSfxBuffer('hardpunch', 'hardpunch.mp3');
-    loadSfxBuffer('hardpunchHit', 'hardpunch_hited.mp3');
-    loadSfxBuffer('victory', 'hardpunch.mp3');
+    ['click', 'punch', 'punchHit', 'hardpunch', 'hardpunchHit', 'victory'].forEach(name => {
+        const file = name === 'victory' ? 'hardpunch.mp3' : `${name.replace(/[A-Z]/g, m => '_' + m.toLowerCase())}.mp3`;
+        loadSfxBuffer(name, file);
+    });
 
     if (document.getElementById('login-screen').style.display !== 'none' && bgmList.login.paused) {
         switchBgm('login');
@@ -797,48 +721,33 @@ window.addEventListener('pointerdown', function initAudioOnce() {
     window.removeEventListener('pointerdown', initAudioOnce);
 }, { once: true });
 
-// 全螢幕切換
 function toggleFullscreen() {
     const doc = window.document;
     const docEl = doc.documentElement;
-    const requestFullscreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-    const cancelFullscreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-    const isFullscreenNow = doc.fullscreenElement || doc.mozFullScreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
-
-    if (!isFullscreenNow) {
-        if (requestFullscreen) requestFullscreen.call(docEl).catch(() => showToast("瀏覽器限制全螢幕，建議以橫屏體驗"));
+    const isFs = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement);
+    if (!isFs) {
+        const req = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+        if (req) req.call(docEl).catch(() => showToast("瀏覽器限制全螢幕，建議以橫屏體驗"));
     } else {
-        if (cancelFullscreen) cancelFullscreen.call(doc);
+        const exit = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+        if (exit) exit.call(doc);
     }
 }
 function updateFullscreenUI() {
     const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
-    const expandIcon = document.getElementById('fs-expand-icon');
-    const compressIcon = document.getElementById('fs-compress-icon');
-    if (isFs) {
-        if (expandIcon) expandIcon.style.display = 'none';
-        if (compressIcon) compressIcon.style.display = 'block';
-    } else {
-        if (expandIcon) expandIcon.style.display = 'block';
-        if (compressIcon) compressIcon.style.display = 'none';
-    }
+    document.getElementById('fs-expand-icon').style.display = isFs ? 'none' : 'block';
+    document.getElementById('fs-compress-icon').style.display = isFs ? 'block' : 'none';
 }
-document.addEventListener('fullscreenchange', updateFullscreenUI);
-document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
-document.addEventListener('mozfullscreenchange', updateFullscreenUI);
+['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange'].forEach(evt => document.addEventListener(evt, updateFullscreenUI));
 
-// ==================== 1. 全局導航管理 (ESC 與左上角通用返回按鈕) ====================
+// ==================== 1. 全局導航管理 ====================
 let currentScreenId = 'login-screen';
 
 function updateGlobalBackButton(screenId) {
     currentScreenId = screenId;
     const backBtn = document.getElementById('global-back-btn');
     if (!backBtn) return;
-    if (screenId === 'login-screen' || screenId === 'main-lobby-screen' || screenId === 'in-game' || screenId === 'victory-screen') {
-        backBtn.style.display = 'none';
-    } else {
-        backBtn.style.display = 'flex';
-    }
+    backBtn.style.display = ['login-screen', 'main-lobby-screen', 'in-game', 'victory-screen'].includes(screenId) ? 'none' : 'flex';
 }
 
 function handleGlobalBack() {
@@ -861,7 +770,7 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
-// ==================== 2. 全域資源非同步快取 & Toast ====================
+// ==================== 2. 全域資源快取與通知 ====================
 const assetCache = new Map();
 function preloadAsset(src) {
     if (!src) return Promise.resolve(null);
@@ -869,16 +778,14 @@ function preloadAsset(src) {
     return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
-            if ('decode' in img) {
-                img.decode().then(() => { assetCache.set(src, img); resolve(img); })
-                           .catch(() => { assetCache.set(src, img); resolve(img); });
-            } else { assetCache.set(src, img); resolve(img); }
+            if ('decode' in img) img.decode().finally(() => { assetCache.set(src, img); resolve(img); });
+            else { assetCache.set(src, img); resolve(img); }
         };
-        img.onerror = () => { console.warn(`資源略過: ${src}`); resolve(img); };
+        img.onerror = () => { console.warn(`資源載入略過: ${src}`); resolve(img); };
         img.src = src;
     });
 }
-function preloadMultipleAssets(urls) { return Promise.all(urls.map(url => preloadAsset(url))); }
+function preloadMultipleAssets(urls) { return Promise.all(urls.filter(Boolean).map(url => preloadAsset(url))); }
 
 let dotsInterval = null;
 function startLoadingDots() {
@@ -903,7 +810,7 @@ function showToast(msg) {
     toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 2200);
 }
 
-// ==================== 3. FIREBASE 與關卡配置 ====================
+// ==================== 3. FIREBASE 與存檔配置 ====================
 const firebaseConfig = {
     apiKey: "AIzaSyCW0VkxjD8cYSJRdSh4dJihXfcFbb85FaY",
     authDomain: "schoolking-b41af.firebaseapp.com",
@@ -920,11 +827,7 @@ let currentUser = null;
 auth.onAuthStateChanged((user) => { 
     currentUser = user; 
     const btnText = document.getElementById('google-btn-text');
-    if (user) {
-        btnText.innerText = user.displayName ? user.displayName.split(' ')[0] + " (登出)" : "已登入 (登出)";
-    } else {
-        btnText.innerText = "Google 登入";
-    }
+    btnText.innerText = user ? (user.displayName ? user.displayName.split(' ')[0] + " (登出)" : "已登入 (登出)") : "Google 登入";
     checkAutoSaveAndToggleContinue(); 
 });
 
@@ -987,9 +890,7 @@ async function checkAutoSaveAndToggleContinue() {
 
 async function handleStartNewGame() {
     const autoData = await getSaveSlotDataAsync('Auto');
-    if (autoData) {
-        if (!confirm("開啟新遊戲將會覆蓋【存檔槽 Auto】的內容，確定要繼續嗎？")) return;
-    }
+    if (autoData && !confirm("開啟新遊戲將會覆蓋【存檔槽 Auto】的內容，確定要繼續嗎？")) return;
     currentGameData = { 
         gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
         ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
@@ -1049,9 +950,8 @@ async function playTransition(asyncAction) {
 function hideAllScreens() {
     ['login-screen', 'main-lobby-screen', 'settings-screen', 'stage-select-screen', 'character-menu-screen', 'shop-screen', 'save-screen', 'victory-screen', 'pause-screen', 'in-game-ui'].forEach(s => document.getElementById(s).style.display = 'none');
     document.getElementById('player-gif-sprite').style.display = 'none';
-    clearAllPunchGifs();
+    document.querySelectorAll('.punch-gif-sprite').forEach(el => el.remove());
 }
-function clearAllPunchGifs() { document.querySelectorAll('.punch-gif-sprite').forEach(el => el.remove()); }
 
 async function enterMainLobby() {
     const currentPartner = availablePartners.find(p => p.name === currentGameData.selectedPartner);
@@ -1080,50 +980,33 @@ async function enterMainLobby() {
 
 function backToLobbyFromSubScreen() { return enterMainLobby(); }
 
-// 設置介面
 function openSettings() {
     hideAllScreens();
-    const settingsScreen = document.getElementById('settings-screen');
-    settingsScreen.style.display = 'flex';
-
+    document.getElementById('settings-screen').style.display = 'flex';
     document.getElementById('bgm-volume-slider').value = currentBgmVolume;
     document.getElementById('bgm-volume-num').innerText = `${Math.round(currentBgmVolume * 100)}%`;
     document.getElementById('sfx-volume-slider').value = currentSfxVolume;
     document.getElementById('sfx-volume-num').innerText = `${Math.round(currentSfxVolume * 100)}%`;
-
     updateGlobalBackButton('settings-screen');
 }
 
-// 關卡選擇
-let isStageDragging = false;
-let stageDragStartX = 0;
-let stageDragScrollLeft = 0;
-let stageMovedDistance = 0;
-
+// 關卡滾動
+let isStageDragging = false, stageDragStartX = 0, stageDragScrollLeft = 0, stageMovedDistance = 0;
 function initStageScrollEvents(container) {
-    container.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        container.scrollLeft += e.deltaY * 0.95;
-    }, { passive: false });
-
+    container.addEventListener('wheel', (e) => { e.preventDefault(); container.scrollLeft += e.deltaY * 0.95; }, { passive: false });
     container.addEventListener('pointerdown', (e) => {
         isStageDragging = true;
         stageDragStartX = e.pageX - container.offsetLeft;
         stageDragScrollLeft = container.scrollLeft;
         stageMovedDistance = 0;
     });
-
     window.addEventListener('pointermove', (e) => {
         if (!isStageDragging) return;
-        const x = e.pageX - container.offsetLeft;
-        const walk = (x - stageDragStartX) * 1.35;
+        const walk = (e.pageX - container.offsetLeft - stageDragStartX) * 1.35;
         stageMovedDistance += Math.abs(walk);
         container.scrollLeft = stageDragScrollLeft - walk;
     });
-
-    window.addEventListener('pointerup', () => {
-        setTimeout(() => { isStageDragging = false; }, 50);
-    });
+    window.addEventListener('pointerup', () => { setTimeout(() => { isStageDragging = false; }, 50); });
 }
 
 async function openStageSelect() { 
@@ -1171,30 +1054,22 @@ async function openStageSelect() {
 }
 
 // 商店邏輯
-const npcDialogues = [
-    "準備好了再出發吧...!",
-    "有沒有想要的東西呢?",
-    "不過要花錢就是了..."
-];
-let typingInterval = null;
-let dialogueFadeTimeout = null;
+const npcDialogues = ["準備好了再出發吧...!", "有沒有想要的東西呢?", "不過要花錢就是了..."];
+let typingInterval = null, dialogueFadeTimeout = null;
 
 async function openShop() { 
     await preloadMultipleAssets(['shop.jpg', 'shopNPC_01.png', 'gold.png', 'gem.png']);
     hideAllScreens(); 
     switchBgm('shop'); 
     
-    const shopScreen = document.getElementById('shop-screen');
-    shopScreen.style.display = 'flex'; 
+    document.getElementById('shop-screen').style.display = 'flex'; 
     updateShopUI();
 
     const npcImg = document.getElementById('shop-npc-img');
     const rightPanel = document.getElementById('shop-right-panel');
-    npcImg.classList.remove('animate-in');
-    rightPanel.classList.remove('animate-in');
+    npcImg.classList.remove('animate-in'); rightPanel.classList.remove('animate-in');
     void npcImg.offsetWidth;
-    npcImg.classList.add('animate-in');
-    rightPanel.classList.add('animate-in');
+    npcImg.classList.add('animate-in'); rightPanel.classList.add('animate-in');
 
     document.getElementById('shop-dialog-bubble').style.opacity = '0';
     updateGlobalBackButton('shop-screen');
@@ -1223,8 +1098,7 @@ function triggerNpcDialogue() {
     let charIndex = 0;
     typingInterval = setInterval(() => {
         if (charIndex < sentence.length) {
-            textEl.innerText += sentence[charIndex];
-            charIndex++;
+            textEl.innerText += sentence[charIndex++];
         } else {
             clearInterval(typingInterval);
             dialogueFadeTimeout = setTimeout(() => { bubble.style.opacity = '0'; }, 2200);
@@ -1268,7 +1142,7 @@ function drawGacha() {
     }
 }
 
-// 存檔讀檔
+// 存讀檔
 async function openLoadScreen() {
     const container = document.getElementById('load-slots-container');
     container.innerHTML = '<div style="text-align:center; color:#388099; padding: 1vw;">讀取中...</div>';
@@ -1295,8 +1169,7 @@ async function loadFromSlot(slotKey) {
             ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
             selectedPartner: '托帕',
             clearedStages: [],
-            bgmVolume: 1.0,
-            sfxVolume: 1.0
+            bgmVolume: 1.0, sfxVolume: 1.0
         }, data);
 
         if (currentGameData.bgmVolume !== undefined) adjustBgmVolume(currentGameData.bgmVolume);
@@ -1308,10 +1181,13 @@ async function loadFromSlot(slotKey) {
 }
 
 function openSaveScreen() {
-    hideAllScreens(); const container = document.getElementById('save-slots-container'); container.innerHTML = '';
+    hideAllScreens(); 
+    const container = document.getElementById('save-slots-container'); 
+    container.innerHTML = '';
     ['Auto', '1', '2'].forEach(slotKey => {
-        const slotDiv = document.createElement('div'); slotDiv.className = 'slot-item';
-        slotDiv.innerHTML = `<div class="slot-info">${slotKey === 'Auto' ? 'Auto' : `存檔槽 ${slotKey}`}</div><button class="btn" onclick="playClickSound(); saveToSlot('${slotKey}')">儲存</button>`;
+        const slotDiv = document.createElement('div'); 
+        slotDiv.className = 'slot-item';
+        slotDiv.innerHTML = `<div>${slotKey === 'Auto' ? 'Auto (自動存檔)' : `存檔槽 ${slotKey}`}</div><button class="btn" onclick="playClickSound(); saveToSlot('${slotKey}')">儲存</button>`;
         container.appendChild(slotDiv);
     });
     document.getElementById('save-screen').style.display = 'flex';
@@ -1328,8 +1204,8 @@ async function saveToSlot(slotKey) {
 }
 function closeSaveScreen() { document.getElementById('save-screen').style.display = 'none'; enterMainLobby(); }
 
-// ==================== 4. 人選畫面 (瀏覽預覽與按鍵鎖定出戰) ====================
-let previewPartnerIndex = 0; // 目前輪盤正中央預覽的夥伴索引
+// ==================== 4. 人物選單 ====================
+let previewPartnerIndex = 0;
 let wheelCardsElements = [];
 function getOwnedPartnersList() { return availablePartners.filter(p => currentGameData.ownedPartners.includes(p.name)); }
 
@@ -1340,7 +1216,6 @@ async function openCharacterMenu() {
     hideAllScreens(); 
     document.getElementById('character-menu-screen').style.display = 'flex';
     
-    // 預設將輪盤中央對準當前已鎖定出戰的夥伴
     const curIdx = ownedList.findIndex(p => p.name === currentGameData.selectedPartner);
     previewPartnerIndex = curIdx !== -1 ? curIdx : 0;
 
@@ -1367,7 +1242,6 @@ async function openCharacterMenu() {
     updateGlobalBackButton('character-menu-screen');
 }
 
-// 點擊輪盤只切換「預覽」，不強迫鎖定出戰
 function previewPartnerByIndex(targetIndex) {
     const ownedList = getOwnedPartnersList();
     if (!ownedList[targetIndex]) return;
@@ -1387,7 +1261,6 @@ function updateCharacterInfoPanel() {
     document.getElementById('char-detail-desc').innerHTML = (partner.desc || '暫無角色介紹').replace(/\n/g, '<br>');
 }
 
-// 更新輪盤下方的鎖定鍵狀態
 function updateLockDeployButton() {
     const ownedList = getOwnedPartnersList();
     const currentPreviewPartner = ownedList[previewPartnerIndex];
@@ -1403,13 +1276,10 @@ function updateLockDeployButton() {
     }
 }
 
-// 按下鎖定鍵綁定出戰角色
 function handleLockDeployPartner() {
     const ownedList = getOwnedPartnersList();
     const partnerToDeploy = ownedList[previewPartnerIndex];
-    if (!partnerToDeploy) return;
-
-    if (partnerToDeploy.name === currentGameData.selectedPartner) return; // 已經出戰中
+    if (!partnerToDeploy || partnerToDeploy.name === currentGameData.selectedPartner) return;
 
     playClickSound();
     currentGameData.selectedPartner = partnerToDeploy.name;
@@ -1435,12 +1305,9 @@ function updateWheelPositions() {
         const rotY = (angle * 180 / Math.PI) * 0.72; 
 
         const isBackside = Math.abs(diff) >= 2;
-        const opacity = isBackside ? 0.15 : Math.max(0.40, cosDepth * 1.0);
-        const zIndexVal = isBackside ? 10 : Math.round(50 + cosDepth * 30);
-
         img.style.transform = `translate3d(${xPx}vw, 0px, 0px) rotateY(${rotY}deg) scale(${scale})`;
-        img.style.opacity = opacity;
-        img.style.zIndex = zIndexVal;
+        img.style.opacity = isBackside ? 0.15 : Math.max(0.40, cosDepth * 1.0);
+        img.style.zIndex = isBackside ? 10 : Math.round(50 + cosDepth * 30);
         img.style.pointerEvents = isBackside ? 'none' : 'auto';
     });
 }
@@ -1450,20 +1317,11 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const playerSpriteImg = document.getElementById('player-gif-sprite');
 
-let isPlaying = false; let isPaused = false; let animFrameReq = null; let sessionGold = 0;
-let currentMapImg = new Image();
-let enemyA01 = new Image();
-let enemyA02 = new Image();
-let goldCoinImg = new Image();
-let gemImg = new Image();
+let isPlaying = false, isPaused = false, animFrameReq = null, sessionGold = 0;
+let currentMapImg = new Image(), enemyA01 = new Image(), enemyA02 = new Image(), goldCoinImg = new Image(), gemImg = new Image();
 
-const camera = { x: 0, y: 0, width: 1920, height: 1080, mapWidth: 3840, mapHeight: 2160, zoom: 1.0, targetZoom: 1.0 };
-
-const WALKABLE_AREA = {
-    topY: 360, bottomY: 1640,
-    topLeftX: 860, bottomLeftX: 815,
-    topRightX: 3330, bottomRightX: 3615
-};
+const camera = { x: 0, y: 0, width: 1920, height: 1080, mapWidth: 3840, mapHeight: 2160, zoom: 1.0 };
+const WALKABLE_AREA = { topY: 360, bottomY: 1640, topLeftX: 860, bottomLeftX: 815, topRightX: 3330, bottomRightX: 3615 };
 
 function clampToWalkableArea(entity, margin = 45) {
     entity.y = Math.max(WALKABLE_AREA.topY + margin, Math.min(WALKABLE_AREA.bottomY - margin, entity.y));
@@ -1479,54 +1337,38 @@ function triggerScreenShake(intensity, frames) { screenShake.intensity = intensi
 function triggerHitStop(frames) { hitStopFrames = Math.max(hitStopFrames, frames); }
 
 let currentActiveStage = STAGES_CONFIG[0];
-let currentWave = 1;
-let totalWavesInStage = 3;
-let waveState = 'ready_sliding';
-let bannerTimer = 0;
-let bannerX = 2200;
-let slomoTimer = 0;
-let panTimer = 0;
+let currentWave = 1, totalWavesInStage = 3, waveState = 'ready_sliding';
+let bannerTimer = 0, bannerX = 2200, slomoTimer = 0, panTimer = 0;
 let lastKillPos = { x: 1920, y: 1080 };
-let isDefeated = false;
-let isVictoryLocked = false;
+let isDefeated = false, isVictoryLocked = false;
 
 const player = {
     x: 1855, y: 1000, size: 64, width: 128, height: 128, baseSpeed: 5.25, speed: 5.25,
     hp: 100, maxHp: 100, atk: 10, facingRight: false, attackCooldown: 0, invuln: 0,
-    kbVx: 0, kbVy: 0, kbTime: 0, isCharging: false, chargeTime: 0,
-    punchAnimTimer: 0, punchFacingRight: false
+    kbVx: 0, kbVy: 0, kbTime: 0, chargeTime: 0, punchAnimTimer: 0, punchFacingRight: false
 };
 
-let chargeParticles = [];
-let droppedCoins = [];
-let lastDropAngle = 0;
-
+let chargeParticles = [], droppedCoins = [], lastDropAngle = 0;
 const keys = { w: false, a: false, s: false, d: false };
 const joystick = { active: false, touchId: null, startX: 0, startY: 0, moveX: 0, moveY: 0, maxDist: 45 };
 
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { 
-        if (isPlaying && document.getElementById('victory-screen').style.display !== 'flex') togglePause(); 
-    }
     if (isVictoryLocked || isDefeated) return;
-    if (e.key === 'w' || e.key === 'W') keys.w = true;
-    if (e.key === 'a' || e.key === 'A') { keys.a = true; if (player.punchAnimTimer <= 0) player.facingRight = false; }
-    if (e.key === 's' || e.key === 'S') keys.s = true;
-    if (e.key === 'd' || e.key === 'D') { keys.d = true; if (player.punchAnimTimer <= 0) player.facingRight = true; }
+    const k = e.key.toLowerCase();
+    if (['w', 'a', 's', 'd'].includes(k)) keys[k] = true;
+    if (k === 'a' && player.punchAnimTimer <= 0) player.facingRight = false;
+    if (k === 'd' && player.punchAnimTimer <= 0) player.facingRight = true;
 });
 window.addEventListener('keyup', (e) => {
-    if (e.key === 'w' || e.key === 'W') keys.w = false;
-    if (e.key === 'a' || e.key === 'A') keys.a = false;
-    if (e.key === 's' || e.key === 'S') keys.s = false;
-    if (e.key === 'd' || e.key === 'D') keys.d = false;
+    const k = e.key.toLowerCase();
+    if (['w', 'a', 's', 'd'].includes(k)) keys[k] = false;
 });
 
 const joystickZone = document.getElementById('joystick-zone');
 const joystickKnob = document.getElementById('joystick-knob');
 
 function initVirtualJoystick() {
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    joystickZone.style.display = isTouch ? 'block' : 'none';
+    joystickZone.style.display = ('ontouchstart' in window || navigator.maxTouchPoints > 0) ? 'block' : 'none';
 
     joystickZone.addEventListener('touchstart', (e) => {
         if (isVictoryLocked || isDefeated) return;
@@ -1566,18 +1408,13 @@ function initVirtualJoystick() {
 initVirtualJoystick();
 
 function handleJoystickMove(clientX, clientY) {
-    const dx = clientX - joystick.startX;
-    const dy = clientY - joystick.startY;
-    const dist = Math.hypot(dx, dy);
-    const angle = Math.atan2(dy, dx);
+    const dx = clientX - joystick.startX, dy = clientY - joystick.startY;
+    const dist = Math.hypot(dx, dy), angle = Math.atan2(dy, dx);
     const clampedDist = Math.min(dist, joystick.maxDist);
 
     joystick.moveX = (clampedDist / joystick.maxDist) * Math.cos(angle);
     joystick.moveY = (clampedDist / joystick.maxDist) * Math.sin(angle);
-
-    const knobX = Math.cos(angle) * clampedDist;
-    const knobY = Math.sin(angle) * clampedDist;
-    joystickKnob.style.transform = `translate3d(${knobX}px, ${knobY}px, 0)`;
+    joystickKnob.style.transform = `translate3d(${Math.cos(angle) * clampedDist}px, ${Math.sin(angle) * clampedDist}px, 0)`;
 
     if (Math.abs(joystick.moveX) > 0.2 && player.punchAnimTimer <= 0) {
         player.facingRight = joystick.moveX > 0;
@@ -1585,31 +1422,23 @@ function handleJoystickMove(clientX, clientY) {
 }
 
 let isAttackHeld = false;
-gameContainer.addEventListener('mousedown', (e) => { if (isPlaying && !isPaused && !isDefeated && !isVictoryLocked) isAttackHeld = true; });
-gameContainer.addEventListener('mouseup', (e) => { if (isPlaying && !isPaused && !isDefeated && !isVictoryLocked && isAttackHeld) { executeAttack(); isAttackHeld = false; } });
+gameContainer.addEventListener('mousedown', () => { if (isPlaying && !isPaused && !isDefeated && !isVictoryLocked) isAttackHeld = true; });
+gameContainer.addEventListener('mouseup', () => { if (isPlaying && !isPaused && !isDefeated && !isVictoryLocked && isAttackHeld) { executeAttack(); isAttackHeld = false; } });
 const btnMobileAttack = document.getElementById('btn-mobile-attack');
 btnMobileAttack.addEventListener('touchstart', (e) => { e.preventDefault(); if (isPlaying && !isPaused && !isDefeated && !isVictoryLocked) isAttackHeld = true; });
 btnMobileAttack.addEventListener('touchend', (e) => { e.preventDefault(); if (isPlaying && !isPaused && !isDefeated && !isVictoryLocked && isAttackHeld) { executeAttack(); isAttackHeld = false; } });
 
-let enemies = []; let dyingEnemies = []; let floatingTexts = []; let activePunchGifs = [];
+let enemies = [], dyingEnemies = [], floatingTexts = [], activePunchGifs = [];
 
 function spawnEnemyWaveForCurrentStage() {
     const count = currentActiveStage.perWave || 3;
     const hpVal = currentActiveStage.hp || 30;
-    const spawnOffsets = [
-        { dx: 585, dy: -265 },
-        { dx: 730, dy: -45 },
-        { dx: 595, dy: 205 },
-        { dx: 820, dy: -180 },
-        { dx: 790, dy: 140 }
-    ];
+    const spawnOffsets = [{ dx: 585, dy: -265 }, { dx: 730, dy: -45 }, { dx: 595, dy: 205 }, { dx: 820, dy: -180 }, { dx: 790, dy: 140 }];
 
     enemies = [];
     for (let i = 0; i < count; i++) {
         const offset = spawnOffsets[i % spawnOffsets.length];
-        let pX = player.x + offset.dx + (Math.random() - 0.5) * 50;
-        let pY = player.y + offset.dy + (Math.random() - 0.5) * 50;
-        let ep = { x: pX, y: pY };
+        let ep = { x: player.x + offset.dx + (Math.random() - 0.5) * 50, y: player.y + offset.dy + (Math.random() - 0.5) * 50 };
         clampToWalkableArea(ep, 64);
 
         enemies.push({
@@ -1624,47 +1453,29 @@ function spawnEnemyWaveForCurrentStage() {
 async function startStageGame(stageConfig) {
     currentActiveStage = stageConfig;
     totalWavesInStage = stageConfig.waves;
-    currentWave = 1;
-    isDefeated = false;
-    isVictoryLocked = false;
+    currentWave = 1; isDefeated = false; isVictoryLocked = false;
 
     const [loadedMap, loadedE1, loadedE2, loadedGold, loadedGem] = await Promise.all([
-        preloadAsset(stageConfig.map),
-        preloadAsset('enemyA_01.png'),
-        preloadAsset('enemyA_02.png'),
-        preloadAsset('gold.png'),
-        preloadAsset('gem.png'),
-        preloadAsset('maincharacter_idle.gif'),
-        preloadAsset('maincharacter_walk.gif'),
-        preloadAsset('maincharacter_punch.gif'),
-        preloadAsset('punch.gif')
+        preloadAsset(stageConfig.map), preloadAsset('enemyA_01.png'), preloadAsset('enemyA_02.png'),
+        preloadAsset('gold.png'), preloadAsset('gem.png'), preloadAsset('maincharacter_idle.gif'),
+        preloadAsset('maincharacter_walk.gif'), preloadAsset('maincharacter_punch.gif'), preloadAsset('punch.gif')
     ]);
 
-    currentMapImg = loadedMap;
-    enemyA01 = loadedE1;
-    enemyA02 = loadedE2;
-    goldCoinImg = loadedGold;
-    gemImg = loadedGem;
+    currentMapImg = loadedMap; enemyA01 = loadedE1; enemyA02 = loadedE2; goldCoinImg = loadedGold; gemImg = loadedGem;
 
     hideAllScreens(); 
     switchBgm('battle');
     updateGlobalBackButton('in-game');
     
-    camera.mapWidth = 3840; camera.mapHeight = 2160;
-    camera.zoom = 1.0; camera.targetZoom = 1.0;
+    camera.mapWidth = 3840; camera.mapHeight = 2160; camera.zoom = 1.0;
     sessionGold = 0;
     player.maxHp = 100 + (currentGameData.hpLevel - 1) * 20; player.hp = player.maxHp;
     player.atk = 10 + (currentGameData.atkLevel - 1) * 5;
-    
-    player.x = 1855; 
-    player.y = 1000;
-    player.facingRight = false; player.chargeTime = 0; player.invuln = 0; player.kbTime = 0;
-    player.punchAnimTimer = 0;
+    player.x = 1855; player.y = 1000; player.facingRight = false; player.chargeTime = 0; player.invuln = 0; player.kbTime = 0; player.punchAnimTimer = 0;
 
     screenShake = { time: 0, intensity: 0, offsetX: 0, offsetY: 0 };
     hitStopFrames = 0;
-    floatingTexts = []; dyingEnemies = []; activePunchGifs = []; chargeParticles = []; droppedCoins = [];
-    enemies = [];
+    floatingTexts = []; dyingEnemies = []; activePunchGifs = []; chargeParticles = []; droppedCoins = []; enemies = [];
 
     waveState = 'ready_sliding';
     bannerX = 2200;
@@ -1677,46 +1488,41 @@ async function startStageGame(stageConfig) {
     animFrameReq = requestAnimationFrame(gameLoop);
 }
 
+function startStageByIndex(index) {
+    if (STAGES_CONFIG[index]) startStageGame(STAGES_CONFIG[index]);
+}
+
 function executeAttack() {
-    if (isDefeated || isVictoryLocked || player.attackCooldown > 0 || player.punchAnimTimer > 0 || waveState === 'ready_sliding' || waveState === 'victory_slowmo' || waveState === 'victory_pan') return;
+    if (isDefeated || isVictoryLocked || player.attackCooldown > 0 || player.punchAnimTimer > 0 || ['ready_sliding', 'victory_slowmo', 'victory_pan'].includes(waveState)) return;
     
     const isHeavy = player.chargeTime >= 30; 
     player.chargeTime = 0;
     player.attackCooldown = 18; 
     player.punchAnimTimer = 18;
 
-    if (isHeavy) { playSnd('hardpunch'); } 
-    else { playSnd('punch'); }
+    playSnd(isHeavy ? 'hardpunch' : 'punch');
 
-    let nearest = null; let minDist = Infinity;
+    let nearest = null, minDist = Infinity;
     for (let e of enemies) {
         let d = Math.hypot(e.x - player.x, e.y - player.y);
         if (d < minDist) { minDist = d; nearest = e; }
     }
 
     if (nearest) {
-        let dx = nearest.x - player.x;
-        let dy = nearest.y - player.y;
-        let angleDeg = Math.atan2(dy, dx) * (180 / Math.PI);
+        let angleDeg = Math.atan2(nearest.y - player.y, nearest.x - player.x) * (180 / Math.PI);
         player.punchFacingRight = (angleDeg >= -90 && angleDeg <= 90);
     } else {
         player.punchFacingRight = player.facingRight;
     }
 
-    let angle = player.facingRight ? 0 : Math.PI;
-    if (nearest) { angle = Math.atan2(nearest.y - player.y, nearest.x - player.x); }
+    let angle = nearest ? Math.atan2(nearest.y - player.y, nearest.x - player.x) : (player.facingRight ? 0 : Math.PI);
 
     const hitRadius = isHeavy ? 220 : 160;
     const basePunchSize = 128;
     const punchScale = isHeavy ? 1.6 : 1.2;
 
-    const hitCheckDistanceOffset = player.size + 40;
-    const worldHitX = player.x + Math.cos(angle) * hitCheckDistanceOffset;
-    const worldHitY = player.y + Math.sin(angle) * hitCheckDistanceOffset;
-
-    const gifDisplayDistance = 165;
-    const worldPunchX = player.x + Math.cos(angle) * gifDisplayDistance;
-    const worldPunchY = player.y + Math.sin(angle) * gifDisplayDistance;
+    const worldHitX = player.x + Math.cos(angle) * (player.size + 40);
+    const worldHitY = player.y + Math.sin(angle) * (player.size + 40);
 
     const punchImg = document.createElement('img');
     punchImg.className = 'punch-gif-sprite';
@@ -1725,11 +1531,9 @@ function executeAttack() {
 
     const punchObj = {
         element: punchImg,
-        worldX: worldPunchX,
-        worldY: worldPunchY,
-        angle: angle,
-        baseSize: basePunchSize,
-        scale: punchScale
+        worldX: player.x + Math.cos(angle) * 165,
+        worldY: player.y + Math.sin(angle) * 165,
+        angle: angle, baseSize: basePunchSize, scale: punchScale
     };
     activePunchGifs.push(punchObj);
 
@@ -1741,38 +1545,24 @@ function executeAttack() {
 
     let hitAny = false;
     for (let e of enemies) {
-        let d = Math.hypot(e.x - worldHitX, e.y - worldHitY);
-        if (d <= hitRadius + e.size) {
-            if (e.invuln <= 0) {
-                hitAny = true;
-                let mult = isHeavy ? 1.6 : 1.0;
-                let dmg = player.atk * mult;
-                let kbDist = isHeavy ? 280 : 140;
-                let eAngle = Math.atan2(e.y - player.y, e.x - player.x);
+        if (Math.hypot(e.x - worldHitX, e.y - worldHitY) <= hitRadius + e.size && e.invuln <= 0) {
+            hitAny = true;
+            let dmg = player.atk * (isHeavy ? 1.6 : 1.0);
+            let kbDist = isHeavy ? 280 : 140;
+            let eAngle = Math.atan2(e.y - player.y, e.x - player.x);
 
-                e.hp -= dmg;
-                e.invuln = 8;
-                e.kbVx = Math.cos(eAngle) * (kbDist / 25);
-                e.kbVy = Math.sin(eAngle) * (kbDist / 25);
-                e.kbTime = 25;
-                e.jumpTimer = 0;
-                e.isJumping = false;
+            e.hp -= dmg; e.invuln = 8;
+            e.kbVx = Math.cos(eAngle) * (kbDist / 25);
+            e.kbVy = Math.sin(eAngle) * (kbDist / 25);
+            e.kbTime = 25; e.jumpTimer = 0; e.isJumping = false;
 
-                spawnDamageText(Math.round(dmg), e.x, e.y, false, isHeavy);
-            }
+            spawnDamageText(Math.round(dmg), e.x, e.y, false, isHeavy);
         }
     }
 
     if (hitAny) {
-        if (isHeavy) {
-            playSnd('hardpunchHit');
-            triggerScreenShake(16, 14);
-            triggerHitStop(7);
-        } else {
-            playSnd('punchHit');
-            triggerScreenShake(6, 8);
-            triggerHitStop(3);
-        }
+        if (isHeavy) { playSnd('hardpunchHit'); triggerScreenShake(16, 14); triggerHitStop(7); } 
+        else { playSnd('punchHit'); triggerScreenShake(6, 8); triggerHitStop(3); }
     }
 }
 
@@ -1792,13 +1582,9 @@ function spawnDroppedCoins(startX, startY, count = 3) {
         const speed = Math.random() * 3.5 + 4.5;
         droppedCoins.push({
             x: startX, y: startY, z: 20,
-            vx: Math.cos(lastDropAngle) * speed,
-            vy: Math.sin(lastDropAngle) * (speed * 0.55),
-            vz: Math.random() * 4.5 + 8.5,
-            bounces: 0, maxBounces: 3,
-            state: 'air', groundWaitTimer: 60,
-            attractSpeed: 8, rotation: Math.random() * Math.PI * 2,
-            rotSpeed: (Math.random() - 0.5) * 0.3
+            vx: Math.cos(lastDropAngle) * speed, vy: Math.sin(lastDropAngle) * (speed * 0.55), vz: Math.random() * 4.5 + 8.5,
+            bounces: 0, maxBounces: 3, state: 'air', groundWaitTimer: 60, attractSpeed: 8,
+            rotation: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - 0.5) * 0.3
         });
     }
 }
@@ -1813,8 +1599,7 @@ function togglePause() {
 }
 
 function quitLevelToStageSelect() {
-    isPlaying = false; isPaused = false;
-    isVictoryLocked = false;
+    isPlaying = false; isPaused = false; isVictoryLocked = false;
     if (animFrameReq) cancelAnimationFrame(animFrameReq);
     document.getElementById('pause-screen').style.display = 'none';
     playTransition(async () => openStageSelect());
@@ -1825,34 +1610,21 @@ function gameLoop() {
     if (!isPlaying || isPaused) return;
 
     if (waveState === 'victory_slowmo') {
-        slomoTimer--;
-        slomoFrameCounter++;
+        slomoTimer--; slomoFrameCounter++;
         camera.zoom += (1.45 - camera.zoom) * 0.08;
-
         if (slomoFrameCounter % 3 === 0) updateLogic();
-
         if (slomoTimer <= 0) {
-            waveState = 'victory_pan';
-            panTimer = 180;
+            waveState = 'victory_pan'; panTimer = 180;
             playSnd('victory');
         }
     } else if (waveState === 'victory_pan') {
-        panTimer--;
-        camera.zoom += (1.0 - camera.zoom) * 0.12;
-
+        panTimer--; camera.zoom += (1.0 - camera.zoom) * 0.12;
         updateLogic();
-
-        if (panTimer <= 0) {
-            finishLevelAndShowVictory(false);
-            return;
-        }
+        if (panTimer <= 0) { finishLevelAndShowVictory(false); return; }
     } else {
         camera.zoom += (1.0 - camera.zoom) * 0.1;
-        if (hitStopFrames > 0) {
-            hitStopFrames--;
-        } else {
-            updateLogic();
-        }
+        if (hitStopFrames > 0) hitStopFrames--;
+        else updateLogic();
     }
 
     renderGame();
@@ -1875,12 +1647,11 @@ function updateLogic() {
     if (player.punchAnimTimer > 0) player.punchAnimTimer--;
     if (player.invuln > 0) player.invuln--;
 
-    const canControl = (!isDefeated && !isVictoryLocked && waveState !== 'ready_sliding' && waveState !== 'victory_slowmo' && waveState !== 'victory_pan');
+    const canControl = (!isDefeated && !isVictoryLocked && !['ready_sliding', 'victory_slowmo', 'victory_pan'].includes(waveState));
 
     if (isAttackHeld && player.punchAnimTimer <= 0 && canControl) {
         player.chargeTime++;
         player.speed = player.baseSpeed * 0.72;
-
         const count = player.chargeTime >= 30 ? 4 : 2;
         const footY = player.y + player.size * 0.8 + 10;
         
@@ -1888,13 +1659,9 @@ function updateLogic() {
             const angle = Math.random() * Math.PI * 2;
             const speed = (Math.random() * 3.5 + 2.5) * (player.chargeTime >= 30 ? 1.5 : 1.0);
             chargeParticles.push({
-                x: player.x + (Math.random() - 0.5) * 20,
-                y: footY + (Math.random() - 0.5) * 8,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * (speed * 0.52),
-                size: Math.floor(Math.random() * 3) + 3,
-                life: Math.floor(Math.random() * 12) + 14,
-                maxLife: 26,
+                x: player.x + (Math.random() - 0.5) * 20, y: footY + (Math.random() - 0.5) * 8,
+                vx: Math.cos(angle) * speed, vy: Math.sin(angle) * (speed * 0.52),
+                size: Math.floor(Math.random() * 3) + 3, life: Math.floor(Math.random() * 12) + 14, maxLife: 26,
                 color: Math.random() > 0.3 ? '#ffffff' : '#e0f7fa'
             });
         }
@@ -1908,26 +1675,24 @@ function updateLogic() {
         if (cp.life <= 0) chargeParticles.splice(i, 1);
     }
 
-    if (player.punchAnimTimer > 0) {
-    } else if (player.kbTime > 0) {
-        player.x += player.kbVx; player.y += player.kbVy; player.kbTime--;
-    } else if (canControl) {
-        let moveX = 0; let moveY = 0;
-        if (keys.w) moveY -= 1;
-        if (keys.s) moveY += 1;
-        if (keys.a) moveX -= 1;
-        if (keys.d) moveX += 1;
+    if (player.punchAnimTimer <= 0) {
+        if (player.kbTime > 0) {
+            player.x += player.kbVx; player.y += player.kbVy; player.kbTime--;
+        } else if (canControl) {
+            let moveX = 0, moveY = 0;
+            if (keys.w) moveY -= 1;
+            if (keys.s) moveY += 1;
+            if (keys.a) moveX -= 1;
+            if (keys.d) moveX += 1;
+            if (joystick.active) { moveX += joystick.moveX; moveY += joystick.moveY; }
 
-        if (joystick.active) {
-            moveX += joystick.moveX; moveY += joystick.moveY;
-        }
-
-        const len = Math.hypot(moveX, moveY);
-        if (len > 0) {
-            const normalizedLen = Math.min(len, 1);
-            player.x += (moveX / len) * normalizedLen * player.speed;
-            player.y += (moveY / len) * normalizedLen * player.speed;
-            if (player.punchAnimTimer <= 0 && moveX !== 0) player.facingRight = moveX > 0;
+            const len = Math.hypot(moveX, moveY);
+            if (len > 0) {
+                const norm = Math.min(len, 1);
+                player.x += (moveX / len) * norm * player.speed;
+                player.y += (moveY / len) * norm * player.speed;
+                if (moveX !== 0) player.facingRight = moveX > 0;
+            }
         }
     }
     
@@ -1952,10 +1717,9 @@ function updateLogic() {
                 }
             }
         } else if (c.state === 'ground') {
-            c.groundWaitTimer--;
-            if (c.groundWaitTimer <= 0) c.state = 'attract';
+            if (--c.groundWaitTimer <= 0) c.state = 'attract';
         } else if (c.state === 'attract') {
-            const dx = player.x - c.x; const dy = (player.y + 10) - c.y; const dist = Math.hypot(dx, dy);
+            const dx = player.x - c.x, dy = (player.y + 10) - c.y, dist = Math.hypot(dx, dy);
             c.attractSpeed += 1.1;
             if (dist <= c.attractSpeed + 15) {
                 sessionGold += 1; currentGameData.gold += 1;
@@ -1976,17 +1740,13 @@ function updateLogic() {
             e.isJumping = false; e.x += e.kbVx; e.y += e.kbVy; e.kbTime--;
         } else if (waveState === 'fighting' || waveState === 'fight_sliding') {
             if (!e.isJumping) {
-                e.jumpTimer++;
-                if (e.jumpTimer >= 120) {
+                if (++e.jumpTimer >= 120) {
                     e.isJumping = true; e.jumpTimer = 0; e.jumpProgress = 0;
                     e.jumpStartX = e.x; e.jumpStartY = e.y;
-                    let distToPlayer = Math.hypot(player.x - e.x, player.y - e.y);
                     let jumpAngle = Math.atan2(player.y - e.y, player.x - e.x);
-                    let actualJumpDist = Math.min(128, distToPlayer);
-
                     let targetPoint = {
-                        x: e.x + Math.cos(jumpAngle) * actualJumpDist,
-                        y: e.y + Math.sin(jumpAngle) * actualJumpDist
+                        x: e.x + Math.cos(jumpAngle) * Math.min(128, Math.hypot(player.x - e.x, player.y - e.y)),
+                        y: e.y + Math.sin(jumpAngle) * Math.min(128, Math.hypot(player.x - e.x, player.y - e.y))
                     };
                     clampToWalkableArea(targetPoint, e.size * 0.7);
                     e.jumpTargetX = targetPoint.x; e.jumpTargetY = targetPoint.y;
@@ -2005,7 +1765,7 @@ function updateLogic() {
 
         clampToWalkableArea(e, e.size * 0.7);
 
-        if (!isDefeated && !isVictoryLocked && player.invuln <= 0 && Math.hypot(player.x - e.x, player.y - e.y) < player.size + e.size && waveState !== 'victory_slowmo' && waveState !== 'victory_pan') {
+        if (!isDefeated && !isVictoryLocked && player.invuln <= 0 && Math.hypot(player.x - e.x, player.y - e.y) < player.size + e.size && !['victory_slowmo', 'victory_pan'].includes(waveState)) {
             player.hp -= 10; player.invuln = 30;
             let angle = Math.atan2(player.y - e.y, player.x - e.x);
             player.kbVx = Math.cos(angle) * 5; player.kbVy = Math.sin(angle) * 5; player.kbTime = 15;
@@ -2024,16 +1784,12 @@ function updateLogic() {
             lastKillPos = { x: e.x, y: e.y };
 
             let deathAngle = Math.atan2(e.y - player.y, e.x - player.x);
-            let targetBounce = {
-                x: e.x + Math.cos(deathAngle) * 128,
-                y: e.y + Math.sin(deathAngle) * 128
-            };
+            let targetBounce = { x: e.x + Math.cos(deathAngle) * 128, y: e.y + Math.sin(deathAngle) * 128 };
             clampToWalkableArea(targetBounce, e.size * 0.7);
 
             dyingEnemies.push({
                 x: e.x, y: e.y, size: e.size,
-                startBounceX: e.x, startBounceY: e.y,
-                targetBounceX: targetBounce.x, targetBounceY: targetBounce.y,
+                startBounceX: e.x, startBounceY: e.y, targetBounceX: targetBounce.x, targetBounceY: targetBounce.y,
                 life: 60, maxLife: 60, facingRight: e.facingRight
             });
 
@@ -2044,13 +1800,9 @@ function updateLogic() {
                     waveState = 'waiting_banner';
                     bannerTimer = 60; 
                 } else {
-                    isVictoryLocked = true;
-                    isAttackHeld = false;
-                    player.chargeTime = 0;
+                    isVictoryLocked = true; isAttackHeld = false; player.chargeTime = 0;
                     document.getElementById('in-game-ui').style.display = 'none';
-
-                    waveState = 'victory_slowmo';
-                    slomoTimer = 120;
+                    waveState = 'victory_slowmo'; slomoTimer = 120;
                     triggerScreenShake(20, 24);
                 }
             }
@@ -2071,61 +1823,32 @@ function updateLogic() {
     }
 
     function updateBannerPosition(onComplete) {
-        if (bannerX > 1080) {
-            bannerX -= 36;
-        } else if (bannerX > 840) {
-            bannerX -= 2.6;
-        } else {
-            bannerX -= 38;
-        }
-        if (bannerX < -650) {
-            onComplete();
-        }
+        if (bannerX > 1080) bannerX -= 36;
+        else if (bannerX > 840) bannerX -= 2.6;
+        else bannerX -= 38;
+        if (bannerX < -650) onComplete();
     }
 
     if (waveState === 'ready_sliding') {
-        updateBannerPosition(() => {
-            waveState = 'fight_sliding';
-            bannerX = 2200;
-        });
-    }
-    else if (waveState === 'fight_sliding') {
-        if (enemies.length === 0 && bannerX <= 1080) {
-            spawnEnemyWaveForCurrentStage();
-        }
-        updateBannerPosition(() => {
-            waveState = 'fighting';
-        });
-    }
-    else if (waveState === 'waiting_banner') {
-        bannerTimer--;
-        if (bannerTimer <= 0) {
-            waveState = 'wave_banner_sliding';
-            bannerX = 2200;
-        }
-    }
-    else if (waveState === 'wave_banner_sliding') {
-        updateBannerPosition(() => {
-            currentWave++;
-            waveState = 'fighting';
-            spawnEnemyWaveForCurrentStage();
-        });
+        updateBannerPosition(() => { waveState = 'fight_sliding'; bannerX = 2200; });
+    } else if (waveState === 'fight_sliding') {
+        if (enemies.length === 0 && bannerX <= 1080) spawnEnemyWaveForCurrentStage();
+        updateBannerPosition(() => { waveState = 'fighting'; });
+    } else if (waveState === 'waiting_banner') {
+        if (--bannerTimer <= 0) { waveState = 'wave_banner_sliding'; bannerX = 2200; }
+    } else if (waveState === 'wave_banner_sliding') {
+        updateBannerPosition(() => { currentWave++; waveState = 'fighting'; spawnEnemyWaveForCurrentStage(); });
     }
 }
 
 function handlePlayerDefeat() {
-    isDefeated = true;
-    isPlaying = false;
+    isDefeated = true; isPlaying = false;
     document.getElementById('in-game-ui').style.display = 'none';
     isAttackHeld = false;
     triggerAutoSave();
-
-    setTimeout(() => {
-        finishLevelAndShowVictory(true);
-    }, 600);
+    setTimeout(() => { finishLevelAndShowVictory(true); }, 600);
 }
 
-// 結算畫面
 function finishLevelAndShowVictory(isDefeat = false) {
     isPlaying = false;
     document.getElementById('in-game-ui').style.display = 'none';
@@ -2135,8 +1858,8 @@ function finishLevelAndShowVictory(isDefeat = false) {
     const badgeEl = document.getElementById('first-clear-badge');
     const gemBoxEl = document.getElementById('victory-gem-box');
     const btnGroup = document.getElementById('settlement-btn-group');
-
     const panelCard = document.getElementById('victory-panel-card');
+
     panelCard.style.animation = 'none';
     void panelCard.offsetWidth;
     panelCard.style.animation = 'slideInFromRightToCenter 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards';
@@ -2146,7 +1869,6 @@ function finishLevelAndShowVictory(isDefeat = false) {
         titleEl.innerText = '你筋疲力盡倒下了...';
         badgeEl.style.display = 'none';
         gemBoxEl.style.display = 'none';
-
         btnGroup.innerHTML = `
             <button class="btn" style="min-width: 11vw;" onclick="playClickSound(); playTransition(async () => startStageGame(currentActiveStage))">再次挑戰</button>
             <button class="btn btn-danger" style="min-width: 11vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
@@ -2154,7 +1876,6 @@ function finishLevelAndShowVictory(isDefeat = false) {
     } else {
         titleEl.className = 'victory-title';
         titleEl.innerText = '關卡通關成功！';
-
         if (!currentGameData.clearedStages) currentGameData.clearedStages = [];
         const isFirstTime = !currentGameData.clearedStages.includes(currentActiveStage.id);
 
@@ -2172,15 +1893,13 @@ function finishLevelAndShowVictory(isDefeat = false) {
         const hasNextStage = curStageIdx !== -1 && curStageIdx < STAGES_CONFIG.length - 1;
 
         if (hasNextStage) {
-            const nextStage = STAGES_CONFIG[curStageIdx + 1];
+            const nextIdx = curStageIdx + 1;
             btnGroup.innerHTML = `
-                <button class="btn btn-primary" style="min-width: 12vw;" onclick="playClickSound(); playTransition(async () => { returnToStageSelectAfterVictory(); startStageGame(STAGES_CONFIG[${curStageIdx + 1}]); })">繼續下一關 (${nextStage.id})</button>
+                <button class="btn btn-primary" style="min-width: 12vw;" onclick="playClickSound(); playTransition(async () => { returnToStageSelectAfterVictory(); startStageByIndex(${nextIdx}); })">繼續下一關 (${STAGES_CONFIG[nextIdx].id})</button>
                 <button class="btn" style="min-width: 11vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
             `;
         } else {
-            btnGroup.innerHTML = `
-                <button class="btn" style="min-width: 14vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
-            `;
+            btnGroup.innerHTML = `<button class="btn" style="min-width: 14vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>`;
         }
     }
 
@@ -2201,7 +1920,6 @@ function drawShadow(x, y, radius, camX, camY) {
 
 function renderGame() {
     ctx.clearRect(0, 0, 1920, 1080);
-    
     ctx.save();
     if (camera.zoom !== 1.0) {
         ctx.translate(960, 540);
@@ -2232,8 +1950,7 @@ function renderGame() {
 
     for (let c of droppedCoins) {
         const coinSize = 34;
-        const screenX = c.x - renderCamX;
-        const screenY = (c.y - c.z) - renderCamY;
+        const screenX = c.x - renderCamX, screenY = (c.y - c.z) - renderCamY;
 
         ctx.save();
         ctx.fillStyle = 'rgba(0, 0, 0, 0.24)';
@@ -2322,8 +2039,7 @@ function renderGame() {
         screenPosY = ((player.y - renderCamY - 540) * camera.zoom + 540) * scaleY - h / 2;
     }
 
-    const flipStr = currentFacingRight ? 'scaleX(-1)' : 'scaleX(1)';
-    playerSpriteImg.style.transform = `translate3d(${screenPosX}px, ${screenPosY}px, 0) ${flipStr}`;
+    playerSpriteImg.style.transform = `translate3d(${screenPosX}px, ${screenPosY}px, 0) ${currentFacingRight ? 'scaleX(-1)' : 'scaleX(1)'}`;
 
     if (player.chargeTime >= 30) {
         const progress = Math.min(1.0, (player.chargeTime - 30) / 30.0);
@@ -2349,15 +2065,13 @@ function renderGame() {
 
     for (let ft of floatingTexts) {
         const progress = ft.life / ft.maxLife; 
-        const scale = (ft.isCrit ? 1.8 : 1.4) * (0.25 + 0.75 * progress) * 1.5;
-        const fontSize = Math.floor(40 * scale);
+        const fontSize = Math.floor(40 * (ft.isCrit ? 1.8 : 1.4) * (0.25 + 0.75 * progress) * 1.5);
         ctx.save(); 
         ctx.globalAlpha = Math.max(0, progress); 
         ctx.font = `900 ${fontSize}px jf-openhuninn, sans-serif`;
         ctx.textAlign = 'center'; 
         ctx.strokeStyle = '#000000';
         ctx.lineWidth = Math.max(3, Math.floor(fontSize * 0.16));
-        ctx.lineJoin = 'round';
         ctx.strokeText(ft.text, ft.x - renderCamX, ft.y - renderCamY);
         ctx.fillStyle = ft.color;
         ctx.fillText(ft.text, ft.x - renderCamX, ft.y - renderCamY); 
@@ -2367,40 +2081,24 @@ function renderGame() {
     ctx.restore();
 
     // 通告橫幅
-    if (waveState === 'ready_sliding' || waveState === 'fight_sliding' || waveState === 'wave_banner_sliding') {
+    if (['ready_sliding', 'fight_sliding', 'wave_banner_sliding'].includes(waveState)) {
         ctx.save();
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
+        let bannerText = '', bW = 780, bH = 80, bannerY = 205;
+        if (waveState === 'ready_sliding') { bannerText = 'READY...'; bW = 560; } 
+        else if (waveState === 'fight_sliding') { bannerText = 'FIGHT!'; bW = 500; } 
+        else if (waveState === 'wave_banner_sliding') { bannerText = `下一波敵人即將出現！ (${currentWave + 1}/${totalWavesInStage})`; bW = 780; }
+
         ctx.fillStyle = '#ffffff';
-
-        let bannerText = '';
-        let bW = 780; 
-        let bH = 80;
-        let bannerY = 205;
-
-        if (waveState === 'ready_sliding') {
-            bannerText = 'READY...';
-            bW = 560;
-        } else if (waveState === 'fight_sliding') {
-            bannerText = 'FIGHT!';
-            bW = 500;
-        } else if (waveState === 'wave_banner_sliding') {
-            bannerText = `下一波敵人即將出現！ (${currentWave + 1}/${totalWavesInStage})`;
-            bW = 780;
-        }
-
         ctx.beginPath();
         ctx.roundRect(bannerX - bW / 2, bannerY, bW, bH, [24]);
         ctx.fill();
-
         ctx.strokeStyle = '#bce2ed';
         ctx.lineWidth = 3.5;
         ctx.stroke();
 
         ctx.fillStyle = '#388099';
         ctx.font = 'bold 36px jf-openhuninn, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(bannerText, bannerX, bannerY + bH / 2);
         ctx.restore();
     }
@@ -2411,9 +2109,7 @@ function renderGame() {
         ctx.font = 'bold 28px jf-openhuninn, sans-serif';
         ctx.fillText(`血量: ${player.hp} / ${player.maxHp}`, 40, 52);
 
-        if (goldCoinImg.complete && goldCoinImg.naturalWidth !== 0) {
-            ctx.drawImage(goldCoinImg, 40, 76, 28, 28);
-        }
+        if (goldCoinImg.complete && goldCoinImg.naturalWidth !== 0) ctx.drawImage(goldCoinImg, 40, 76, 28, 28);
         ctx.fillStyle = '#f1c40f'; 
         ctx.fillText(`金幣: ${sessionGold}`, 76, 98);
 
@@ -2423,8 +2119,7 @@ function renderGame() {
 }
 
 function returnToStageSelectAfterVictory() {
-    isVictoryLocked = false;
-    isDefeated = false;
+    isVictoryLocked = false; isDefeated = false;
     document.getElementById('victory-screen').style.display = 'none';
     playerSpriteImg.style.display = 'none'; 
     return openStageSelect();
