@@ -176,225 +176,63 @@
         .lobby-left-bottom-group { position: absolute; left: 3%; bottom: 4%; display: flex; gap: 0.8vw; z-index: 12; }
         .btn-sub-action { background: rgba(255, 255, 255, 0.9); color: #388099; border: none; padding: 0.5vw 1.2vw; border-radius: 18px; font-size: 0.95vw; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); backdrop-filter: blur(5px); }
 
-        .title { font-size: 3vw; font-weight: bold; color: #388099; margin-bottom: 0.5vw; letter-spacing: 2px; }
-        .subtitle { font-size: 1.5vw; font-weight: bold; color: #538199; margin-bottom: 1.2vw; }
+        .title { font-size: 2.8vw; font-weight: bold; color: #388099; margin-bottom: 0.5vw; letter-spacing: 2px; }
+        .subtitle { font-size: 1.4vw; font-weight: bold; color: #538199; margin-bottom: 1.2vw; }
         .btn { padding: 0.8vw 1.8vw; font-size: 1.3vw; font-weight: bold; color: #388099; background: #ffffff; border: 1.5px solid #dcdcdc; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); text-align: center; }
         .btn-danger { color: #ff4757; border-color: #ffccd1; }
 
+        /* 關卡選擇卡片網格 (1-1 ~ 1-5) */
         #stage-select-screen { background: url('office.jpg') no-repeat center center / cover; }
-        .stage-card-grid { display: flex; gap: 2vw; margin-top: 1.5vw; }
-        .stage-card { width: 18vw; height: 22vw; background: #ffffff; border-radius: 24px; color: #388099; padding: 1.5vw; display: flex; flex-direction: column; justify-content: space-between; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.12); border: 1px solid #eef2f5; cursor: pointer; }
+        .stage-card-grid { display: flex; gap: 1.4vw; margin-top: 1.2vw; flex-wrap: wrap; justify-content: center; width: 92%; }
+        .stage-card { width: 15vw; height: 18.5vw; background: #ffffff; border-radius: 24px; color: #388099; padding: 1.2vw; display: flex; flex-direction: column; justify-content: space-between; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.12); border: 1px solid #eef2f5; cursor: pointer; transition: transform 0.2s; }
+        .stage-card:hover { transform: translateY(-4px); }
+        .stage-card.locked { opacity: 0.65; cursor: not-allowed; }
 
-        /* ================= 4. 人物選單：3D 地球儀透視容器 ================= */
+        /* 人物選單 */
         #character-menu-screen {
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(10px);
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px);
+            padding: 0; display: flex; justify-content: center; align-items: center;
         }
+        .char-select-main-wrapper { width: 94%; height: 85%; display: flex; justify-content: space-between; align-items: center; position: relative; }
+        .char-wheel-left-area { position: relative; width: 48%; height: 100%; display: flex; justify-content: center; align-items: center; perspective: 1200px; transform-style: preserve-3d; pointer-events: auto; overflow: visible; }
+        .char-wheel-card-img { position: absolute; width: 8.5vw; height: 33vw; object-fit: contain; cursor: pointer; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.12)); will-change: transform, opacity; transform-origin: center center; touch-action: manipulation; user-select: none; -webkit-user-drag: none; transition: transform 0.42s cubic-bezier(0.18, 0.89, 0.32, 1.05), opacity 0.42s ease, filter 0.42s ease; }
+        .char-detail-panel { width: 42%; height: 94%; background: rgba(45, 45, 48, 0.88); border-radius: 28px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.12); padding: 2.8vw 2.5vw; display: flex; flex-direction: column; justify-content: space-between; color: #ffffff; box-sizing: border-box; }
+        .char-detail-header { display: flex; flex-direction: column; gap: 0.6vw; }
+        .char-detail-name { font-size: 2.6vw; font-weight: bold; color: #ffffff; letter-spacing: 2px; }
+        .char-detail-tag { display: inline-block; align-self: flex-start; padding: 0.3vw 0.8vw; background: rgba(255, 255, 255, 0.15); border-radius: 8px; font-size: 0.95vw; color: #b0bec5; }
+        .char-detail-body { font-size: 1.1vw; color: #cfd8dc; line-height: 1.7; margin-top: 1.5vw; }
+        .esc-exit-btn { position: absolute; bottom: 3.5%; left: 3.5%; background: #ffffff; color: #388099; padding: 0.6vw 1.8vw; border-radius: 25px; font-size: 1.1vw; font-weight: bold; cursor: pointer; border: 1.5px solid #dcdcdc; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 25; }
 
-        .char-select-main-wrapper {
-            width: 94%;
-            height: 85%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-        }
-
-        .char-wheel-left-area {
-            position: relative;
-            width: 48%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 1200px;
-            transform-style: preserve-3d;
-            pointer-events: auto;
-            overflow: visible;
-        }
-
-        .char-wheel-card-img {
-            position: absolute;
-            width: 8.5vw;
-            height: 33vw;
-            object-fit: contain;
-            cursor: pointer;
-            filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.12));
-            will-change: transform, opacity;
-            transform-origin: center center;
-            touch-action: manipulation;
-            user-select: none;
-            -webkit-user-drag: none;
-            transition: transform 0.42s cubic-bezier(0.18, 0.89, 0.32, 1.05), opacity 0.42s ease, filter 0.42s ease;
-        }
-
-        .char-detail-panel {
-            width: 42%;
-            height: 94%;
-            background: rgba(45, 45, 48, 0.88);
-            border-radius: 28px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 2.8vw 2.5vw;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            color: #ffffff;
-            box-sizing: border-box;
-        }
-
-        .char-detail-header {
-            display: flex;
-            flex-direction: column;
-            gap: 0.6vw;
-        }
-
-        .char-detail-name {
-            font-size: 2.6vw;
-            font-weight: bold;
-            color: #ffffff;
-            letter-spacing: 2px;
-            transition: color 0.15s ease;
-        }
-
-        .char-detail-tag {
-            display: inline-block;
-            align-self: flex-start;
-            padding: 0.3vw 0.8vw;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 8px;
-            font-size: 0.95vw;
-            color: #b0bec5;
-        }
-
-        .char-detail-body {
-            font-size: 1.1vw;
-            color: #cfd8dc;
-            line-height: 1.7;
-            margin-top: 1.5vw;
-        }
-
-        .esc-exit-btn {
-            position: absolute;
-            bottom: 3.5%;
-            left: 3.5%;
-            background: #ffffff;
-            color: #388099;
-            padding: 0.6vw 1.8vw;
-            border-radius: 25px;
-            font-size: 1.1vw;
-            font-weight: bold;
-            cursor: pointer;
-            border: 1.5px solid #dcdcdc;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            z-index: 25;
-        }
-
-        /* ================= 5. 全新商店介面 (背景 shop.jpg + 1920x1080 滿版 NPC 立繪) ================= */
-        #shop-screen {
-            background: url('shop.jpg') no-repeat center center / cover;
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0; overflow: hidden;
-        }
-
-        /* 點擊觸發對話的左側透明熱區 */
-        .shop-npc-interactive-zone {
-            position: absolute; top: 0; left: 0; width: 50%; height: 100%;
-            z-index: 8; cursor: pointer;
-        }
-
-        /* NPC 滿版 1920x1080 立繪，對齊畫面完全不失真縮放 */
-        .shop-npc-portrait {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: contain; pointer-events: none; z-index: 6; opacity: 0;
-        }
-        .shop-npc-portrait.animate-in {
-            animation: slideInFromLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        /* NPC 打字對話框 (圓角白框) */
-        #shop-dialog-bubble {
-            position: absolute; left: 6.8%; bottom: 15.5%; width: 33%; min-height: 4.8vw;
-            background: #ffffff; border-radius: 20px;
-            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
-            border: 2px solid #eef2f5;
-            padding: 1vw 1.6vw; display: flex; align-items: center;
-            z-index: 9; opacity: 0; pointer-events: none;
-            transition: opacity 0.4s ease;
-        }
-        #shop-dialog-text {
-            color: #388099; font-size: 1.25vw; font-weight: bold;
-            letter-spacing: 1px; line-height: 1.4;
-        }
-
-        /* 商店右側功能面板 (由右向左滑入) */
-        .shop-right-panel-wrapper {
-            position: absolute; right: 4.5%; width: 44%; height: 82%;
-            background: rgba(255, 255, 255, 0.94); border-radius: 28px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
-            border: 2px solid #eef2f5;
-            padding: 2.2vw 2.5vw; display: flex; flex-direction: column;
-            justify-content: space-between; z-index: 10; opacity: 0;
-        }
-        .shop-right-panel-wrapper.animate-in {
-            animation: slideInFromRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
+        /* 商店畫面 */
+        #shop-screen { background: url('shop.jpg') no-repeat center center / cover; position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0; overflow: hidden; }
+        .shop-npc-interactive-zone { position: absolute; top: 0; left: 0; width: 50%; height: 100%; z-index: 8; cursor: pointer; }
+        .shop-npc-portrait { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; z-index: 6; opacity: 0; }
+        .shop-npc-portrait.animate-in { animation: slideInFromLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        #shop-dialog-bubble { position: absolute; left: 6.8%; bottom: 15.5%; width: 33%; min-height: 4.8vw; background: #ffffff; border-radius: 20px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12); border: 2px solid #eef2f5; padding: 1vw 1.6vw; display: flex; align-items: center; z-index: 9; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        #shop-dialog-text { color: #388099; font-size: 1.25vw; font-weight: bold; letter-spacing: 1px; line-height: 1.4; }
+        .shop-right-panel-wrapper { position: absolute; right: 4.5%; width: 44%; height: 82%; background: rgba(255, 255, 255, 0.94); border-radius: 28px; backdrop-filter: blur(10px); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12); border: 2px solid #eef2f5; padding: 2.2vw 2.5vw; display: flex; flex-direction: column; justify-content: space-between; z-index: 10; opacity: 0; }
+        .shop-right-panel-wrapper.animate-in { animation: slideInFromRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .shop-header-title { font-size: 2.2vw; font-weight: bold; color: #388099; }
         .shop-header-sub { font-size: 1.1vw; font-weight: bold; color: #538199; margin-top: 0.3vw; }
         .shop-goods-list { display: flex; flex-direction: column; gap: 1.1vw; margin-top: 1vw; }
-        .shop-goods-card {
-            background: #ffffff; border: 1.5px solid #dbe8ed; border-radius: 18px;
-            padding: 1vw 1.5vw; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-        }
+        .shop-goods-card { background: #ffffff; border: 1.5px solid #dbe8ed; border-radius: 18px; padding: 1vw 1.5vw; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .goods-title { font-size: 1.3vw; font-weight: bold; color: #388099; }
         .goods-sub { font-size: 0.95vw; color: #78909c; margin-top: 0.2vw; }
 
-        /* 遊戲畫面頂部浮動通知 (Toast) */
-        #game-toast {
-            position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
-            background: #ffffff; color: #388099;
-            border: 2px solid #bce2ed; border-radius: 30px;
-            padding: 0.6vw 2vw; font-size: 1.25vw; font-weight: bold;
-            box-shadow: 0 8px 24px rgba(56, 128, 153, 0.25);
-            z-index: 1000; pointer-events: none; opacity: 0;
-            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        #game-toast.show {
-            top: 5%; opacity: 1;
-        }
+        /* 浮動通知 Toast */
+        #game-toast { position: absolute; top: -60px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #388099; border: 2px solid #bce2ed; border-radius: 30px; padding: 0.6vw 2vw; font-size: 1.25vw; font-weight: bold; box-shadow: 0 8px 24px rgba(56, 128, 153, 0.25); z-index: 1000; pointer-events: none; opacity: 0; transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #game-toast.show { top: 5%; opacity: 1; }
 
-        /* 勝利結算畫面 (大廳統一的白色圓角面板) */
-        #victory-screen {
-            display: none; cursor: pointer; background: rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(8px); z-index: 30;
-        }
-        .victory-panel {
-            background: #ffffff; border-radius: 28px; padding: 3vw 5vw;
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15); border: 2px solid #eef2f5;
-            display: flex; flex-direction: column; align-items: center; gap: 1.2vw;
-            animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        @keyframes bounceIn {
-            0% { transform: scale(0.7); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .victory-title { font-size: 3.2vw; font-weight: bold; color: #388099; letter-spacing: 2px; }
-        .victory-coins-box {
-            background: #fbfdfe; border: 1.5px solid #dbe8ed; border-radius: 18px;
-            padding: 0.8vw 2.5vw; font-size: 1.6vw; font-weight: bold; color: #f1c40f;
-            display: flex; align-items: center; gap: 0.6vw;
-        }
+        /* 勝利結算畫面 (含首次通關寶石通知) */
+        #victory-screen { display: none; cursor: pointer; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(8px); z-index: 30; }
+        .victory-panel { background: #ffffff; border-radius: 28px; padding: 2.6vw 4.5vw; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15); border: 2px solid #eef2f5; display: flex; flex-direction: column; align-items: center; gap: 1vw; animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes bounceIn { 0% { transform: scale(0.7); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .victory-title { font-size: 3vw; font-weight: bold; color: #388099; letter-spacing: 2px; }
+        .victory-reward-group { display: flex; gap: 1.2vw; }
+        .victory-box { background: #fbfdfe; border: 1.5px solid #dbe8ed; border-radius: 18px; padding: 0.7vw 2vw; font-size: 1.4vw; font-weight: bold; display: flex; align-items: center; gap: 0.6vw; }
+        .first-clear-badge { background: #e0f2fe; color: #0284c7; border: 1.5px solid #bae6fd; border-radius: 20px; padding: 0.5vw 1.6vw; font-size: 1.1vw; font-weight: bold; display: flex; align-items: center; gap: 0.5vw; }
 
-        /* 存檔彈窗與讀檔 */
+        /* 存讀檔 */
         #load-screen-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; display: none; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.25); }
         .load-game-card { width: 48vw; min-width: 420px; background: #ffffff; border-radius: 20px; padding: 2.5vw 3vw 1.8vw 3vw; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); color: #388099; display: flex; flex-direction: column; gap: 1.2vw; }
         .load-slot-list { display: flex; flex-direction: column; gap: 1vw; }
@@ -408,34 +246,11 @@
         .slot-grid { display: grid; grid-template-columns: 1fr; gap: 1.2vw; }
         .slot-item { background: #ffffff; padding: 1.2vw 2vw; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eef2f5; color: #388099; }
 
-        /* ================= 智慧原地等待轉場 (右下角 LOADING) ================= */
-        #transition-overlay { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: transparent; pointer-events: none; z-index: 999; opacity: 0; 
-            transition: opacity 0.2s ease; 
-        }
-        #transition-overlay.active { 
-            pointer-events: auto; opacity: 1; 
-        }
-
-        #loading-corner-box {
-            position: absolute; right: 3.5%; bottom: 3.5%;
-            display: flex; align-items: baseline; gap: 4px;
-            color: #ffffff; font-weight: bold; font-size: 1.35vw;
-            letter-spacing: 2px;
-            background: rgba(15, 23, 42, 0.72);
-            padding: 0.45vw 1.1vw;
-            border-radius: 16px;
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.22);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-            pointer-events: none;
-            animation: pulseGlow 1.2s ease-in-out infinite alternate;
-        }
-        @keyframes pulseGlow {
-            0% { transform: translateY(0px); opacity: 0.85; }
-            100% { transform: translateY(-2px); opacity: 1; box-shadow: 0 8px 22px rgba(72, 202, 228, 0.45); }
-        }
+        /* 轉場層 */
+        #transition-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; pointer-events: none; z-index: 999; opacity: 0; transition: opacity 0.2s ease; }
+        #transition-overlay.active { pointer-events: auto; opacity: 1; }
+        #loading-corner-box { position: absolute; right: 3.5%; bottom: 3.5%; display: flex; align-items: baseline; gap: 4px; color: #ffffff; font-weight: bold; font-size: 1.35vw; letter-spacing: 2px; background: rgba(15, 23, 42, 0.72); padding: 0.45vw 1.1vw; border-radius: 16px; backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.22); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); pointer-events: none; animation: pulseGlow 1.2s ease-in-out infinite alternate; }
+        @keyframes pulseGlow { 0% { transform: translateY(0px); opacity: 0.85; } 100% { transform: translateY(-2px); opacity: 1; box-shadow: 0 8px 22px rgba(72, 202, 228, 0.45); } }
         .loading-dots { display: inline-block; width: 1.6vw; text-align: left; }
 
         #orientation-warning { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #ff4757; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; font-size: 24px; text-align: center; }
@@ -448,7 +263,7 @@
         📱<br><br>請將手機旋轉為「橫屏」以獲得最佳遊戲體驗！
     </div>
 
-    <!-- 背景音樂配置 (全新 BGM 庫) -->
+    <!-- 背景音樂 -->
     <audio id="bg-music-login" src="Glassy Blooms.mp3" loop preload="auto"></audio>
     <audio id="bg-music-lobby" src="Glassy Pastel Dreams.mp3" loop preload="auto"></audio>
     <audio id="bg-music-stage" src="Pastel Office.mp3" loop preload="auto"></audio>
@@ -460,39 +275,33 @@
         <div id="in-game-ui">
             <button class="btn-pause-game" onclick="playClickSound(); togglePause()">⏸ 暫停</button>
             <div class="btn-mobile-attack" id="btn-mobile-attack">👊</div>
-            <div id="joystick-zone">
-                <div id="joystick-knob"></div>
-            </div>
+            <div id="joystick-zone"><div id="joystick-knob"></div></div>
         </div>
 
         <img id="player-gif-sprite" src="maincharacter_idle.gif" alt="Player Character">
         <canvas id="clickEffectCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998;"></canvas>
         <canvas id="gameCanvas" width="1920" height="1080"></canvas>
 
-        <!-- 頂部圓角白框 Toast 通知 (替代原生 alert) -->
         <div id="game-toast">已成功購買！</div>
 
-        <!-- 全局無黑屏轉場層 (僅右下角精緻 Loading) -->
         <div id="transition-overlay">
             <div id="loading-corner-box">
                 <span>LOADING</span><span class="loading-dots" id="loading-dots-el">...</span>
             </div>
         </div>
 
-        <!-- 暫停選單 -->
+        <!-- 暫停選單 (改為返回關卡選擇) -->
         <div id="pause-screen" class="ui-screen" style="display: none;">
             <div class="pause-panel">
                 <div class="pause-title">遊戲已暫停</div>
                 <button class="btn" style="width: 100%; font-size: 1.6vw; padding: 1vw 0;" onclick="playClickSound(); togglePause()">繼續遊戲</button>
-                <button class="btn btn-danger" style="width: 100%; font-size: 1.6vw; padding: 1vw 0;" onclick="playClickSound(); quitLevel()">中斷關卡 (返回大廳)</button>
+                <button class="btn btn-danger" style="width: 100%; font-size: 1.6vw; padding: 1vw 0;" onclick="playClickSound(); quitLevelToStageSelect()">中斷關卡 (返回關卡選擇)</button>
             </div>
         </div>
 
         <!-- 1. 登入介面 -->
         <div id="login-screen" class="ui-screen">
-            <video id="login-bg-video" autoplay loop muted playsinline>
-                <source src="loginscreen_movie.mp4" type="video/mp4">
-            </video>
+            <video id="login-bg-video" autoplay loop muted playsinline><source src="loginscreen_movie.mp4" type="video/mp4"></video>
             <img src="IEA LOGO.png" class="top-left-logo" alt="IEA LOGO">
 
             <div class="top-right-group">
@@ -553,24 +362,11 @@
             </div>
         </div>
 
-        <!-- 3. 關卡選擇 -->
+        <!-- 3. 關卡選擇 (支援 1-1 ~ 1-5 關卡卡片) -->
         <div id="stage-select-screen" class="ui-screen" style="display: none;">
             <div class="title">選擇挑戰關卡</div>
-            <div class="stage-card-grid">
-                <div class="stage-card" onclick="playClickSound(); playTransition(async () => startLevel(1, 'map_1-1.jpg'))">
-                    <div style="font-size: 1.8vw; font-weight: bold;">關卡 1-1</div>
-                    <div style="font-size: 1vw; color: #78909c;">教學關卡 (共 3 波)</div>
-                    <div style="font-size: 1.2vw; font-weight: bold; color: #ff4757;">敵人: 9 體</div>
-                    <button class="btn" style="width: 100%;">開始挑戰</button>
-                </div>
-                <div class="stage-card" style="opacity: 0.65; cursor: not-allowed;">
-                    <div style="font-size: 1.8vw; font-weight: bold;">關卡 1-2</div>
-                    <div style="font-size: 1vw; color: #78909c;">尚未解鎖</div>
-                    <div style="font-size: 1.2vw; color: #999;">🔒 敬請期待</div>
-                    <button class="btn" style="width: 100%; background: #f0f0f0; color: #aaa;" disabled>尚未開放</button>
-                </div>
-            </div>
-            <div style="margin-top: 2vw;">
+            <div class="stage-card-grid" id="stage-card-container"></div>
+            <div style="margin-top: 1.5vw;">
                 <button class="btn btn-danger" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">返回大廳</button>
             </div>
         </div>
@@ -579,7 +375,6 @@
         <div id="character-menu-screen" class="ui-screen" style="display: none;">
             <div class="char-select-main-wrapper">
                 <div class="char-wheel-left-area" id="char-wheel-container"></div>
-                
                 <div class="char-detail-panel" id="char-detail-panel">
                     <div class="char-detail-header">
                         <div class="char-detail-name" id="char-detail-name">托帕</div>
@@ -591,25 +386,15 @@
             <button class="esc-exit-btn" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">按 ESC 返回大廳</button>
         </div>
 
-        <!-- 5. 全新商店介面 (背景 shop.jpg + 1920x1080 滿版 NPC 立繪) -->
+        <!-- 5. 商店介面 -->
         <div id="shop-screen" class="ui-screen" style="display: none;">
-            <!-- 左側點擊觸發 NPC 對話熱區 -->
             <div class="shop-npc-interactive-zone" onclick="triggerNpcDialogue()"></div>
-
-            <!-- 左側 NPC 角色立繪 (1920x1080 原圖比例完全對應) -->
             <img id="shop-npc-img" class="shop-npc-portrait" src="shopNPC_01.png" alt="Shop NPC">
-
-            <!-- 點擊立繪後出現的打字機氣泡對話框 -->
-            <div id="shop-dialog-bubble">
-                <span id="shop-dialog-text"></span>
-            </div>
-
-            <!-- 右側功能滑入卡片 -->
+            <div id="shop-dialog-bubble"><span id="shop-dialog-text"></span></div>
             <div class="shop-right-panel-wrapper" id="shop-right-panel">
                 <div>
                     <div class="shop-header-title">校園補給商店</div>
                     <div class="shop-header-sub" id="shop-currency-display">金幣: 0 | 寶石: 0</div>
-                    
                     <div class="shop-goods-list">
                         <div class="shop-goods-card">
                             <div>
@@ -634,7 +419,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div style="text-align: right; margin-top: 1vw;">
                     <button class="btn btn-danger" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">返回大廳</button>
                 </div>
@@ -652,13 +436,22 @@
             </div>
         </div>
 
-        <!-- 7. 全新大廳風格勝利結算畫面 (白色質感面板 + 藍字) -->
+        <!-- 7. 勝利結算畫面 (含首通寶石展示) -->
         <div id="victory-screen" class="ui-screen" style="display: none;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">
             <div class="victory-panel">
                 <div class="victory-title">🎉 關卡通關成功！</div>
-                <div class="victory-coins-box">
-                    <span>🪙 本場戰利品:</span>
-                    <span id="victory-gold-text">0 金幣</span>
+                <div id="first-clear-badge" class="first-clear-badge" style="display: none;">
+                    <span>✨ 首通達成！獲得額外獎勵 寶石 +1</span>
+                </div>
+                <div class="victory-reward-group">
+                    <div class="victory-box" style="color: #f1c40f;">
+                        <span>🪙 金幣:</span>
+                        <span id="victory-gold-text">0</span>
+                    </div>
+                    <div class="victory-box" id="victory-gem-box" style="color: #38bdf8; display: none;">
+                        <span>💎 寶石:</span>
+                        <span>+1</span>
+                    </div>
                 </div>
                 <div style="font-size: 1.1vw; color: #78909c; margin-top: 0.5vw;">( 點擊任意處返回關卡選擇 )</div>
             </div>
@@ -669,9 +462,7 @@
 // ==================== 0. 音訊系統配置 ====================
 class AudioPool {
     constructor(src, size = 4) {
-        this.pool = [];
-        this.index = 0;
-        this.size = size;
+        this.pool = []; this.index = 0; this.size = size;
         for (let i = 0; i < size; i++) {
             const audio = new Audio(src);
             audio.preload = 'auto';
@@ -692,12 +483,12 @@ const sndPools = {
     punch: new AudioPool('punch.mp3', 6),
     punchHit: new AudioPool('punch_hited.mp3', 6),
     hardpunch: new AudioPool('hardpunch.mp3', 4),
-    hardpunchHit: new AudioPool('hardpunch_hited.mp3', 4)
+    hardpunchHit: new AudioPool('hardpunch_hited.mp3', 4),
+    victory: new AudioPool('hardpunch.mp3', 1) // 勝利終結音效池 (借用重擊力量音效)
 };
 function playClickSound() { sndPools.click.play(); }
 function playSnd(name) { if (sndPools[name]) sndPools[name].play(); }
 
-// 5 大場景 BGM
 const bgmList = {
     login: document.getElementById('bg-music-login'),
     lobby: document.getElementById('bg-music-lobby'),
@@ -705,7 +496,6 @@ const bgmList = {
     shop: document.getElementById('bg-music-shop'),
     battle: document.getElementById('bg-music-battle')
 };
-
 let currentBgmKey = null;
 
 function switchBgm(targetKey) {
@@ -740,22 +530,18 @@ window.addEventListener('pointerdown', function initAudioOnce() {
 
 // ==================== 1. 全域資源非同步快取 & Toast 通知 ====================
 const assetCache = new Map();
-
 function preloadAsset(src) {
     if (!src) return Promise.resolve(null);
     if (assetCache.has(src)) return Promise.resolve(assetCache.get(src));
-
     return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
             if ('decode' in img) {
                 img.decode().then(() => { assetCache.set(src, img); resolve(img); })
                            .catch(() => { assetCache.set(src, img); resolve(img); });
-            } else {
-                assetCache.set(src, img); resolve(img);
-            }
+            } else { assetCache.set(src, img); resolve(img); }
         };
-        img.onerror = () => { console.warn(`資源載入略過: ${src}`); resolve(img); };
+        img.onerror = () => { console.warn(`資源略過: ${src}`); resolve(img); };
         img.src = src;
     });
 }
@@ -784,7 +570,7 @@ function showToast(msg) {
     toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 2200);
 }
 
-// ==================== 2. FIREBASE 與存檔系統 ====================
+// ==================== 2. FIREBASE 與 1-1~1-5 關卡配置 ====================
 const firebaseConfig = {
     apiKey: "AIzaSyCW0VkxjD8cYSJRdSh4dJihXfcFbb85FaY",
     authDomain: "schoolking-b41af.firebaseapp.com",
@@ -802,7 +588,6 @@ auth.onAuthStateChanged((user) => {
     currentUser = user; 
     const btnText = document.getElementById('google-btn-text');
     const cloudStatus = document.getElementById('cloud-status-text');
-
     if (user) {
         btnText.innerText = user.displayName ? user.displayName.split(' ')[0] + " (登出)" : "已登入 (登出)";
         cloudStatus.innerText = `☁️ 雲端同步已啟用 (${user.email})`;
@@ -815,53 +600,37 @@ auth.onAuthStateChanged((user) => {
 
 function toggleGoogleLogin() {
     if (currentUser) { 
-        auth.signOut().then(() => { 
-            showToast("已登出 Google 帳號"); 
-            checkAutoSaveAndToggleContinue(); 
-            switchBgm('login');
-        });
+        auth.signOut().then(() => { showToast("已登出 Google 帳號"); checkAutoSaveAndToggleContinue(); switchBgm('login'); });
     } else { 
         auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(res => {
-            showToast(`歡迎回來，${res.user.displayName}！`); 
-            checkAutoSaveAndToggleContinue(); 
-            switchBgm('login');
+            showToast(`歡迎回來，${res.user.displayName}！`); checkAutoSaveAndToggleContinue(); switchBgm('login');
         }); 
     }
 }
 
 const availablePartners = [
-    { 
-        id: 'topaz', name: '托帕', tag: '近戰衝擊型夥伴', 
-        desc: '【角色介紹】\n個性元氣開朗的校園格鬥家，擅長以重拳破防並具備優異的擊退性能。\n\n【被動天賦】\n普通拳擊命中時，蓄力速度提升 15%，擊退距離略微加長。',
-        lobbyImage: 'characterA_lobby01.png', blockImage: 'characterA_block01.png' 
-    },
-    { 
-        id: 'blackthorn', name: '黑棘', tag: '迅捷穿透型夥伴', 
-        desc: '【角色介紹】\n身手敏捷的學生會執行部成員，攻擊步頻極高，擅長在敵群中靈活穿梭。\n\n【被動天賦】\n自身移動速度額外提升 10%，閃避間隔縮短。',
-        lobbyImage: 'characterB_lobby01.png', blockImage: 'characterB_block01.png' 
-    },
-    { 
-        id: 'larimar', name: '拉利瑪', tag: '強襲重裝型夥伴', 
-        desc: '【角色介紹】\n沉著冷靜的守護者，擁有強悍的生命力與不屈的防禦姿態。\n\n【被動天賦】\n受到碰撞傷害時硬直時間降低 25%，生命值上限提升 20 點。',
-        lobbyImage: 'characterC_lobby01.png', blockImage: 'characterC_block01.png' 
-    },
-    { 
-        id: 'amber', name: '琥珀', tag: '機巧支援型 (未實裝)', 
-        desc: '【角色介紹】\n科研社的王牌發明家，擅長運用精密的校園戰術道具牽制對手。\n\n【被動天賦】\n每隔一段時間於周遭生成電磁脈衝，短暫麻痺靠近的敵人。',
-        lobbyImage: 'characterA_lobby01.png', blockImage: 'characterA_block01.png' 
-    },
-    { 
-        id: 'sapphire', name: '藍寶', tag: '疾風連擊型 (未實裝)', 
-        desc: '【角色介紹】\n田徑部的主將，擁有校園內無人能及的極限爆發步速與連續打擊力。\n\n【被動天賦】\n擊殺敵人後 3 秒內移動速度大幅躍升 35%，並產生殘影障壁。',
-        lobbyImage: 'characterB_lobby01.png', blockImage: 'characterB_block01.png' 
-    }
+    { id: 'topaz', name: '托帕', tag: '近戰衝擊型夥伴', desc: '【角色介紹】\n個性元氣開朗的校園格鬥家，擅長以重拳破防並具備優異的擊退性能。\n\n【被動天賦】\n普通拳擊命中時，蓄力速度提升 15%，擊退距離略微加長。', lobbyImage: 'characterA_lobby01.png', blockImage: 'characterA_block01.png' },
+    { id: 'blackthorn', name: '黑棘', tag: '迅捷穿透型夥伴', desc: '【角色介紹】\n身手敏捷的學生會執行部成員，攻擊步頻極高，擅長在敵群中靈活穿梭。\n\n【被動天賦】\n自身移動速度額外提升 10%，閃避間隔縮短。', lobbyImage: 'characterB_lobby01.png', blockImage: 'characterB_block01.png' },
+    { id: 'larimar', name: '拉利瑪', tag: '強襲重裝型夥伴', desc: '【角色介紹】\n沉著冷靜的守護者，擁有強悍的生命力與不屈的防禦姿態。\n\n【被動天賦】\n受到碰撞傷害時硬直時間降低 25%，生命值上限提升 20 點。', lobbyImage: 'characterC_lobby01.png', blockImage: 'characterC_block01.png' },
+    { id: 'amber', name: '琥珀', tag: '機巧支援型 (未實裝)', desc: '【角色介紹】\n科研社的王牌發明家，擅長運用精密的校園戰術道具牽制對手。\n\n【被動天賦】\n每隔一段時間於周遭生成電磁脈衝，短暫麻痺靠近的敵人。', lobbyImage: 'characterA_lobby01.png', blockImage: 'characterA_block01.png' },
+    { id: 'sapphire', name: '藍寶', tag: '疾風連擊型 (未實裝)', desc: '【角色介紹】\n田徑部的主將，擁有校園內無人能及的極限爆發步速與連續打擊力。\n\n【被動天賦】\n擊殺敵人後 3 秒內移動速度大幅躍升 35%，並產生殘影障壁。', lobbyImage: 'characterB_lobby01.png', blockImage: 'characterB_block01.png' }
+];
+
+// 1-1 ~ 1-5 關卡配置規格
+const STAGES_CONFIG = [
+    { id: '1-1', title: '關卡 1-1', desc: '教學關卡', waves: 3, perWave: 3, hp: 30, map: 'map_1-1.jpg' },
+    { id: '1-2', title: '關卡 1-2', desc: '初階考核', waves: 3, perWave: 4, hp: 35, map: 'map_1-1.jpg' },
+    { id: '1-3', title: '關卡 1-3', desc: '試煉對峙', waves: 4, perWave: 4, hp: 40, map: 'map_1-1.jpg' },
+    { id: '1-4', title: '關卡 1-4', desc: '激烈交鋒', waves: 4, perWave: 5, hp: 45, map: 'map_1-1.jpg' },
+    { id: '1-5', title: '關卡 1-5', desc: '極限突破', waves: 5, perWave: 5, hp: 55, map: 'map_1-1.jpg' }
 ];
 
 const SAVE_PREFIX = "SCHOOL_KING_SAVE_SLOT_";
 let currentGameData = { 
     gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
     ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
-    selectedPartner: '托帕' 
+    selectedPartner: '托帕',
+    clearedStages: [] // 記錄已首通的關卡 id (如 ['1-1', '1-2'])
 };
 
 async function triggerAutoSave() {
@@ -893,7 +662,8 @@ async function handleStartNewGame() {
     currentGameData = { 
         gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
         ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
-        selectedPartner: '托帕' 
+        selectedPartner: '托帕',
+        clearedStages: []
     };
     playTransition(async () => enterMainLobby());
 }
@@ -934,15 +704,9 @@ async function playTransition(asyncAction) {
     const overlay = document.getElementById('transition-overlay');
     startLoadingDots();
     overlay.classList.add('active');
-
-    try {
-        if (asyncAction) await asyncAction();
-    } catch (err) {
-        console.error("轉場執行失敗:", err);
-    } finally {
-        stopLoadingDots();
-        overlay.classList.remove('active');
-    }
+    try { if (asyncAction) await asyncAction(); } 
+    catch (err) { console.error("轉場執行失敗:", err); } 
+    finally { stopLoadingDots(); overlay.classList.remove('active'); }
 }
 
 function hideAllScreens() {
@@ -977,32 +741,61 @@ async function enterMainLobby() {
 
 function backToLobbyFromSubScreen() { return enterMainLobby(); }
 
+// 動態渲染 1-1 ~ 1-5 關卡卡片 (解鎖機制)
 async function openStageSelect() { 
     await preloadAsset('office.jpg');
     hideAllScreens(); 
     switchBgm('stage'); 
+    
+    const container = document.getElementById('stage-card-container');
+    container.innerHTML = '';
+
+    STAGES_CONFIG.forEach((stage, idx) => {
+        // 解鎖判斷：第一關預設解鎖，其餘關卡需上一關已首通
+        const isUnlocked = (idx === 0) || (currentGameData.clearedStages && currentGameData.clearedStages.includes(STAGES_CONFIG[idx - 1].id));
+        const isCleared = currentGameData.clearedStages && currentGameData.clearedStages.includes(stage.id);
+
+        const card = document.createElement('div');
+        card.className = `stage-card ${isUnlocked ? '' : 'locked'}`;
+        
+        let statusBadge = isCleared ? '<span style="color:#10b981; font-weight:bold; font-size:0.95vw;">★ 已首通 (寶石已領)</span>' : (isUnlocked ? '<span style="color:#0284c7; font-weight:bold; font-size:0.95vw;">💎 首通送寶石 x1</span>' : '<span style="color:#94a3b8; font-size:0.95vw;">🔒 尚未解鎖</span>');
+
+        card.innerHTML = `
+            <div style="font-size: 1.6vw; font-weight: bold;">${stage.title}</div>
+            <div style="font-size: 0.95vw; color: #78909c;">${stage.desc} (共 ${stage.waves} 波)</div>
+            <div style="font-size: 1.1vw; font-weight: bold; color: #ff4757;">敵人: ${stage.waves * stage.perWave} 體</div>
+            ${statusBadge}
+            <button class="btn" style="width: 100%; font-size: 1.1vw; padding: 0.5vw 0;" ${isUnlocked ? '' : 'disabled'}>${isUnlocked ? '開始挑戰' : '尚未開放'}</button>
+        `;
+
+        if (isUnlocked) {
+            card.onclick = () => {
+                playClickSound();
+                playTransition(async () => startStageGame(stage));
+            };
+        }
+        container.appendChild(card);
+    });
+
     document.getElementById('stage-select-screen').style.display = 'flex'; 
 }
 
-// ==================== 4. 商店系統與 NPC 對話互動 ====================
+// 商店邏輯
 const npcDialogues = [
     "準備好了再出發吧...!",
     "有沒有想要的東西呢?",
     "不過要花錢就是了..."
 ];
-
 let typingInterval = null;
 let dialogueFadeTimeout = null;
 
 async function openShop() { 
-    // 預載商店專屬背景 shop.jpg 與滿版 NPC 立繪
     await preloadMultipleAssets(['shop.jpg', 'shopNPC_01.png', 'gold.png', 'gem.png']);
     hideAllScreens(); 
     switchBgm('shop'); 
     
     const shopScreen = document.getElementById('shop-screen');
     shopScreen.style.display = 'flex'; 
-
     updateShopUI();
 
     const npcImg = document.getElementById('shop-npc-img');
@@ -1013,8 +806,7 @@ async function openShop() {
     npcImg.classList.add('animate-in');
     rightPanel.classList.add('animate-in');
 
-    const bubble = document.getElementById('shop-dialog-bubble');
-    bubble.style.opacity = '0';
+    document.getElementById('shop-dialog-bubble').style.opacity = '0';
 }
 
 function updateShopUI() {
@@ -1029,7 +821,6 @@ function triggerNpcDialogue() {
     playClickSound();
     const bubble = document.getElementById('shop-dialog-bubble');
     const textEl = document.getElementById('shop-dialog-text');
-    
     if (typingInterval) clearInterval(typingInterval);
     if (dialogueFadeTimeout) clearTimeout(dialogueFadeTimeout);
 
@@ -1044,9 +835,7 @@ function triggerNpcDialogue() {
             charIndex++;
         } else {
             clearInterval(typingInterval);
-            dialogueFadeTimeout = setTimeout(() => {
-                bubble.style.opacity = '0';
-            }, 2200);
+            dialogueFadeTimeout = setTimeout(() => { bubble.style.opacity = '0'; }, 2200);
         }
     }, 60);
 }
@@ -1087,7 +876,7 @@ function drawGacha() {
     }
 }
 
-// 存讀檔
+// 存檔讀檔
 async function openLoadScreen() {
     const container = document.getElementById('load-slots-container');
     container.innerHTML = '<div style="text-align:center; color:#388099; padding: 1vw;">讀取中...</div>';
@@ -1112,7 +901,8 @@ async function loadFromSlot(slotKey) {
         currentGameData = Object.assign({ 
             gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
             ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
-            selectedPartner: '托帕' 
+            selectedPartner: '托帕',
+            clearedStages: []
         }, data);
         closeLoadScreen(); 
         await enterMainLobby();
@@ -1163,13 +953,7 @@ async function openCharacterMenu() {
         img.className = 'char-wheel-card-img'; 
         img.draggable = false;
         img.src = partner.blockImage;
-
-        img.addEventListener('pointerdown', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            selectPartnerByIndex(index);
-        });
-
+        img.addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); selectPartnerByIndex(index); });
         container.appendChild(img);
         wheelCardsElements.push(img);
     });
@@ -1181,11 +965,9 @@ async function openCharacterMenu() {
 function selectPartnerByIndex(targetIndex) {
     const ownedList = getOwnedPartnersList();
     if (!ownedList[targetIndex]) return;
-
     playClickSound();
     selectedPartnerIndex = targetIndex;
     currentGameData.selectedPartner = ownedList[targetIndex].name;
-
     updateCharacterInfoPanel();
     updateWheelPositions();
     triggerAutoSave();
@@ -1194,12 +976,9 @@ function selectPartnerByIndex(targetIndex) {
 function updateCharacterInfoPanel() {
     const partner = availablePartners.find(p => p.name === currentGameData.selectedPartner);
     if (!partner) return;
-    const nameEl = document.getElementById('char-detail-name');
-    const tagEl = document.getElementById('char-detail-tag');
-    const descEl = document.getElementById('char-detail-desc');
-    if (nameEl) nameEl.innerText = partner.name;
-    if (tagEl) tagEl.innerText = partner.tag || '校園戰鬥夥伴';
-    if (descEl) descEl.innerHTML = (partner.desc || '暫無角色介紹').replace(/\n/g, '<br>');
+    document.getElementById('char-detail-name').innerText = partner.name;
+    document.getElementById('char-detail-tag').innerText = partner.tag || '校園戰鬥夥伴';
+    document.getElementById('char-detail-desc').innerHTML = (partner.desc || '暫無角色介紹').replace(/\n/g, '<br>');
 }
 
 function updateWheelPositions() {
@@ -1229,7 +1008,7 @@ function updateWheelPositions() {
     });
 }
 
-// ==================== 5. 戰鬥核心系統 ====================
+// ==================== 4. 戰鬥核心系統 (Ready->Fight開局、首通寶石、鏡頭轉場) ====================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const playerSpriteImg = document.getElementById('player-gif-sprite');
@@ -1258,16 +1037,18 @@ function clampToWalkableArea(entity, margin = 45) {
 
 let screenShake = { time: 0, intensity: 0, offsetX: 0, offsetY: 0 };
 let hitStopFrames = 0;
-
 function triggerScreenShake(intensity, frames) { screenShake.intensity = intensity; screenShake.time = frames; }
 function triggerHitStop(frames) { hitStopFrames = Math.max(hitStopFrames, frames); }
 
+// 當前進行的關卡資訊
+let currentActiveStage = STAGES_CONFIG[0];
 let currentWave = 1;
-const TOTAL_WAVES = 3;
-let waveState = 'fighting';
+let totalWavesInStage = 3;
+let waveState = 'ready_sliding'; // 'ready_sliding', 'fight_sliding', 'fighting', 'waiting_banner', 'wave_banner_sliding', 'victory_slowmo', 'victory_pan'
 let bannerTimer = 0;
 let bannerX = 2200;
 let slomoTimer = 0;
+let panTimer = 0;
 let lastKillPos = { x: 1920, y: 1080 };
 
 const player = {
@@ -1371,26 +1152,48 @@ btnMobileAttack.addEventListener('touchend', (e) => { e.preventDefault(); if (is
 
 let enemies = []; let dyingEnemies = []; let floatingTexts = []; let activePunchGifs = [];
 
-function spawnEnemyWave() {
-    const spawnTemplates = [
-        { x: 2440, y: 735, delay: 0 },
-        { x: 2585, y: 955, delay: 40 },
-        { x: 2450, y: 1205, delay: 80 }
+function spawnEnemyWaveForCurrentStage() {
+    const count = currentActiveStage.perWave || 3;
+    const hpVal = currentActiveStage.hp || 30;
+    
+    // 分散分佈於主角右側區域
+    const spawnOffsets = [
+        { dx: 585, dy: -265 },
+        { dx: 730, dy: -45 },
+        { dx: 595, dy: 205 },
+        { dx: 820, dy: -180 },
+        { dx: 790, dy: 140 }
     ];
-    enemies = spawnTemplates.map(t => ({
-        x: t.x, y: t.y, width: 128, height: 128, size: 64, hp: 30, maxHp: 30,
-        kbVx: 0, kbVy: 0, kbTime: 0, invuln: 0, jumpTimer: t.delay, isJumping: false,
-        jumpTargetX: 0, jumpTargetY: 0, jumpStartX: 0, jumpStartY: 0, jumpProgress: 0,
-        facingRight: false, spawnAlpha: 0.0
-    }));
+
+    enemies = [];
+    for (let i = 0; i < count; i++) {
+        const offset = spawnOffsets[i % spawnOffsets.length];
+        let pX = player.x + offset.dx + (Math.random() - 0.5) * 50;
+        let pY = player.y + offset.dy + (Math.random() - 0.5) * 50;
+        
+        let ep = { x: pX, y: pY };
+        clampToWalkableArea(ep, 64);
+
+        enemies.push({
+            x: ep.x, y: ep.y, width: 128, height: 128, size: 64, hp: hpVal, maxHp: hpVal,
+            kbVx: 0, kbVy: 0, kbTime: 0, invuln: 0, jumpTimer: i * 25, isJumping: false,
+            jumpTargetX: 0, jumpTargetY: 0, jumpStartX: 0, jumpStartY: 0, jumpProgress: 0,
+            facingRight: false, spawnAlpha: 0.0 // 淡入生成
+        });
+    }
 }
 
-async function startLevel(levelNum, mapFileName) {
+async function startStageGame(stageConfig) {
+    currentActiveStage = stageConfig;
+    totalWavesInStage = stageConfig.waves;
+    currentWave = 1;
+
     const [loadedMap, loadedE1, loadedE2, loadedGold] = await Promise.all([
-        preloadAsset(mapFileName),
+        preloadAsset(stageConfig.map),
         preloadAsset('enemyA_01.png'),
         preloadAsset('enemyA_02.png'),
         preloadAsset('gold.png'),
+        preloadAsset('gem.png'),
         preloadAsset('maincharacter_idle.gif'),
         preloadAsset('maincharacter_walk.gif'),
         preloadAsset('maincharacter_punch.gif'),
@@ -1419,10 +1222,11 @@ async function startLevel(levelNum, mapFileName) {
     screenShake = { time: 0, intensity: 0, offsetX: 0, offsetY: 0 };
     hitStopFrames = 0;
     floatingTexts = []; dyingEnemies = []; activePunchGifs = []; chargeParticles = []; droppedCoins = [];
-    
-    currentWave = 1;
-    waveState = 'fighting';
-    spawnEnemyWave();
+    enemies = [];
+
+    // 開局依序播放 "Ready..." -> "Fight!" 滑動橫幅
+    waveState = 'ready_sliding';
+    bannerX = 2200;
 
     document.getElementById('in-game-ui').style.display = 'block';
     playerSpriteImg.style.display = 'block';
@@ -1433,7 +1237,7 @@ async function startLevel(levelNum, mapFileName) {
 }
 
 function executeAttack() {
-    if (player.attackCooldown > 0 || player.punchAnimTimer > 0 || waveState === 'victory_slowmo') return;
+    if (player.attackCooldown > 0 || player.punchAnimTimer > 0 || waveState === 'ready_sliding' || waveState === 'victory_slowmo' || waveState === 'victory_pan') return;
     
     const isHeavy = player.chargeTime >= 30; 
     player.chargeTime = 0;
@@ -1545,7 +1349,6 @@ function spawnDroppedCoins(startX, startY, count = 3) {
     for (let i = 0; i < count; i++) {
         lastDropAngle += (Math.PI * 0.45) + Math.random() * (Math.PI * 0.35);
         const speed = Math.random() * 3.5 + 4.5;
-        
         droppedCoins.push({
             x: startX, y: startY, z: 20,
             vx: Math.cos(lastDropAngle) * speed,
@@ -1568,11 +1371,11 @@ function togglePause() {
     }
 }
 
-function quitLevel() {
+function quitLevelToStageSelect() {
     isPlaying = false; isPaused = false;
     if (animFrameReq) cancelAnimationFrame(animFrameReq);
     document.getElementById('pause-screen').style.display = 'none';
-    playTransition(async () => enterMainLobby());
+    playTransition(async () => openStageSelect());
 }
 
 let slomoFrameCounter = 0;
@@ -1582,12 +1385,23 @@ function gameLoop() {
     if (waveState === 'victory_slowmo') {
         slomoTimer--;
         slomoFrameCounter++;
-        camera.zoom += (1.42 - camera.zoom) * 0.08;
+        camera.zoom += (1.45 - camera.zoom) * 0.08;
 
-        if (slomoFrameCounter % 3 === 0) {
-            updateLogic();
-        }
+        if (slomoFrameCounter % 3 === 0) updateLogic();
+
         if (slomoTimer <= 0) {
+            // 2 秒慢動作結束：鏡頭迅速平滑拉回主角身上，撥放勝利音效，停留 1 秒
+            waveState = 'victory_pan';
+            panTimer = 60; // 1 秒
+            playSnd('victory');
+        }
+    } else if (waveState === 'victory_pan') {
+        panTimer--;
+        camera.zoom += (1.0 - camera.zoom) * 0.12; // 縮放回標準
+
+        updateLogic();
+
+        if (panTimer <= 0) {
             finishLevelAndShowVictory();
             return;
         }
@@ -1620,7 +1434,10 @@ function updateLogic() {
     if (player.punchAnimTimer > 0) player.punchAnimTimer--;
     if (player.invuln > 0) player.invuln--;
 
-    if (isAttackHeld && player.punchAnimTimer <= 0 && waveState !== 'victory_slowmo') {
+    // 蓄力 (在 Ready 橫幅滑動期間禁止蓄力與移動)
+    const canControl = (waveState !== 'ready_sliding' && waveState !== 'victory_slowmo' && waveState !== 'victory_pan');
+
+    if (isAttackHeld && player.punchAnimTimer <= 0 && canControl) {
         player.chargeTime++;
         player.speed = player.baseSpeed * 0.72;
 
@@ -1654,7 +1471,7 @@ function updateLogic() {
     if (player.punchAnimTimer > 0) {
     } else if (player.kbTime > 0) {
         player.x += player.kbVx; player.y += player.kbVy; player.kbTime--;
-    } else if (waveState !== 'victory_slowmo') {
+    } else if (canControl) {
         let moveX = 0; let moveY = 0;
         if (keys.w) moveY -= 1;
         if (keys.s) moveY += 1;
@@ -1676,11 +1493,13 @@ function updateLogic() {
     
     clampToWalkableArea(player, 45);
 
+    // 鏡頭焦點跟隨：特寫時聚焦點在最後擊殺點，其餘時間聚集在主角
     let focusTargetX = (waveState === 'victory_slowmo') ? lastKillPos.x : player.x;
     let focusTargetY = (waveState === 'victory_slowmo') ? lastKillPos.y : player.y;
     camera.x = Math.max(0, Math.min(focusTargetX - camera.width / 2, camera.mapWidth - camera.width));
     camera.y = Math.max(0, Math.min(focusTargetY - camera.height / 2, camera.mapHeight - camera.height));
 
+    // 金幣
     for (let i = droppedCoins.length - 1; i >= 0; i--) {
         const c = droppedCoins[i];
         if (c.state === 'air') {
@@ -1710,6 +1529,7 @@ function updateLogic() {
         }
     }
 
+    // 敵人
     for (let i = enemies.length - 1; i >= 0; i--) {
         let e = enemies[i];
         if (e.spawnAlpha < 1.0) e.spawnAlpha = Math.min(1.0, e.spawnAlpha + 0.05);
@@ -1717,7 +1537,7 @@ function updateLogic() {
 
         if (e.kbTime > 0) {
             e.isJumping = false; e.x += e.kbVx; e.y += e.kbVy; e.kbTime--;
-        } else if (waveState === 'fighting') {
+        } else if (waveState === 'fighting' || waveState === 'fight_sliding') {
             if (!e.isJumping) {
                 e.jumpTimer++;
                 if (e.jumpTimer >= 120) {
@@ -1748,7 +1568,7 @@ function updateLogic() {
 
         clampToWalkableArea(e, e.size * 0.7);
 
-        if (player.invuln <= 0 && Math.hypot(player.x - e.x, player.y - e.y) < player.size + e.size && waveState !== 'victory_slowmo') {
+        if (player.invuln <= 0 && Math.hypot(player.x - e.x, player.y - e.y) < player.size + e.size && waveState !== 'victory_slowmo' && waveState !== 'victory_pan') {
             player.hp -= 10; player.invuln = 30;
             let angle = Math.atan2(player.y - e.y, player.x - e.x);
             player.kbVx = Math.cos(angle) * 5; player.kbVy = Math.sin(angle) * 5; player.kbTime = 15;
@@ -1777,10 +1597,11 @@ function updateLogic() {
             enemies.splice(i, 1);
 
             if (enemies.length === 0) {
-                if (currentWave < TOTAL_WAVES) {
+                if (currentWave < totalWavesInStage) {
                     waveState = 'waiting_banner';
                     bannerTimer = 60; 
                 } else {
+                    // 全關卡最後一隻敵人死亡：進入 2 秒慢動作特寫
                     waveState = 'victory_slowmo';
                     slomoTimer = 120;
                     triggerScreenShake(20, 24);
@@ -1802,28 +1623,51 @@ function updateLogic() {
         if (ft.life <= 0) floatingTexts.splice(i, 1);
     }
 
-    if (waveState === 'waiting_banner') {
+    // 橫幅滑動軌跡共用邏輯 (高速進場 -> 中央慢速 1.5 秒 -> 高速滑離)
+    function updateBannerPosition(onComplete) {
+        if (bannerX > 1080) {
+            bannerX -= 36;
+        } else if (bannerX > 840) {
+            bannerX -= 2.6; // 中央減速
+        } else {
+            bannerX -= 38;
+        }
+        if (bannerX < -550) {
+            onComplete();
+        }
+    }
+
+    // 1. 開場 Ready 橫幅
+    if (waveState === 'ready_sliding') {
+        updateBannerPosition(() => {
+            waveState = 'fight_sliding';
+            bannerX = 2200;
+        });
+    }
+    // 2. 開場 Fight 橫幅 (進場瞬間喚醒第一波怪)
+    else if (waveState === 'fight_sliding') {
+        if (enemies.length === 0 && bannerX <= 1080) {
+            spawnEnemyWaveForCurrentStage();
+        }
+        updateBannerPosition(() => {
+            waveState = 'fighting';
+        });
+    }
+    // 3. 波次間隔等候
+    else if (waveState === 'waiting_banner') {
         bannerTimer--;
         if (bannerTimer <= 0) {
-            waveState = 'banner_sliding';
+            waveState = 'wave_banner_sliding';
             bannerX = 2200;
-            bannerTimer = 0;
         }
-    } else if (waveState === 'banner_sliding') {
-        bannerTimer++;
-        if (bannerX > 1100) {
-            bannerX -= 32;
-        } else if (bannerX > 820) {
-            bannerX -= 2.3;
-        } else {
-            bannerX -= 34;
-        }
-
-        if (bannerX < -500) {
+    }
+    // 4. 下一波敵人即將出現橫幅
+    else if (waveState === 'wave_banner_sliding') {
+        updateBannerPosition(() => {
             currentWave++;
             waveState = 'fighting';
-            spawnEnemyWave();
-        }
+            spawnEnemyWaveForCurrentStage();
+        });
     }
 }
 
@@ -1831,9 +1675,24 @@ function finishLevelAndShowVictory() {
     isPlaying = false;
     document.getElementById('in-game-ui').style.display = 'none';
     isAttackHeld = false;
+    
+    // 首通獎勵判定：若本關卡尚未在首通清單中，發放 1 寶石並標記首通
+    if (!currentGameData.clearedStages) currentGameData.clearedStages = [];
+    const isFirstTime = !currentGameData.clearedStages.includes(currentActiveStage.id);
+
+    if (isFirstTime) {
+        currentGameData.clearedStages.push(currentActiveStage.id);
+        currentGameData.gem = (currentGameData.gem || 0) + 1; // 首次通關獎勵 1 寶石
+        document.getElementById('first-clear-badge').style.display = 'flex';
+        document.getElementById('victory-gem-box').style.display = 'flex';
+    } else {
+        document.getElementById('first-clear-badge').style.display = 'none';
+        document.getElementById('victory-gem-box').style.display = 'none';
+    }
+
     triggerAutoSave();
     
-    document.getElementById('victory-gold-text').innerText = `${sessionGold} 金幣`;
+    document.getElementById('victory-gold-text').innerText = `${sessionGold}`;
     playTransition(async () => {
         document.getElementById('victory-screen').style.display = 'flex';
     });
@@ -1906,7 +1765,6 @@ function renderGame() {
 
     for (let e of enemies) {
         drawShadow(e.x, e.y, e.size, renderCamX, renderCamY);
-
         ctx.save();
         ctx.translate(e.x - renderCamX, e.y - renderCamY);
         if (!e.facingRight) ctx.scale(-1, 1);
@@ -2001,7 +1859,6 @@ function renderGame() {
         const progress = ft.life / ft.maxLife; 
         const scale = (ft.isCrit ? 1.8 : 1.4) * (0.25 + 0.75 * progress) * 1.5;
         const fontSize = Math.floor(40 * scale);
-
         ctx.save(); 
         ctx.globalAlpha = Math.max(0, progress); 
         ctx.font = `900 ${fontSize}px jf-openhuninn, sans-serif`;
@@ -2010,7 +1867,6 @@ function renderGame() {
         ctx.lineWidth = Math.max(3, Math.floor(fontSize * 0.16));
         ctx.lineJoin = 'round';
         ctx.strokeText(ft.text, ft.x - renderCamX, ft.y - renderCamY);
-
         ctx.fillStyle = ft.color;
         ctx.fillText(ft.text, ft.x - renderCamX, ft.y - renderCamY); 
         ctx.restore();
@@ -2018,33 +1874,51 @@ function renderGame() {
 
     ctx.restore();
 
-    if (waveState === 'banner_sliding') {
+    // ==================== 繪製所有通告橫幅 (統一往上移 75px: Y=205) ====================
+    if (waveState === 'ready_sliding' || waveState === 'fight_sliding' || waveState === 'wave_banner_sliding') {
         ctx.save();
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-        ctx.shadowBlur = 16;
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.28)';
+        ctx.shadowBlur = 18;
         ctx.fillStyle = '#ffffff';
-        const bW = 680; const bH = 80;
+
+        let bannerText = '';
+        let bW = 680; 
+        let bH = 80;
+        let bannerY = 205; // 由原本 280px 上提 75px
+
+        if (waveState === 'ready_sliding') {
+            bannerText = 'READY...';
+            bW = 520;
+        } else if (waveState === 'fight_sliding') {
+            bannerText = 'FIGHT!';
+            bW = 460;
+        } else if (waveState === 'wave_banner_sliding') {
+            bannerText = `⚔️ 下一波敵人即將出現！ (${currentWave + 1}/${totalWavesInStage})`;
+            bW = 720;
+        }
+
         ctx.beginPath();
-        ctx.roundRect(bannerX - bW / 2, 280, bW, bH, [24]);
+        ctx.roundRect(bannerX - bW / 2, bannerY, bW, bH, [24]);
         ctx.fill();
 
         ctx.strokeStyle = '#bce2ed';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 3.5;
         ctx.stroke();
 
         ctx.fillStyle = '#388099';
         ctx.font = 'bold 36px jf-openhuninn, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(`⚔️ 下一波敵人即將出現！ (${currentWave + 1}/${TOTAL_WAVES})`, bannerX, 320);
+        ctx.fillText(bannerText, bannerX, bannerY + bH / 2);
         ctx.restore();
     }
 
+    // 戰鬥 HUD
     if (document.getElementById('victory-screen').style.display !== 'flex') {
         ctx.fillStyle = 'white'; ctx.font = 'bold 28px jf-openhuninn, sans-serif';
         ctx.fillText(`血量: ${player.hp} / ${player.maxHp}`, 40, 50);
         ctx.fillStyle = '#f1c40f'; ctx.fillText(`🪙 金幣: ${sessionGold}`, 40, 90);
-        ctx.fillStyle = '#b5e3ff'; ctx.fillText(`波次: ${currentWave} / ${TOTAL_WAVES}`, 40, 130);
+        ctx.fillStyle = '#b5e3ff'; ctx.fillText(`關卡: ${currentActiveStage.id} (波次: ${currentWave} / ${totalWavesInStage})`, 40, 130);
     }
 }
 
