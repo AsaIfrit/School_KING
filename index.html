@@ -310,38 +310,43 @@
 
         #victory-screen { display: none; cursor: pointer; background: rgba(0, 0, 0, 0.75); z-index: 30; }
 
-        /* ================= 智慧平滑轉場與右下角 LOADING 提示 ================= */
+        /* ================= 智慧無黑屏等待：透明攔截層 + 原地 LOADING 浮現 ================= */
         #transition-overlay { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(10, 10, 16, 0.96); 
+            background: transparent; /* 完全透明，原地停留當前畫面，不黑屏 */
             pointer-events: none; z-index: 999; opacity: 0; 
-            transition: opacity 0.25s ease; 
-            display: flex; justify-content: center; align-items: center; 
+            transition: opacity 0.2s ease; 
         }
-        #transition-overlay.active { pointer-events: auto; opacity: 1; }
-        .transition-anim { width: 10vw; height: 10vw; border: 6px solid rgba(255, 255, 255, 0.15); border-top: 6px solid #48cae4; border-radius: 50%; animation: spin 0.7s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #transition-overlay.active { 
+            pointer-events: auto; /* 載入中攔截點擊，防止重複操作 */
+            opacity: 1; 
+        }
 
-        /* 經典高質感右下角 LOADING 水印 */
+        /* 經典沉浸式右下角 LOADING 提示標籤 */
         #loading-corner-box {
-            position: absolute; right: 4%; bottom: 4.5%;
+            position: absolute; right: 3.5%; bottom: 3.5%;
             display: flex; align-items: baseline; gap: 4px;
-            color: #ffffff; font-weight: bold; font-size: 1.4vw;
-            letter-spacing: 3px; text-shadow: 0 0 12px rgba(72, 202, 228, 0.8);
+            color: #ffffff; font-weight: bold; font-size: 1.35vw;
+            letter-spacing: 2px;
+            background: rgba(15, 23, 42, 0.72);
+            padding: 0.45vw 1.1vw;
+            border-radius: 16px;
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
             pointer-events: none;
+            animation: pulseGlow 1.2s ease-in-out infinite alternate;
         }
+
+        @keyframes pulseGlow {
+            0% { transform: translateY(0px); opacity: 0.85; }
+            100% { transform: translateY(-2px); opacity: 1; box-shadow: 0 8px 22px rgba(72, 202, 228, 0.45); }
+        }
+
         .loading-dots {
             display: inline-block;
-            width: 1.8vw;
+            width: 1.6vw;
             text-align: left;
-            animation: dotCycle 1.4s infinite steps(4, end);
-        }
-        @keyframes dotCycle {
-            0%   { content: ''; }
-            25%  { content: '.'; }
-            50%  { content: '..'; }
-            75%  { content: '...'; }
-            100% { content: ''; }
         }
 
         #orientation-warning { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #ff4757; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; font-size: 24px; text-align: center; }
@@ -372,11 +377,10 @@
         <canvas id="clickEffectCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998;"></canvas>
         <canvas id="gameCanvas" width="1920" height="1080"></canvas>
 
-        <!-- 全局無縫轉場遮罩 (含右下角 Loading) -->
+        <!-- 全局無黑屏轉場層 (僅右下角精緻 Loading) -->
         <div id="transition-overlay">
-            <div class="transition-anim"></div>
             <div id="loading-corner-box">
-                <span>LOADING</span><span class="loading-dots">...</span>
+                <span>LOADING</span><span class="loading-dots" id="loading-dots-el">...</span>
             </div>
         </div>
 
@@ -577,7 +581,7 @@ const sndPools = {
 function playClickSound() { sndPools.click.play(); }
 function playSnd(name) { if (sndPools[name]) sndPools[name].play(); }
 
-// 核心：全域資源非同步快取與解碼系統 (防止 GitHub 延遲導致黑畫面)
+// 全域資源非同步快取
 const assetCache = new Map();
 
 function preloadAsset(src) {
@@ -587,7 +591,6 @@ function preloadAsset(src) {
     return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
-            // 利用瀏覽器現代 GPU decode API 提前在記憶體解碼，防範繪製瞬間卡格
             if ('decode' in img) {
                 img.decode().then(() => {
                     assetCache.set(src, img);
@@ -603,7 +606,7 @@ function preloadAsset(src) {
         };
         img.onerror = () => {
             console.warn(`資源載入略過或失敗: ${src}`);
-            resolve(img); // 防止個別素材失敗卡死全遊戲
+            resolve(img);
         };
         img.src = src;
     });
@@ -611,6 +614,24 @@ function preloadAsset(src) {
 
 function preloadMultipleAssets(urls) {
     return Promise.all(urls.map(url => preloadAsset(url)));
+}
+
+// 點點呼吸動畫計時器
+let dotsInterval = null;
+function startLoadingDots() {
+    const dotsEl = document.getElementById('loading-dots-el');
+    let count = 0;
+    if (dotsInterval) clearInterval(dotsInterval);
+    dotsInterval = setInterval(() => {
+        count = (count + 1) % 4;
+        dotsEl.innerText = '.'.repeat(count);
+    }, 320);
+}
+function stopLoadingDots() {
+    if (dotsInterval) {
+        clearInterval(dotsInterval);
+        dotsInterval = null;
+    }
 }
 
 // 背景音樂控制
@@ -758,7 +779,7 @@ async function handleStartNewGame() {
     playTransition(async () => enterMainLobby());
 }
 
-// ==================== 2. UI 互動與「先載入再切換」的轉場機制 ====================
+// ==================== 2. UI 互動與「原地無黑屏等待」轉場 ====================
 const gameContainer = document.getElementById('game-container');
 const fxCanvas = document.getElementById('clickEffectCanvas');
 const fxCtx = fxCanvas.getContext('2d');
@@ -791,24 +812,26 @@ function updateAndDrawFx() {
 updateAndDrawFx();
 
 /**
- * 智慧非同步轉場：
- * 先蓋上黑色遮罩 + 顯示右下角 LOADING，
- * 等待傳入的非同步行為 (圖片預載、解碼、地圖初始化) 真正 100% 完成後，才淡出遮罩。
+ * 原地無縫轉場：
+ * 1. 絕不閃黑屏，停留在當前最後畫面
+ * 2. 右下角淡入精緻的 LOADING... 標籤並啟動呼吸點點動畫
+ * 3. 待下一個場景全部素材就緒，一瞬間直接切過去，隱藏 LOADING 標籤
  */
 async function playTransition(asyncAction) {
     const overlay = document.getElementById('transition-overlay');
-    overlay.classList.add('active');
+    startLoadingDots();
+    overlay.classList.add('active'); // 顯示右下角 LOADING，同時鎖定點擊防連按
 
-    const minWaitPromise = new Promise(resolve => setTimeout(resolve, 300)); // 保證轉場視覺平滑不抽搐
     try {
         if (asyncAction) {
             await asyncAction();
         }
     } catch (err) {
         console.error("轉場執行失敗:", err);
+    } finally {
+        stopLoadingDots();
+        overlay.classList.remove('active');
     }
-    await minWaitPromise;
-    overlay.classList.remove('active');
 }
 
 function hideAllScreens() {
@@ -819,10 +842,12 @@ function hideAllScreens() {
 function clearAllPunchGifs() { document.querySelectorAll('.punch-gif-sprite').forEach(el => el.remove()); }
 
 async function enterMainLobby() {
-    // 預載大廳必備資產
-    await preloadMultipleAssets(['office.jpg', 'gold.png', 'gem.png']);
+    // 預載大廳必備資產 (大廳背景、金幣、寶石、當前夥伴)
     const currentPartner = availablePartners.find(p => p.name === currentGameData.selectedPartner);
-    if (currentPartner) await preloadAsset(currentPartner.lobbyImage);
+    await preloadMultipleAssets([
+        'office.jpg', 'gold.png', 'gem.png',
+        currentPartner ? currentPartner.lobbyImage : null
+    ]);
 
     hideAllScreens();
     switchBgm('lobby');
@@ -945,7 +970,6 @@ function getOwnedPartnersList() {
 }
 
 async function openCharacterMenu() {
-    // 預先載入所有展示角色的 3D 立繪塊
     const ownedList = getOwnedPartnersList();
     await preloadMultipleAssets(ownedList.map(p => p.blockImage));
 
@@ -1031,7 +1055,7 @@ function updateWheelPositions() {
     });
 }
 
-// ==================== 4. 戰鬥核心系統 (地圖與敵人保證預載完成才進入) ====================
+// ==================== 4. 戰鬥核心系統 ====================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const playerSpriteImg = document.getElementById('player-gif-sprite');
@@ -1170,12 +1194,8 @@ btnMobileAttack.addEventListener('touchend', (e) => { e.preventDefault(); if (is
 
 let enemies = []; let dyingEnemies = []; let floatingTexts = []; let activePunchGifs = [];
 
-/**
- * 徹底解決「關卡黑畫面」核心：
- * 等候大尺寸地圖（3840x2160）與全部敵人圖素都下載解碼完畢，才開始遊戲！
- */
 async function startLevel(levelNum, mapFileName) {
-    // 預先並行非同步載入地圖、敵人與金幣素材
+    // 保持在關卡選擇畫面，後台預載完所有素材才進入戰鬥
     const [loadedMap, loadedE1, loadedE2, loadedGold] = await Promise.all([
         preloadAsset(mapFileName),
         preloadAsset('enemyA_01.png'),
