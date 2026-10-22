@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>School KING</title>
     <!-- 引入 jf open 粉圓字型 & 圓潤備用字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,7 +72,7 @@
             background: rgba(15, 15, 25, 0.95); z-index: 10; transition: opacity 0.4s ease;
         }
 
-        /* ================= 全局通用頂部左上角返回按鈕 (手機/滑鼠共用) ================= */
+        /* ================= 全局通用按鈕 (返回 / 全螢幕) ================= */
         #global-back-btn {
             position: absolute; top: 4%; left: 3.5%; z-index: 50;
             background: rgba(255, 255, 255, 0.92); color: #388099;
@@ -84,6 +84,19 @@
         }
         #global-back-btn:hover { background: #ffffff; transform: scale(1.05); }
 
+        /* 全螢幕切換按鈕 (簡潔無 Emoji，常駐右上角) */
+        #fullscreen-btn {
+            position: absolute; top: 4%; right: 3.5%; z-index: 50;
+            background: rgba(255, 255, 255, 0.92); color: #388099;
+            border: 1.5px solid #dcdcdc; border-radius: 16px;
+            padding: 0.5vw 1vw; font-size: 1vw; font-weight: bold;
+            cursor: pointer; display: flex; align-items: center; gap: 0.4vw;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12); backdrop-filter: blur(5px);
+            transition: all 0.2s ease;
+        }
+        #fullscreen-btn:hover { background: #ffffff; transform: scale(1.05); }
+        #fullscreen-btn svg { width: 1.1vw; height: 1.1vw; min-width: 14px; min-height: 14px; fill: #388099; }
+
         /* ================= 戰鬥內 UI 與暫停選單 ================= */
         #in-game-ui {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -91,10 +104,10 @@
         }
 
         .btn-pause-game {
-            position: absolute; top: 4%; right: 4%;
+            position: absolute; top: 4%; right: 10.5%;
             background: rgba(255, 255, 255, 0.9); color: #388099;
             border: 1.5px solid #dcdcdc; border-radius: 16px;
-            padding: 0.6vw 1.4vw; font-size: 1.1vw; font-weight: bold;
+            padding: 0.5vw 1.3vw; font-size: 1.1vw; font-weight: bold;
             cursor: pointer; pointer-events: auto;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: all 0.2s ease;
         }
@@ -148,7 +161,7 @@
         #login-bg-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
         .top-left-logo { position: absolute; top: 5%; left: 5%; z-index: 5; width: 18vw; max-width: 320px; min-width: 160px; pointer-events: none; filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.5)); }
         
-        .top-right-group { position: absolute; top: 4%; right: 4%; z-index: 15; display: flex; align-items: center; gap: 0.6vw; }
+        .top-right-group { position: absolute; top: 4%; right: 12%; z-index: 15; display: flex; align-items: center; gap: 0.6vw; }
         
         .google-login-btn { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.8); color: #388099; padding: 0.4vw 0.9vw; border-radius: 14px; font-size: 0.7vw; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 0.4vw; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease; }
         .google-login-btn:hover { background: #ffffff; transform: translateY(-1px); }
@@ -165,13 +178,13 @@
         .lobby-character-portrait.animate-in { animation: slideInFromLeft 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideInFromLeft { 0% { transform: translateX(-500px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 
-        .lobby-top-bar { position: absolute; top: 3.5%; right: 4%; z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.8vw; }
+        .lobby-top-bar { position: absolute; top: 3.5%; right: 12%; z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.8vw; }
         .lobby-currency-container { display: flex; gap: 1.2vw; }
         .currency-box { position: relative; background: #ffffff; border-radius: 20px; width: 10.5vw; height: 2.3vw; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border: 1px solid #eef2f5; padding: 0 1vw; }
         .currency-box-icon { position: absolute; left: -0.6vw; top: 50%; transform: translateY(-50%); width: 2.2vw; height: 2.2vw; object-fit: contain; }
         .currency-box-text { font-size: 1.15vw; font-weight: bold; color: #538199; text-align: center; width: 100%; padding-left: 1.2vw; }
 
-        /* 大廳右側主選單 (新增：設置) */
+        /* 大廳右側主選單 */
         .lobby-right-menu { position: absolute; right: 4%; top: 16%; display: flex; flex-direction: column; align-items: flex-end; gap: 1.2vw; z-index: 12; }
         .lobby-white-btn { background: #ffffff; color: #4a8ca7; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); transition: transform 0.2s ease, box-shadow 0.2s ease; display: flex; align-items: center; justify-content: center; letter-spacing: 2px; opacity: 0; }
         .lobby-white-btn.animate-in { animation: slideInFromRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -192,9 +205,11 @@
         .title { font-size: 2.8vw; font-weight: bold; color: #388099; margin-bottom: 0.5vw; letter-spacing: 2px; }
         .subtitle { font-size: 1.4vw; font-weight: bold; color: #538199; margin-bottom: 1.2vw; }
         .btn { padding: 0.7vw 1.8vw; font-size: 1.2vw; font-weight: bold; color: #388099; background: #ffffff; border: 1.5px solid #dcdcdc; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); text-align: center; }
+        .btn-primary { background: #388099; color: #ffffff; border-color: #388099; }
+        .btn-primary:hover { background: #2f6c82; }
         .btn-danger { color: #ff4757; border-color: #ffccd1; }
 
-        /* ================= 設置面板樣式 ================= */
+        /* 設置面板 */
         #settings-screen { background: url('office.jpg') no-repeat center center / cover; }
         .settings-panel-box {
             width: 46vw; min-width: 440px; background: rgba(255, 255, 255, 0.95);
@@ -264,7 +279,7 @@
         .char-detail-tag { display: inline-block; align-self: flex-start; padding: 0.3vw 0.8vw; background: rgba(255, 255, 255, 0.15); border-radius: 8px; font-size: 0.95vw; color: #b0bec5; }
         .char-detail-body { font-size: 1.1vw; color: #cfd8dc; line-height: 1.7; margin-top: 1.5vw; }
 
-        /* 商店畫面 (右側白色大方塊中線精準垂直置中) */
+        /* 商店畫面 */
         #shop-screen { background: url('shop.jpg') no-repeat center center / cover; position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0; overflow: hidden; }
         .shop-npc-interactive-zone { position: absolute; top: 0; left: 0; width: 50%; height: 100%; z-index: 8; cursor: pointer; }
         .shop-npc-portrait { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; z-index: 6; opacity: 0; }
@@ -307,7 +322,7 @@
             background: #ffffff; border-radius: 28px; padding: 2.8vw 5.2vw; 
             box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18); border: 2px solid #eef2f5; 
             display: flex; flex-direction: column; align-items: center; gap: 1.4vw; 
-            min-width: 32vw;
+            min-width: 34vw;
             animation: slideInFromRightToCenter 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
         }
         @keyframes slideInFromRightToCenter { 
@@ -363,9 +378,16 @@
     <audio id="bg-music-battle" src="Victory Pixel.mp3" loop preload="auto"></audio>
 
     <div id="game-container">
-        <!-- 全局通用左上角返回按鈕 (非戰鬥時顯示) -->
+        <!-- 全局通用左上角返回按鈕 -->
         <button id="global-back-btn" onclick="playClickSound(); handleGlobalBack()">
             <span style="font-size: 1.4vw; line-height: 1;">‹</span> <span>返回</span>
+        </button>
+
+        <!-- 全螢幕切換按鈕 (簡潔無 Emoji，支援 PC & 手機) -->
+        <button id="fullscreen-btn" onclick="playClickSound(); toggleFullscreen()">
+            <svg id="fs-expand-icon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+            <svg id="fs-compress-icon" viewBox="0 0 24 24" style="display:none;"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+            <span id="fs-text">全螢幕</span>
         </button>
 
         <!-- 戰鬥 UI -->
@@ -454,7 +476,7 @@
             </div>
         </div>
 
-        <!-- 2.5 設置面板 (BGM 與 SFX 獨立控制) -->
+        <!-- 2.5 設置面板 -->
         <div id="settings-screen" class="ui-screen" style="display: none;">
             <div class="settings-panel-box">
                 <div class="title" style="text-align: center; margin-bottom: 0.5vw;">系統設置</div>
@@ -559,7 +581,7 @@
             </div>
         </div>
 
-        <!-- 7. 通用結算畫面 -->
+        <!-- 7. 通用結算畫面 (支援繼續下一關) -->
         <div id="victory-screen" class="ui-screen" style="display: none;">
             <div class="victory-panel" id="victory-panel-card">
                 <div id="settlement-title" class="victory-title">關卡通關成功！</div>
@@ -582,15 +604,14 @@
                     </div>
                 </div>
 
-                <div id="settlement-btn-group" style="display: flex; gap: 1.2vw; margin-top: 0.5vw; width: 100%; justify-content: center;">
-                    <button class="btn" style="min-width: 11vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
-                </div>
+                <!-- 動態按鈕組：由 JS 依通關或戰敗狀態動態生成 -->
+                <div id="settlement-btn-group" style="display: flex; gap: 1.2vw; margin-top: 0.5vw; width: 100%; justify-content: center;"></div>
             </div>
         </div>
     </div>
 
 <script>
-// ==================== 0. 音效系統 (獨立 BGM 與 SFX 音量控制) ====================
+// ==================== 0. 音效與全螢幕系統 ====================
 let currentSfxVolume = 1.0;
 let currentBgmVolume = 1.0;
 
@@ -668,6 +689,48 @@ window.addEventListener('pointerdown', function initAudioOnce() {
     }
     window.removeEventListener('pointerdown', initAudioOnce);
 }, { once: true });
+
+// 全螢幕切換控制 (手機與 PC 瀏覽器通用)
+function toggleFullscreen() {
+    const doc = window.document;
+    const docEl = doc.documentElement;
+
+    const requestFullscreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+    const cancelFullscreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+    const isFullscreenNow = doc.fullscreenElement || doc.mozFullScreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
+
+    if (!isFullscreenNow) {
+        if (requestFullscreen) {
+            requestFullscreen.call(docEl).catch(err => {
+                showToast("瀏覽器已限制或無法切換全螢幕");
+            });
+        }
+    } else {
+        if (cancelFullscreen) {
+            cancelFullscreen.call(doc);
+        }
+    }
+}
+
+function updateFullscreenUI() {
+    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    const expandIcon = document.getElementById('fs-expand-icon');
+    const compressIcon = document.getElementById('fs-compress-icon');
+    const fsText = document.getElementById('fs-text');
+    if (isFs) {
+        if (expandIcon) expandIcon.style.display = 'none';
+        if (compressIcon) compressIcon.style.display = 'block';
+        if (fsText) fsText.innerText = "退出";
+    } else {
+        if (expandIcon) expandIcon.style.display = 'block';
+        if (compressIcon) compressIcon.style.display = 'none';
+        if (fsText) fsText.innerText = "全螢幕";
+    }
+}
+document.addEventListener('fullscreenchange', updateFullscreenUI);
+document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
+document.addEventListener('mozfullscreenchange', updateFullscreenUI);
 
 // ==================== 1. 全局導航管理 (ESC 與左上角通用返回按鈕) ====================
 let currentScreenId = 'login-screen';
@@ -765,13 +828,10 @@ let currentUser = null;
 auth.onAuthStateChanged((user) => { 
     currentUser = user; 
     const btnText = document.getElementById('google-btn-text');
-    const cloudStatus = document.getElementById('cloud-status-text');
     if (user) {
         btnText.innerText = user.displayName ? user.displayName.split(' ')[0] + " (登出)" : "已登入 (登出)";
-        cloudStatus.innerText = `雲端同步已啟用 (${user.email})`;
     } else {
         btnText.innerText = "Google 登入";
-        cloudStatus.innerText = "目前模式: 本地端儲存 (未登入)";
     }
     checkAutoSaveAndToggleContinue(); 
 });
@@ -1252,7 +1312,7 @@ function updateWheelPositions() {
     });
 }
 
-// ==================== 5. 戰鬥核心系統 ====================
+// ==================== 5. 戰鬥核心系統 (支援繼續下一關) ====================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const playerSpriteImg = document.getElementById('player-gif-sprite');
@@ -1929,6 +1989,7 @@ function handlePlayerDefeat() {
     }, 600);
 }
 
+// 結算畫面 (支援繼續下一關)
 function finishLevelAndShowVictory(isDefeat = false) {
     isPlaying = false;
     document.getElementById('in-game-ui').style.display = 'none';
@@ -1971,9 +2032,21 @@ function finishLevelAndShowVictory(isDefeat = false) {
             gemBoxEl.style.display = 'none';
         }
 
-        btnGroup.innerHTML = `
-            <button class="btn" style="min-width: 14vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
-        `;
+        // 判定是否存在下一關
+        const curStageIdx = STAGES_CONFIG.findIndex(s => s.id === currentActiveStage.id);
+        const hasNextStage = curStageIdx !== -1 && curStageIdx < STAGES_CONFIG.length - 1;
+
+        if (hasNextStage) {
+            const nextStage = STAGES_CONFIG[curStageIdx + 1];
+            btnGroup.innerHTML = `
+                <button class="btn btn-primary" style="min-width: 12vw;" onclick="playClickSound(); playTransition(async () => { returnToStageSelectAfterVictory(); startStageGame(STAGES_CONFIG[${curStageIdx + 1}]); })">繼續下一關 (${nextStage.id})</button>
+                <button class="btn" style="min-width: 11vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
+            `;
+        } else {
+            btnGroup.innerHTML = `
+                <button class="btn" style="min-width: 14vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
+            `;
+        }
     }
 
     triggerAutoSave();
@@ -2158,7 +2231,7 @@ function renderGame() {
 
     ctx.restore();
 
-    // 通告橫幅 (純淨無光暈)
+    // 通告橫幅
     if (waveState === 'ready_sliding' || waveState === 'fight_sliding' || waveState === 'wave_banner_sliding') {
         ctx.save();
         ctx.shadowColor = 'transparent';
