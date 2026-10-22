@@ -32,16 +32,21 @@
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
+            height: 100dvh; /* 動態相容手機瀏覽器網址列伸縮 */
             background-color: #000; overflow: hidden;
             display: flex; justify-content: center; align-items: center; color: #fff;
         }
 
-        /* 16:9 遊戲畫面容器 */
+        /* ================= 完美 16:9 全尺寸智慧自適應容器 ================= */
         #game-container {
-            position: relative; width: 100vw; height: 56.25vw;
-            max-height: 100vh; max-width: 177.78vh;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-            background-color: #1a1a24; overflow: hidden;
+            position: relative;
+            /* 智慧約束：依據視窗自動等比縮放，確保在任何手機/PC螢幕永遠完整可見 */
+            width: min(100vw, calc(100dvh * 16 / 9));
+            height: min(100dvh, calc(100vw * 9 / 16));
+            aspect-ratio: 16 / 9;
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9);
+            background-color: #1a1a24; 
+            overflow: hidden;
         }
 
         canvas { width: 100%; height: 100%; display: block; }
@@ -72,7 +77,7 @@
             background: rgba(15, 15, 25, 0.95); z-index: 10; transition: opacity 0.4s ease;
         }
 
-        /* ================= 全局通用按鈕 (返回 / 全螢幕) ================= */
+        /* ================= 通用按鈕：左上角返回 / 右上角小圓形全螢幕 ================= */
         #global-back-btn {
             position: absolute; top: 4%; left: 3.5%; z-index: 50;
             background: rgba(255, 255, 255, 0.92); color: #388099;
@@ -84,18 +89,18 @@
         }
         #global-back-btn:hover { background: #ffffff; transform: scale(1.05); }
 
-        /* 全螢幕切換按鈕 (簡潔無 Emoji，常駐右上角) */
+        /* 縮小版精緻圓形全螢幕按鈕 (無文字、不擋暫停鍵) */
         #fullscreen-btn {
-            position: absolute; top: 4%; right: 3.5%; z-index: 50;
+            position: absolute; top: 4%; right: 3%; z-index: 50;
+            width: 2.8vw; height: 2.8vw; min-width: 38px; min-height: 38px;
             background: rgba(255, 255, 255, 0.92); color: #388099;
-            border: 1.5px solid #dcdcdc; border-radius: 16px;
-            padding: 0.5vw 1vw; font-size: 1vw; font-weight: bold;
-            cursor: pointer; display: flex; align-items: center; gap: 0.4vw;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12); backdrop-filter: blur(5px);
-            transition: all 0.2s ease;
+            border: 1.5px solid #dcdcdc; border-radius: 50%;
+            padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); backdrop-filter: blur(5px);
+            transition: transform 0.2s ease, background-color 0.2s;
         }
-        #fullscreen-btn:hover { background: #ffffff; transform: scale(1.05); }
-        #fullscreen-btn svg { width: 1.1vw; height: 1.1vw; min-width: 14px; min-height: 14px; fill: #388099; }
+        #fullscreen-btn:hover { background: #ffffff; transform: scale(1.08); }
+        #fullscreen-btn svg { width: 1.3vw; height: 1.3vw; min-width: 18px; min-height: 18px; fill: #388099; }
 
         /* ================= 戰鬥內 UI 與暫停選單 ================= */
         #in-game-ui {
@@ -103,11 +108,12 @@
             pointer-events: none; z-index: 8; display: none;
         }
 
+        /* 暫停鍵安排在全螢幕鍵左側，保留安全距離絕不重疊 */
         .btn-pause-game {
-            position: absolute; top: 4%; right: 10.5%;
+            position: absolute; top: 4%; right: calc(3% + 46px);
             background: rgba(255, 255, 255, 0.9); color: #388099;
             border: 1.5px solid #dcdcdc; border-radius: 16px;
-            padding: 0.5vw 1.3vw; font-size: 1.1vw; font-weight: bold;
+            padding: 0.5vw 1.2vw; font-size: 1.05vw; font-weight: bold;
             cursor: pointer; pointer-events: auto;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: all 0.2s ease;
         }
@@ -161,7 +167,7 @@
         #login-bg-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
         .top-left-logo { position: absolute; top: 5%; left: 5%; z-index: 5; width: 18vw; max-width: 320px; min-width: 160px; pointer-events: none; filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.5)); }
         
-        .top-right-group { position: absolute; top: 4%; right: 12%; z-index: 15; display: flex; align-items: center; gap: 0.6vw; }
+        .top-right-group { position: absolute; top: 4%; right: calc(3% + 46px); z-index: 15; display: flex; align-items: center; gap: 0.6vw; }
         
         .google-login-btn { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.8); color: #388099; padding: 0.4vw 0.9vw; border-radius: 14px; font-size: 0.7vw; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 0.4vw; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease; }
         .google-login-btn:hover { background: #ffffff; transform: translateY(-1px); }
@@ -178,7 +184,7 @@
         .lobby-character-portrait.animate-in { animation: slideInFromLeft 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideInFromLeft { 0% { transform: translateX(-500px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 
-        .lobby-top-bar { position: absolute; top: 3.5%; right: 12%; z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.8vw; }
+        .lobby-top-bar { position: absolute; top: 3.5%; right: calc(3% + 46px); z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.8vw; }
         .lobby-currency-container { display: flex; gap: 1.2vw; }
         .currency-box { position: relative; background: #ffffff; border-radius: 20px; width: 10.5vw; height: 2.3vw; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border: 1px solid #eef2f5; padding: 0 1vw; }
         .currency-box-icon { position: absolute; left: -0.6vw; top: 50%; transform: translateY(-50%); width: 2.2vw; height: 2.2vw; object-fit: contain; }
@@ -279,7 +285,7 @@
         .char-detail-tag { display: inline-block; align-self: flex-start; padding: 0.3vw 0.8vw; background: rgba(255, 255, 255, 0.15); border-radius: 8px; font-size: 0.95vw; color: #b0bec5; }
         .char-detail-body { font-size: 1.1vw; color: #cfd8dc; line-height: 1.7; margin-top: 1.5vw; }
 
-        /* 商店畫面 */
+        /* 商店畫面 (右側白色大方塊中線精準垂直置中) */
         #shop-screen { background: url('shop.jpg') no-repeat center center / cover; position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0; overflow: hidden; }
         .shop-npc-interactive-zone { position: absolute; top: 0; left: 0; width: 50%; height: 100%; z-index: 8; cursor: pointer; }
         .shop-npc-portrait { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; z-index: 6; opacity: 0; }
@@ -383,11 +389,10 @@
             <span style="font-size: 1.4vw; line-height: 1;">‹</span> <span>返回</span>
         </button>
 
-        <!-- 全螢幕切換按鈕 (簡潔無 Emoji，支援 PC & 手機) -->
-        <button id="fullscreen-btn" onclick="playClickSound(); toggleFullscreen()">
+        <!-- 右上角小圓形全螢幕切換按鈕 (簡潔無文字、不擋暫停) -->
+        <button id="fullscreen-btn" onclick="playClickSound(); toggleFullscreen()" title="切換全螢幕">
             <svg id="fs-expand-icon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
             <svg id="fs-compress-icon" viewBox="0 0 24 24" style="display:none;"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
-            <span id="fs-text">全螢幕</span>
         </button>
 
         <!-- 戰鬥 UI -->
@@ -604,7 +609,6 @@
                     </div>
                 </div>
 
-                <!-- 動態按鈕組：由 JS 依通關或戰敗狀態動態生成 -->
                 <div id="settlement-btn-group" style="display: flex; gap: 1.2vw; margin-top: 0.5vw; width: 100%; justify-content: center;"></div>
             </div>
         </div>
@@ -697,13 +701,12 @@ function toggleFullscreen() {
 
     const requestFullscreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
     const cancelFullscreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-
     const isFullscreenNow = doc.fullscreenElement || doc.mozFullScreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
 
     if (!isFullscreenNow) {
         if (requestFullscreen) {
-            requestFullscreen.call(docEl).catch(err => {
-                showToast("瀏覽器已限制或無法切換全螢幕");
+            requestFullscreen.call(docEl).catch(() => {
+                showToast("瀏覽器已限制全螢幕，建議以橫屏體驗");
             });
         }
     } else {
@@ -717,15 +720,12 @@ function updateFullscreenUI() {
     const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
     const expandIcon = document.getElementById('fs-expand-icon');
     const compressIcon = document.getElementById('fs-compress-icon');
-    const fsText = document.getElementById('fs-text');
     if (isFs) {
         if (expandIcon) expandIcon.style.display = 'none';
         if (compressIcon) compressIcon.style.display = 'block';
-        if (fsText) fsText.innerText = "退出";
     } else {
         if (expandIcon) expandIcon.style.display = 'block';
         if (compressIcon) compressIcon.style.display = 'none';
-        if (fsText) fsText.innerText = "全螢幕";
     }
 }
 document.addEventListener('fullscreenchange', updateFullscreenUI);
@@ -914,8 +914,12 @@ const gameContainer = document.getElementById('game-container');
 const fxCanvas = document.getElementById('clickEffectCanvas');
 const fxCtx = fxCanvas.getContext('2d');
 let clickParticles = [];
-function resizeFxCanvas() { fxCanvas.width = gameContainer.getBoundingClientRect().width; fxCanvas.height = gameContainer.getBoundingClientRect().height; }
-window.addEventListener('resize', resizeFxCanvas); resizeFxCanvas();
+function resizeFxCanvas() { 
+    fxCanvas.width = gameContainer.getBoundingClientRect().width; 
+    fxCanvas.height = gameContainer.getBoundingClientRect().height; 
+}
+window.addEventListener('resize', resizeFxCanvas); 
+resizeFxCanvas();
 
 window.addEventListener('pointerdown', (e) => {
     const rect = gameContainer.getBoundingClientRect();
@@ -1312,7 +1316,7 @@ function updateWheelPositions() {
     });
 }
 
-// ==================== 5. 戰鬥核心系統 (支援繼續下一關) ====================
+// ==================== 5. 戰鬥核心系統 ====================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const playerSpriteImg = document.getElementById('player-gif-sprite');
@@ -1372,6 +1376,9 @@ const keys = { w: false, a: false, s: false, d: false };
 const joystick = { active: false, touchId: null, startX: 0, startY: 0, moveX: 0, moveY: 0, maxDist: 45 };
 
 window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { 
+        if (isPlaying && document.getElementById('victory-screen').style.display !== 'flex') togglePause(); 
+    }
     if (isVictoryLocked || isDefeated) return;
     if (e.key === 'w' || e.key === 'W') keys.w = true;
     if (e.key === 'a' || e.key === 'A') { keys.a = true; if (player.punchAnimTimer <= 0) player.facingRight = false; }
@@ -1802,6 +1809,7 @@ function updateLogic() {
     camera.x = Math.max(0, Math.min(focusTargetX - camera.width / 2, camera.mapWidth - camera.width));
     camera.y = Math.max(0, Math.min(focusTargetY - camera.height / 2, camera.mapHeight - camera.height));
 
+    // 金幣
     for (let i = droppedCoins.length - 1; i >= 0; i--) {
         const c = droppedCoins[i];
         if (c.state === 'air') {
@@ -1831,6 +1839,7 @@ function updateLogic() {
         }
     }
 
+    // 敵人
     for (let i = enemies.length - 1; i >= 0; i--) {
         let e = enemies[i];
         if (e.spawnAlpha < 1.0) e.spawnAlpha = Math.min(1.0, e.spawnAlpha + 0.05);
@@ -1989,7 +1998,7 @@ function handlePlayerDefeat() {
     }, 600);
 }
 
-// 結算畫面 (支援繼續下一關)
+// 結算畫面
 function finishLevelAndShowVictory(isDefeat = false) {
     isPlaying = false;
     document.getElementById('in-game-ui').style.display = 'none';
@@ -2032,7 +2041,6 @@ function finishLevelAndShowVictory(isDefeat = false) {
             gemBoxEl.style.display = 'none';
         }
 
-        // 判定是否存在下一關
         const curStageIdx = STAGES_CONFIG.findIndex(s => s.id === currentActiveStage.id);
         const hasNextStage = curStageIdx !== -1 && curStageIdx < STAGES_CONFIG.length - 1;
 
