@@ -229,7 +229,6 @@
             touch-action: manipulation;
             user-select: none;
             -webkit-user-drag: none;
-            /* 原生 GPU 3D 平滑轉動，解決跳轉與殘影 */
             transition: transform 0.42s cubic-bezier(0.18, 0.89, 0.32, 1.05), opacity 0.42s ease, filter 0.42s ease;
         }
 
@@ -310,10 +309,40 @@
         .back-text-btn { background: none; border: none; color: #388099; font-size: 1.6vw; font-weight: bold; cursor: pointer; }
 
         #victory-screen { display: none; cursor: pointer; background: rgba(0, 0, 0, 0.75); z-index: 30; }
-        #transition-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0); pointer-events: none; z-index: 999; opacity: 0; transition: opacity 0.3s ease; display: flex; justify-content: center; align-items: center; }
+
+        /* ================= 智慧平滑轉場與右下角 LOADING 提示 ================= */
+        #transition-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(10, 10, 16, 0.96); 
+            pointer-events: none; z-index: 999; opacity: 0; 
+            transition: opacity 0.25s ease; 
+            display: flex; justify-content: center; align-items: center; 
+        }
         #transition-overlay.active { pointer-events: auto; opacity: 1; }
-        .transition-anim { width: 15vw; height: 15vw; border: 8px solid rgba(255, 255, 255, 0.3); border-top: 8px solid #388099; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .transition-anim { width: 10vw; height: 10vw; border: 6px solid rgba(255, 255, 255, 0.15); border-top: 6px solid #48cae4; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* 經典高質感右下角 LOADING 水印 */
+        #loading-corner-box {
+            position: absolute; right: 4%; bottom: 4.5%;
+            display: flex; align-items: baseline; gap: 4px;
+            color: #ffffff; font-weight: bold; font-size: 1.4vw;
+            letter-spacing: 3px; text-shadow: 0 0 12px rgba(72, 202, 228, 0.8);
+            pointer-events: none;
+        }
+        .loading-dots {
+            display: inline-block;
+            width: 1.8vw;
+            text-align: left;
+            animation: dotCycle 1.4s infinite steps(4, end);
+        }
+        @keyframes dotCycle {
+            0%   { content: ''; }
+            25%  { content: '.'; }
+            50%  { content: '..'; }
+            75%  { content: '...'; }
+            100% { content: ''; }
+        }
 
         #orientation-warning { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #ff4757; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; font-size: 24px; text-align: center; }
         @media screen and (orientation: portrait) { #orientation-warning { display: flex; } }
@@ -343,7 +372,13 @@
         <canvas id="clickEffectCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998;"></canvas>
         <canvas id="gameCanvas" width="1920" height="1080"></canvas>
 
-        <div id="transition-overlay"><div class="transition-anim"></div></div>
+        <!-- 全局無縫轉場遮罩 (含右下角 Loading) -->
+        <div id="transition-overlay">
+            <div class="transition-anim"></div>
+            <div id="loading-corner-box">
+                <span>LOADING</span><span class="loading-dots">...</span>
+            </div>
+        </div>
 
         <!-- 暫停選單 -->
         <div id="pause-screen" class="ui-screen" style="display: none;">
@@ -373,7 +408,7 @@
             </div>
 
             <div class="bottom-right-btn-group">
-                <button id="btn-continue-game" class="btn-custom btn-continue" style="display: none;" onclick="playClickSound(); playTransition(() => { loadFromSlot('Auto'); })">Continue</button>
+                <button id="btn-continue-game" class="btn-custom btn-continue" style="display: none;" onclick="playClickSound(); playTransition(async () => { await loadFromSlot('Auto'); })">Continue</button>
                 <button class="btn-custom" onclick="playClickSound(); handleStartNewGame()">Start game</button>
                 <button class="btn-custom" onclick="playClickSound(); openLoadScreen()">Load game</button>
             </div>
@@ -410,12 +445,12 @@
                 </div>
             </div>
             <div class="lobby-right-menu">
-                <button class="lobby-white-btn btn-campus" onclick="playClickSound(); playTransition(() => openStageSelect())">前往校園</button>
-                <button class="lobby-white-btn btn-character" onclick="playClickSound(); playTransition(() => openCharacterMenu())">人物選單</button>
-                <button class="lobby-white-btn btn-shop-main" onclick="playClickSound(); playTransition(() => openShop())">SHOP</button>
+                <button class="lobby-white-btn btn-campus" onclick="playClickSound(); playTransition(async () => openStageSelect())">前往校園</button>
+                <button class="lobby-white-btn btn-character" onclick="playClickSound(); playTransition(async () => openCharacterMenu())">人物選單</button>
+                <button class="lobby-white-btn btn-shop-main" onclick="playClickSound(); playTransition(async () => openShop())">SHOP</button>
             </div>
             <div class="lobby-left-bottom-group">
-                <button class="btn-sub-action" onclick="playClickSound(); playTransition(() => openSaveScreen())">💾 手動存檔</button>
+                <button class="btn-sub-action" onclick="playClickSound(); playTransition(async () => openSaveScreen())">💾 手動存檔</button>
             </div>
         </div>
 
@@ -423,7 +458,7 @@
         <div id="stage-select-screen" class="ui-screen" style="display: none;">
             <div class="title">選擇挑戰關卡</div>
             <div class="stage-card-grid">
-                <div class="stage-card" onclick="playClickSound(); playTransition(() => startLevel(1, 'map_1-1.jpg'))">
+                <div class="stage-card" onclick="playClickSound(); playTransition(async () => startLevel(1, 'map_1-1.jpg'))">
                     <div style="font-size: 1.8vw; font-weight: bold;">關卡 1-1</div>
                     <div style="font-size: 1vw; color: #78909c;">教學關卡</div>
                     <div style="font-size: 1.2vw; font-weight: bold; color: #ff4757;">敵人: 3 體</div>
@@ -437,11 +472,11 @@
                 </div>
             </div>
             <div style="margin-top: 2vw;">
-                <button class="btn btn-danger" onclick="playClickSound(); playTransition(() => backToLobbyFromSubScreen())">返回大廳</button>
+                <button class="btn btn-danger" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">返回大廳</button>
             </div>
         </div>
 
-        <!-- 4. 人選畫面：3D 地球儀圓周旋轉輪盤 + 右側黑色圓角說明欄 -->
+        <!-- 4. 人選畫面 -->
         <div id="character-menu-screen" class="ui-screen" style="display: none;">
             <div class="char-select-main-wrapper">
                 <div class="char-wheel-left-area" id="char-wheel-container"></div>
@@ -451,16 +486,10 @@
                         <div class="char-detail-name" id="char-detail-name">托帕</div>
                         <div class="char-detail-tag" id="char-detail-tag">近戰衝擊型夥伴</div>
                     </div>
-                    <div class="char-detail-body" id="char-detail-desc">
-                        【角色介紹】<br>
-                        個性元氣開朗的校園格鬥家，擅長以重拳破防並具備優異的擊退性能。<br><br>
-                        【被動天賦】<br>
-                        普通拳擊命中時，蓄力速度提升 15%，擊退距離略微加長。<br><br>
-                        (未來可在此擴充更多角色背景、專屬招式或技能數值介紹)
-                    </div>
+                    <div class="char-detail-body" id="char-detail-desc"></div>
                 </div>
             </div>
-            <button class="esc-exit-btn" onclick="playClickSound(); playTransition(() => backToLobbyFromSubScreen())">按 ESC 返回大廳</button>
+            <button class="esc-exit-btn" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">按 ESC 返回大廳</button>
         </div>
 
         <!-- 5. SHOP 商店 -->
@@ -492,7 +521,7 @@
                     </div>
                 </div>
                 <div style="text-align: right; margin-top: 1vw;">
-                    <button class="btn" onclick="playClickSound(); playTransition(() => backToLobbyFromSubScreen())">返回大廳</button>
+                    <button class="btn" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">返回大廳</button>
                 </div>
             </div>
         </div>
@@ -503,13 +532,13 @@
             <div class="panel-container">
                 <div class="slot-grid" id="save-slots-container"></div>
                 <div style="text-align: right; margin-top: 1vw;">
-                    <button class="btn btn-danger" onclick="playClickSound(); playTransition(() => closeSaveScreen())">返回大廳</button>
+                    <button class="btn btn-danger" onclick="playClickSound(); playTransition(async () => closeSaveScreen())">返回大廳</button>
                 </div>
             </div>
         </div>
 
         <!-- 7. 勝利結算畫面 -->
-        <div id="victory-screen" class="ui-screen" style="display: none;" onclick="playClickSound(); playTransition(() => returnToStageSelectAfterVictory())">
+        <div id="victory-screen" class="ui-screen" style="display: none;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">
             <div class="title" style="color: #2ed573; font-size: 4.5vw; text-shadow: 0 0 20px rgba(46, 213, 115, 0.6);">🎉 戰鬥勝利！</div>
             <div class="subtitle" id="victory-gold-text" style="color: #eccc68;">獲得金幣: 0</div>
             <div style="font-size: 1.6vw; color: #aaa; margin-top: 2vw;">( 點擊畫面回到關卡選擇 )</div>
@@ -517,7 +546,7 @@
     </div>
 
 <script>
-// ==================== 0. 音效池 (Audio Pool) 與資源管理 ====================
+// ==================== 0. 音效池與網路資源非同步快取器 ====================
 class AudioPool {
     constructor(src, size = 4) {
         this.pool = [];
@@ -538,7 +567,6 @@ class AudioPool {
     }
 }
 
-// 建立高效能音訊池
 const sndPools = {
     click: new AudioPool('click.mp3', 3),
     punch: new AudioPool('punch.mp3', 6),
@@ -546,25 +574,44 @@ const sndPools = {
     hardpunch: new AudioPool('hardpunch.mp3', 4),
     hardpunchHit: new AudioPool('hardpunch_hited.mp3', 4)
 };
-
 function playClickSound() { sndPools.click.play(); }
 function playSnd(name) { if (sndPools[name]) sndPools[name].play(); }
 
-// 預載圖片資產庫
-const assetImages = {};
-function preloadImage(key, src) {
-    const img = new Image();
-    img.src = src;
-    assetImages[key] = img;
-    return img;
+// 核心：全域資源非同步快取與解碼系統 (防止 GitHub 延遲導致黑畫面)
+const assetCache = new Map();
+
+function preloadAsset(src) {
+    if (!src) return Promise.resolve(null);
+    if (assetCache.has(src)) return Promise.resolve(assetCache.get(src));
+
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            // 利用瀏覽器現代 GPU decode API 提前在記憶體解碼，防範繪製瞬間卡格
+            if ('decode' in img) {
+                img.decode().then(() => {
+                    assetCache.set(src, img);
+                    resolve(img);
+                }).catch(() => {
+                    assetCache.set(src, img);
+                    resolve(img);
+                });
+            } else {
+                assetCache.set(src, img);
+                resolve(img);
+            }
+        };
+        img.onerror = () => {
+            console.warn(`資源載入略過或失敗: ${src}`);
+            resolve(img); // 防止個別素材失敗卡死全遊戲
+        };
+        img.src = src;
+    });
 }
-const enemyA01 = preloadImage('enemyA01', 'enemyA_01.png');
-const enemyA02 = preloadImage('enemyA02', 'enemyA_02.png');
-const goldCoinImg = preloadImage('goldCoin', 'gold.png');
-preloadImage('charWalk', 'maincharacter_walk.gif');
-preloadImage('charIdle', 'maincharacter_idle.gif');
-preloadImage('charPunch', 'maincharacter_punch.gif');
-preloadImage('punchFx', 'punch.gif');
+
+function preloadMultipleAssets(urls) {
+    return Promise.all(urls.map(url => preloadAsset(url)));
+}
 
 // 背景音樂控制
 const bgmLogin = document.getElementById('bg-music-login');
@@ -573,14 +620,10 @@ const bgmLobby = document.getElementById('bg-music-lobby');
 function switchBgm(type) {
     if (type === 'login') {
         bgmLobby.pause();
-        if (bgmLogin.paused) {
-            bgmLogin.play().catch(() => {});
-        }
+        if (bgmLogin.paused) bgmLogin.play().catch(() => {});
     } else if (type === 'lobby') {
         bgmLogin.pause();
-        if (bgmLobby.paused) {
-            bgmLobby.play().catch(() => {});
-        }
+        if (bgmLobby.paused) bgmLobby.play().catch(() => {});
     } else if (type === 'none') {
         bgmLogin.pause();
         bgmLobby.pause();
@@ -601,7 +644,7 @@ window.addEventListener('pointerdown', function initAudioOnce() {
     window.removeEventListener('pointerdown', initAudioOnce);
 }, { once: true });
 
-// ==================== 1. FIREBASE 與存檔系統 (新增2位未實裝展示夥伴，共5人) ====================
+// ==================== 1. FIREBASE 與存檔系統 ====================
 const firebaseConfig = {
     apiKey: "AIzaSyCW0VkxjD8cYSJRdSh4dJihXfcFbb85FaY",
     authDomain: "schoolking-b41af.firebaseapp.com",
@@ -646,7 +689,6 @@ function toggleGoogleLogin() {
     }
 }
 
-// 包含 2 位未實裝展示角色的 5 位完整陣容
 const availablePartners = [
     { 
         id: 'topaz', name: '托帕', tag: '近戰衝擊型夥伴', 
@@ -676,7 +718,6 @@ const availablePartners = [
 ];
 
 const SAVE_PREFIX = "SCHOOL_KING_SAVE_SLOT_";
-// 預設將 5 位角色均納入擁有名單以進行輪盤展示
 let currentGameData = { 
     gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
     ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
@@ -714,10 +755,10 @@ async function handleStartNewGame() {
         ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
         selectedPartner: '托帕' 
     };
-    playTransition(() => enterMainLobby());
+    playTransition(async () => enterMainLobby());
 }
 
-// ==================== 2. UI 互動與動畫切換 ====================
+// ==================== 2. UI 互動與「先載入再切換」的轉場機制 ====================
 const gameContainer = document.getElementById('game-container');
 const fxCanvas = document.getElementById('clickEffectCanvas');
 const fxCtx = fxCanvas.getContext('2d');
@@ -749,9 +790,25 @@ function updateAndDrawFx() {
 }
 updateAndDrawFx();
 
-function playTransition(cb, dur = 400) {
-    const overlay = document.getElementById('transition-overlay'); overlay.classList.add('active');
-    setTimeout(() => { if (cb) cb(); setTimeout(() => overlay.classList.remove('active'), 100); }, dur / 2);
+/**
+ * 智慧非同步轉場：
+ * 先蓋上黑色遮罩 + 顯示右下角 LOADING，
+ * 等待傳入的非同步行為 (圖片預載、解碼、地圖初始化) 真正 100% 完成後，才淡出遮罩。
+ */
+async function playTransition(asyncAction) {
+    const overlay = document.getElementById('transition-overlay');
+    overlay.classList.add('active');
+
+    const minWaitPromise = new Promise(resolve => setTimeout(resolve, 300)); // 保證轉場視覺平滑不抽搐
+    try {
+        if (asyncAction) {
+            await asyncAction();
+        }
+    } catch (err) {
+        console.error("轉場執行失敗:", err);
+    }
+    await minWaitPromise;
+    overlay.classList.remove('active');
 }
 
 function hideAllScreens() {
@@ -761,13 +818,18 @@ function hideAllScreens() {
 }
 function clearAllPunchGifs() { document.querySelectorAll('.punch-gif-sprite').forEach(el => el.remove()); }
 
-function enterMainLobby() {
+async function enterMainLobby() {
+    // 預載大廳必備資產
+    await preloadMultipleAssets(['office.jpg', 'gold.png', 'gem.png']);
+    const currentPartner = availablePartners.find(p => p.name === currentGameData.selectedPartner);
+    if (currentPartner) await preloadAsset(currentPartner.lobbyImage);
+
     hideAllScreens();
     switchBgm('lobby');
     document.getElementById('main-lobby-screen').style.display = 'flex';
     document.getElementById('lobby-gold-display').innerText = currentGameData.gold || 0;
     document.getElementById('lobby-gem-display').innerText = currentGameData.gem || 0;
-    const currentPartner = availablePartners.find(p => p.name === currentGameData.selectedPartner);
+    
     const lobbyImg = document.getElementById('lobby-character-img');
     if (currentPartner && lobbyImg) lobbyImg.src = currentPartner.lobbyImage;
 
@@ -781,16 +843,26 @@ function enterMainLobby() {
     triggerAutoSave();
 }
 
-function backToLobbyFromSubScreen() { enterMainLobby(); }
-function openStageSelect() { hideAllScreens(); switchBgm('none'); document.getElementById('stage-select-screen').style.display = 'flex'; }
-function openShop() { 
-    hideAllScreens(); document.getElementById('shop-screen').style.display = 'flex'; 
+function backToLobbyFromSubScreen() { return enterMainLobby(); }
+
+async function openStageSelect() { 
+    await preloadAsset('office.jpg');
+    hideAllScreens(); 
+    switchBgm('none'); 
+    document.getElementById('stage-select-screen').style.display = 'flex'; 
+}
+
+async function openShop() { 
+    await preloadAsset('office.jpg');
+    hideAllScreens(); 
+    document.getElementById('shop-screen').style.display = 'flex'; 
     document.getElementById('shop-currency-display').innerText = `金幣: ${currentGameData.gold} | 寶石: ${currentGameData.gem}`;
     document.getElementById('atk-level-text').innerText = `LV ${currentGameData.atkLevel} (基礎攻擊力: ${10 + (currentGameData.atkLevel - 1) * 5})`;
     document.getElementById('atk-cost').innerText = currentGameData.atkLevel * 50;
     document.getElementById('hp-level-text').innerText = `LV ${currentGameData.hpLevel} (生命上限: ${100 + (currentGameData.hpLevel - 1) * 20})`;
     document.getElementById('hp-cost').innerText = currentGameData.hpLevel * 50;
 }
+
 function buyUpgrade(type) {
     let cost = currentGameData[`${type}Level`] * 50;
     if (currentGameData.gold >= cost) {
@@ -826,7 +898,7 @@ async function openLoadScreen() {
         slotDiv.className = 'load-slot-item';
         let slotTitle = slotKey === 'Auto' ? 'Auto (自動存檔)' : `存檔槽 ${slotKey}`;
         let slotText = slotData ? `${slotTitle} - 金幣:${slotData.gold||0} 寶石:${slotData.gem||0}` : `${slotTitle} (空)`;
-        slotDiv.innerHTML = `<div class="load-slot-text">${slotText}</div><button class="load-btn-action" onclick="playClickSound(); playTransition(() => loadFromSlot('${slotKey}'))" ${slotData ? '' : 'disabled'}>Load</button>`;
+        slotDiv.innerHTML = `<div class="load-slot-text">${slotText}</div><button class="load-btn-action" onclick="playClickSound(); playTransition(async () => loadFromSlot('${slotKey}'))" ${slotData ? '' : 'disabled'}>Load</button>`;
         container.appendChild(slotDiv);
     }
 }
@@ -839,9 +911,11 @@ async function loadFromSlot(slotKey) {
             ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
             selectedPartner: '托帕' 
         }, data);
-        closeLoadScreen(); enterMainLobby();
+        closeLoadScreen(); 
+        await enterMainLobby();
     }
 }
+
 function openSaveScreen() {
     hideAllScreens(); const container = document.getElementById('save-slots-container'); container.innerHTML = '';
     ['Auto', '1', '2'].forEach(slotKey => {
@@ -862,7 +936,7 @@ async function saveToSlot(slotKey) {
 }
 function closeSaveScreen() { document.getElementById('save-screen').style.display = 'none'; enterMainLobby(); }
 
-// ==================== 4. 0延遲 3D 地球儀式旋轉人物輪盤系統 (圖層深度優化 + 5人完整展示) ====================
+// ==================== 3. 3D 地球儀式旋轉人物輪盤系統 ====================
 let selectedPartnerIndex = 0;
 let wheelCardsElements = [];
 
@@ -870,12 +944,14 @@ function getOwnedPartnersList() {
     return availablePartners.filter(p => currentGameData.ownedPartners.includes(p.name)); 
 }
 
-function openCharacterMenu() {
+async function openCharacterMenu() {
+    // 預先載入所有展示角色的 3D 立繪塊
+    const ownedList = getOwnedPartnersList();
+    await preloadMultipleAssets(ownedList.map(p => p.blockImage));
+
     hideAllScreens(); 
     document.getElementById('character-menu-screen').style.display = 'flex';
-    const ownedList = getOwnedPartnersList();
     
-    // 找到當前選定角色的索引
     const curIdx = ownedList.findIndex(p => p.name === currentGameData.selectedPartner);
     selectedPartnerIndex = curIdx !== -1 ? curIdx : 0;
 
@@ -883,14 +959,12 @@ function openCharacterMenu() {
     container.innerHTML = '';
     wheelCardsElements = [];
 
-    // 建立 5 位角色的實體卡牌
     ownedList.forEach((partner, index) => {
         const img = document.createElement('img'); 
         img.className = 'char-wheel-card-img'; 
         img.draggable = false;
         img.src = partner.blockImage;
 
-        // 0 毫秒極速響應：按下瞬間立刻更新說明與滑動
         img.addEventListener('pointerdown', (e) => {
             e.stopPropagation();
             e.preventDefault();
@@ -913,7 +987,6 @@ function selectPartnerByIndex(targetIndex) {
     selectedPartnerIndex = targetIndex;
     currentGameData.selectedPartner = ownedList[targetIndex].name;
 
-    // 即刻更新說明欄與進行 3D 地球儀轉向
     updateCharacterInfoPanel();
     updateWheelPositions();
     triggerAutoSave();
@@ -930,29 +1003,23 @@ function updateCharacterInfoPanel() {
     if (descEl) descEl.innerHTML = (partner.desc || '暫無角色介紹').replace(/\n/g, '<br>');
 }
 
-// 核心：3D 圓周地球儀投影 + 背部繞行圖層層級 (Z-Index) 與淡出遮蔽
 function updateWheelPositions() {
     const ownedList = getOwnedPartnersList();
     const total = ownedList.length;
     if (total === 0) return;
 
     wheelCardsElements.forEach((img, idx) => {
-        // 計算環形最短角位差
         let diff = (idx - selectedPartnerIndex) % total;
         if (diff > total / 2) diff -= total;
         if (diff < -total / 2) diff += total;
 
-        // 每張卡牌夾角約 24 度 (0.42 弧度)
         const angle = diff * 0.42; 
         const cosDepth = Math.cos(angle);
         
-        // 圓周正弦 X 軸位移、餘弦 Z 軸深度縮放
         const xPx = Math.sin(angle) * 17.5; 
         const scale = Math.max(0.68, cosDepth * 1.0);
         const rotY = (angle * 180 / Math.PI) * 0.72; 
 
-        // 圖層優先級 (Z-Index) 與背面過渡邏輯：
-        // 當左右卡牌跨越到對側背後時 (|diff| >= 2)，退至最底層並淡出，絕不穿幫遮擋正面卡牌
         const isBackside = Math.abs(diff) >= 2;
         const opacity = isBackside ? 0.15 : Math.max(0.40, cosDepth * 1.0);
         const zIndexVal = isBackside ? 10 : Math.round(50 + cosDepth * 30);
@@ -964,16 +1031,19 @@ function updateWheelPositions() {
     });
 }
 
-// ==================== 5. 戰鬥核心系統 ====================
+// ==================== 4. 戰鬥核心系統 (地圖與敵人保證預載完成才進入) ====================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const playerSpriteImg = document.getElementById('player-gif-sprite');
 
 let isPlaying = false; let isPaused = false; let animFrameReq = null; let sessionGold = 0;
 let currentMapImg = new Image();
+let enemyA01 = new Image();
+let enemyA02 = new Image();
+let goldCoinImg = new Image();
+
 const camera = { x: 0, y: 0, width: 1920, height: 1080, mapWidth: 3840, mapHeight: 2160 };
 
-// map_1-1 (3840x2160) 黑色多邊形約束參數
 const WALKABLE_AREA = {
     topY: 360,
     bottomY: 1640,
@@ -994,15 +1064,9 @@ function clampToWalkableArea(entity, margin = 45) {
 let screenShake = { time: 0, intensity: 0, offsetX: 0, offsetY: 0 };
 let hitStopFrames = 0;
 
-function triggerScreenShake(intensity, frames) {
-    screenShake.intensity = intensity;
-    screenShake.time = frames;
-}
-function triggerHitStop(frames) {
-    hitStopFrames = Math.max(hitStopFrames, frames);
-}
+function triggerScreenShake(intensity, frames) { screenShake.intensity = intensity; screenShake.time = frames; }
+function triggerHitStop(frames) { hitStopFrames = Math.max(hitStopFrames, frames); }
 
-// 玩家屬性 (出生於紅點 1855, 1000)
 const player = {
     x: 1855, y: 1000, size: 64, width: 128, height: 128, baseSpeed: 5.25, speed: 5.25,
     hp: 100, maxHp: 100, atk: 10, facingRight: false, attackCooldown: 0, invuln: 0,
@@ -1106,11 +1170,32 @@ btnMobileAttack.addEventListener('touchend', (e) => { e.preventDefault(); if (is
 
 let enemies = []; let dyingEnemies = []; let floatingTexts = []; let activePunchGifs = [];
 
-function startLevel(levelNum, mapFileName) {
+/**
+ * 徹底解決「關卡黑畫面」核心：
+ * 等候大尺寸地圖（3840x2160）與全部敵人圖素都下載解碼完畢，才開始遊戲！
+ */
+async function startLevel(levelNum, mapFileName) {
+    // 預先並行非同步載入地圖、敵人與金幣素材
+    const [loadedMap, loadedE1, loadedE2, loadedGold] = await Promise.all([
+        preloadAsset(mapFileName),
+        preloadAsset('enemyA_01.png'),
+        preloadAsset('enemyA_02.png'),
+        preloadAsset('gold.png'),
+        preloadAsset('maincharacter_idle.gif'),
+        preloadAsset('maincharacter_walk.gif'),
+        preloadAsset('maincharacter_punch.gif'),
+        preloadAsset('punch.gif')
+    ]);
+
+    currentMapImg = loadedMap;
+    enemyA01 = loadedE1;
+    enemyA02 = loadedE2;
+    goldCoinImg = loadedGold;
+
     hideAllScreens(); 
     switchBgm('none');
-    currentMapImg.src = mapFileName; camera.mapWidth = 3840; camera.mapHeight = 2160;
     
+    camera.mapWidth = 3840; camera.mapHeight = 2160;
     sessionGold = 0;
     player.maxHp = 100 + (currentGameData.hpLevel - 1) * 20; player.hp = player.maxHp;
     player.atk = 10 + (currentGameData.atkLevel - 1) * 5;
@@ -1159,12 +1244,7 @@ function executeAttack() {
         let dx = nearest.x - player.x;
         let dy = nearest.y - player.y;
         let angleDeg = Math.atan2(dy, dx) * (180 / Math.PI);
-
-        if (angleDeg >= -90 && angleDeg <= 90) {
-            player.punchFacingRight = true;
-        } else {
-            player.punchFacingRight = false;
-        }
+        player.punchFacingRight = (angleDeg >= -90 && angleDeg <= 90);
     } else {
         player.punchFacingRight = player.facingRight;
     }
@@ -1289,7 +1369,7 @@ function quitLevel() {
     isPaused = false;
     if (animFrameReq) cancelAnimationFrame(animFrameReq);
     document.getElementById('pause-screen').style.display = 'none';
-    playTransition(() => enterMainLobby());
+    playTransition(async () => enterMainLobby());
 }
 
 function gameLoop() {
@@ -1554,7 +1634,7 @@ function renderGame() {
     const renderCamX = camera.x - screenShake.offsetX;
     const renderCamY = camera.y - screenShake.offsetY;
 
-    if (currentMapImg.complete) { 
+    if (currentMapImg && currentMapImg.complete && currentMapImg.naturalWidth !== 0) { 
         ctx.drawImage(currentMapImg, -renderCamX, -renderCamY); 
     } else { 
         ctx.fillStyle = '#1a1a24'; ctx.fillRect(-renderCamX, -renderCamY, camera.mapWidth, camera.mapHeight); 
@@ -1589,7 +1669,7 @@ function renderGame() {
         ctx.save();
         ctx.translate(screenX, screenY);
         ctx.rotate(c.rotation);
-        if (goldCoinImg.complete && goldCoinImg.naturalWidth !== 0) {
+        if (goldCoinImg && goldCoinImg.complete && goldCoinImg.naturalWidth !== 0) {
             ctx.drawImage(goldCoinImg, -coinSize / 2, -coinSize / 2, coinSize, coinSize);
         } else {
             ctx.fillStyle = '#f1c40f';
@@ -1608,7 +1688,7 @@ function renderGame() {
         let imgToDraw = e.isJumping ? enemyA02 : enemyA01;
         if (e.invuln > 0 && Math.floor(e.invuln / 2) % 2 === 0) ctx.globalAlpha = 0.4;
 
-        if (imgToDraw.complete && imgToDraw.naturalWidth !== 0) {
+        if (imgToDraw && imgToDraw.complete && imgToDraw.naturalWidth !== 0) {
             ctx.drawImage(imgToDraw, -e.width / 2, -e.height / 2, e.width, e.height);
         } else {
             ctx.fillStyle = e.invuln > 0 ? '#ffffff' : '#2ed573';
@@ -1626,7 +1706,7 @@ function renderGame() {
         if (Math.floor(de.life / 4) % 2 === 0) alpha *= 0.3; 
         ctx.globalAlpha = Math.max(0, alpha);
 
-        if (enemyA01.complete && enemyA01.naturalWidth !== 0) {
+        if (enemyA01 && enemyA01.complete && enemyA01.naturalWidth !== 0) {
             ctx.drawImage(enemyA01, -64, -64, 128, 128);
         } else {
             ctx.fillStyle = '#ff4757';
@@ -1712,13 +1792,14 @@ function checkLevelVictory() {
     isPlaying = false; document.getElementById('in-game-ui').style.display = 'none'; isAttackHeld = false; triggerAutoSave();
     setTimeout(() => {
         document.getElementById('victory-gold-text').innerText = `獲得金幣: ${sessionGold}`;
-        playTransition(() => { document.getElementById('victory-screen').style.display = 'flex'; });
+        playTransition(async () => { document.getElementById('victory-screen').style.display = 'flex'; });
     }, 500);
 }
 
 function returnToStageSelectAfterVictory() {
     document.getElementById('victory-screen').style.display = 'none';
-    playerSpriteImg.style.display = 'none'; openStageSelect();
+    playerSpriteImg.style.display = 'none'; 
+    return openStageSelect();
 }
 </script>
 </body>
