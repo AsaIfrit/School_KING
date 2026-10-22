@@ -72,6 +72,18 @@
             background: rgba(15, 15, 25, 0.95); z-index: 10; transition: opacity 0.4s ease;
         }
 
+        /* ================= 全局通用頂部左上角返回按鈕 (手機/滑鼠共用) ================= */
+        #global-back-btn {
+            position: absolute; top: 4%; left: 3.5%; z-index: 50;
+            background: rgba(255, 255, 255, 0.92); color: #388099;
+            border: 1.5px solid #dcdcdc; border-radius: 20px;
+            padding: 0.5vw 1.3vw; font-size: 1.15vw; font-weight: bold;
+            cursor: pointer; display: none; align-items: center; gap: 0.4vw;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12); backdrop-filter: blur(5px);
+            transition: all 0.2s ease;
+        }
+        #global-back-btn:hover { background: #ffffff; transform: scale(1.05); }
+
         /* ================= 戰鬥內 UI 與暫停選單 ================= */
         #in-game-ui {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -82,7 +94,7 @@
             position: absolute; top: 4%; right: 4%;
             background: rgba(255, 255, 255, 0.9); color: #388099;
             border: 1.5px solid #dcdcdc; border-radius: 16px;
-            padding: 0.6vw 1.2vw; font-size: 1.2vw; font-weight: bold;
+            padding: 0.6vw 1.4vw; font-size: 1.1vw; font-weight: bold;
             cursor: pointer; pointer-events: auto;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: all 0.2s ease;
         }
@@ -93,14 +105,14 @@
             width: 8vw; height: 8vw; min-width: 76px; min-height: 76px;
             background: rgba(255, 255, 255, 0.88); color: #388099;
             border: 3px solid #b2d3de; border-radius: 50%;
-            font-size: 2.8vw; font-weight: bold;
+            font-size: 2.2vw; font-weight: bold;
             display: flex; justify-content: center; align-items: center;
             cursor: pointer; pointer-events: auto;
             box-shadow: 0 6px 15px rgba(0,0,0,0.25); transition: transform 0.1s ease;
         }
         .btn-mobile-attack:active { transform: scale(0.9); background: #e0f0f5; }
 
-        /* 手機虛擬搖桿容器與桿頭 */
+        /* 手機虛擬搖桿 */
         #joystick-zone {
             position: absolute; bottom: 6%; left: 5%;
             width: 14vw; height: 14vw; min-width: 130px; min-height: 130px;
@@ -127,23 +139,20 @@
             background: #ffffff; border-radius: 24px; padding: 3vw 5vw;
             box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid #eef2f5;
             display: flex; flex-direction: column; align-items: center; gap: 1.5vw;
+            min-width: 28vw;
         }
-        .pause-title { font-size: 3vw; font-weight: bold; color: #388099; margin-bottom: 1vw; letter-spacing: 2px; }
+        .pause-title { font-size: 2.8vw; font-weight: bold; color: #388099; margin-bottom: 0.8vw; letter-spacing: 2px; }
 
         /* 登入畫面樣式 */
         #login-screen { background: #000; }
         #login-bg-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
         .top-left-logo { position: absolute; top: 5%; left: 5%; z-index: 5; width: 18vw; max-width: 320px; min-width: 160px; pointer-events: none; filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.5)); }
         
-        .top-right-group { position: absolute; top: 4%; right: 4%; z-index: 15; display: flex; align-items: center; gap: 0.5vw; }
-        .audio-control-panel { display: flex; align-items: center; gap: 0.4vw; background: rgba(0, 0, 0, 0.35); padding: 0.3vw 0.6vw; border-radius: 12px; backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); }
-        .audio-btn { background: none; border: none; color: #ffffff; font-size: 0.8vw; cursor: pointer; }
-        .audio-slider { width: 3.5vw; min-width: 35px; height: 3px; -webkit-appearance: none; appearance: none; background: rgba(255, 255, 255, 0.4); border-radius: 2px; outline: none; cursor: pointer; }
-        .audio-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 8px; height: 8px; border-radius: 50%; background: #ffffff; cursor: pointer; }
+        .top-right-group { position: absolute; top: 4%; right: 4%; z-index: 15; display: flex; align-items: center; gap: 0.6vw; }
         
-        .google-login-btn { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.8); color: #388099; padding: 0.3vw 0.7vw; border-radius: 12px; font-size: 0.65vw; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 0.3vw; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease; }
+        .google-login-btn { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.8); color: #388099; padding: 0.4vw 0.9vw; border-radius: 14px; font-size: 0.7vw; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 0.4vw; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease; }
         .google-login-btn:hover { background: #ffffff; transform: translateY(-1px); }
-        .google-login-btn svg { width: 0.7vw !important; height: 0.7vw !important; min-width: 8px; min-height: 8px; }
+        .google-login-btn svg { width: 0.8vw !important; height: 0.8vw !important; min-width: 10px; min-height: 10px; }
 
         .bottom-right-btn-group { position: absolute; right: 8%; bottom: 8%; z-index: 5; display: flex; flex-direction: column; gap: 1.2vw; width: 16vw; min-width: 180px; }
         .btn-custom { width: 100%; padding: 0.8vw 1.5vw; font-size: 1.4vw; font-weight: bold; color: #388099; background-color: #ffffff; border: 1.5px solid #dcdcdc; border-radius: 30px; cursor: pointer; text-align: center; box-shadow: 4px 6px 0px rgba(100, 100, 100, 0.4); transition: all 0.15s ease; }
@@ -158,35 +167,88 @@
 
         .lobby-top-bar { position: absolute; top: 3.5%; right: 4%; z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.8vw; }
         .lobby-currency-container { display: flex; gap: 1.2vw; }
-        .currency-box { position: relative; background: #ffffff; border-radius: 20px; width: 9.5vw; height: 2.2vw; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border: 1px solid #eef2f5; }
+        .currency-box { position: relative; background: #ffffff; border-radius: 20px; width: 10.5vw; height: 2.3vw; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border: 1px solid #eef2f5; padding: 0 1vw; }
         .currency-box-icon { position: absolute; left: -0.6vw; top: 50%; transform: translateY(-50%); width: 2.2vw; height: 2.2vw; object-fit: contain; }
-        .currency-box-text { font-size: 1.1vw; font-weight: bold; color: #538199; text-align: center; width: 100%; padding-left: 1vw; }
+        .currency-box-text { font-size: 1.15vw; font-weight: bold; color: #538199; text-align: center; width: 100%; padding-left: 1.2vw; }
 
-        .lobby-right-menu { position: absolute; right: 4%; top: 22%; display: flex; flex-direction: column; align-items: flex-end; gap: 1.6vw; z-index: 12; }
+        /* 大廳右側主選單 (新增：設置) */
+        .lobby-right-menu { position: absolute; right: 4%; top: 16%; display: flex; flex-direction: column; align-items: flex-end; gap: 1.2vw; z-index: 12; }
         .lobby-white-btn { background: #ffffff; color: #4a8ca7; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); transition: transform 0.2s ease, box-shadow 0.2s ease; display: flex; align-items: center; justify-content: center; letter-spacing: 2px; opacity: 0; }
         .lobby-white-btn.animate-in { animation: slideInFromRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .btn-campus.animate-in { animation-delay: 0s; }
-        .btn-character.animate-in { animation-delay: 0.25s; }
-        .btn-shop-main.animate-in { animation-delay: 0.50s; }
+        .btn-character.animate-in { animation-delay: 0.15s; }
+        .btn-shop-main.animate-in { animation-delay: 0.30s; }
+        .btn-settings-main.animate-in { animation-delay: 0.45s; }
         @keyframes slideInFromRight { 0% { transform: translateX(500px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-        .btn-campus { width: 24vw; height: 5.2vw; font-size: 2.3vw; border-radius: 28px; }
-        .btn-character { width: 17vw; height: 4vw; font-size: 1.6vw; border-radius: 22px; }
-        .btn-shop-main { width: 17vw; height: 4vw; font-size: 1.7vw; border-radius: 22px; }
+        
+        .btn-campus { width: 23vw; height: 4.8vw; font-size: 2.1vw; border-radius: 26px; }
+        .btn-character { width: 17vw; height: 3.8vw; font-size: 1.55vw; border-radius: 22px; }
+        .btn-shop-main { width: 17vw; height: 3.8vw; font-size: 1.6vw; border-radius: 22px; }
+        .btn-settings-main { width: 17vw; height: 3.8vw; font-size: 1.55vw; border-radius: 22px; }
 
         .lobby-left-bottom-group { position: absolute; left: 3%; bottom: 4%; display: flex; gap: 0.8vw; z-index: 12; }
-        .btn-sub-action { background: rgba(255, 255, 255, 0.9); color: #388099; border: none; padding: 0.5vw 1.2vw; border-radius: 18px; font-size: 0.95vw; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); backdrop-filter: blur(5px); }
+        .btn-sub-action { background: rgba(255, 255, 255, 0.9); color: #388099; border: none; padding: 0.6vw 1.5vw; border-radius: 18px; font-size: 1vw; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); backdrop-filter: blur(5px); }
 
         .title { font-size: 2.8vw; font-weight: bold; color: #388099; margin-bottom: 0.5vw; letter-spacing: 2px; }
         .subtitle { font-size: 1.4vw; font-weight: bold; color: #538199; margin-bottom: 1.2vw; }
-        .btn { padding: 0.8vw 1.8vw; font-size: 1.3vw; font-weight: bold; color: #388099; background: #ffffff; border: 1.5px solid #dcdcdc; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); text-align: center; }
+        .btn { padding: 0.7vw 1.8vw; font-size: 1.2vw; font-weight: bold; color: #388099; background: #ffffff; border: 1.5px solid #dcdcdc; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); text-align: center; }
         .btn-danger { color: #ff4757; border-color: #ffccd1; }
 
-        /* 關卡選擇卡片網格 (1-1 ~ 1-5) */
-        #stage-select-screen { background: url('office.jpg') no-repeat center center / cover; }
-        .stage-card-grid { display: flex; gap: 1.4vw; margin-top: 1.2vw; flex-wrap: wrap; justify-content: center; width: 92%; }
-        .stage-card { width: 15vw; height: 18.5vw; background: #ffffff; border-radius: 24px; color: #388099; padding: 1.2vw; display: flex; flex-direction: column; justify-content: space-between; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.12); border: 1px solid #eef2f5; cursor: pointer; transition: transform 0.2s; }
+        /* ================= 設置面板樣式 ================= */
+        #settings-screen { background: url('office.jpg') no-repeat center center / cover; }
+        .settings-panel-box {
+            width: 46vw; min-width: 440px; background: rgba(255, 255, 255, 0.95);
+            border-radius: 28px; padding: 2.6vw 3.5vw; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
+            border: 2px solid #eef2f5; display: flex; flex-direction: column; gap: 1.8vw;
+        }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.3vw; font-weight: bold; color: #388099; }
+        .setting-slider-group { display: flex; align-items: center; gap: 1vw; width: 55%; }
+        .setting-slider {
+            width: 100%; height: 8px; -webkit-appearance: none; appearance: none;
+            background: #dbe6ea; border-radius: 4px; outline: none; cursor: pointer;
+        }
+        .setting-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none; width: 20px; height: 20px;
+            border-radius: 50%; background: #388099; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .setting-val-text { font-size: 1.1vw; width: 3.5vw; text-align: right; color: #78909c; }
+
+        /* 關卡選擇：橫向單列無滾動條 */
+        #stage-select-screen { 
+            background: url('office.jpg') no-repeat center center / cover; 
+            justify-content: center; align-items: center; padding: 0 2vw;
+        }
+        .stage-scroll-container {
+            width: 92%; max-width: 92%;
+            display: flex; gap: 1.8vw; margin-top: 1.5vw;
+            overflow-x: auto; overflow-y: hidden;
+            padding: 1vw 1.5vw 1.8vw 1.5vw;
+            flex-wrap: nowrap;
+            touch-action: pan-x; cursor: grab;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .stage-scroll-container:active { cursor: grabbing; }
+        .stage-scroll-container::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+        .stage-card {
+            flex: 0 0 17.5vw; width: 17.5vw; height: 21vw;
+            background: #ffffff; border-radius: 24px;
+            color: #388099; padding: 1.4vw 1.2vw; display: flex; flex-direction: column;
+            justify-content: space-between; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            border: 1px solid #eef2f5; cursor: pointer; transition: transform 0.2s;
+            pointer-events: auto;
+        }
         .stage-card:hover { transform: translateY(-4px); }
         .stage-card.locked { opacity: 0.65; cursor: not-allowed; }
+        
+        .stage-reward-badge {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 0.4vw 0.8vw; border-radius: 12px; font-weight: bold; font-size: 0.95vw;
+            width: 100%; box-sizing: border-box; text-align: center;
+        }
+        .badge-cleared { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+        .badge-first { background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; }
+        .badge-locked { background: #f8fafc; color: #94a3b8; border: 1px solid #e2e8f0; }
 
         /* 人物選單 */
         #character-menu-screen {
@@ -201,36 +263,64 @@
         .char-detail-name { font-size: 2.6vw; font-weight: bold; color: #ffffff; letter-spacing: 2px; }
         .char-detail-tag { display: inline-block; align-self: flex-start; padding: 0.3vw 0.8vw; background: rgba(255, 255, 255, 0.15); border-radius: 8px; font-size: 0.95vw; color: #b0bec5; }
         .char-detail-body { font-size: 1.1vw; color: #cfd8dc; line-height: 1.7; margin-top: 1.5vw; }
-        .esc-exit-btn { position: absolute; bottom: 3.5%; left: 3.5%; background: #ffffff; color: #388099; padding: 0.6vw 1.8vw; border-radius: 25px; font-size: 1.1vw; font-weight: bold; cursor: pointer; border: 1.5px solid #dcdcdc; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 25; }
 
-        /* 商店畫面 */
+        /* 商店畫面 (右側白色大方塊中線精準垂直置中) */
         #shop-screen { background: url('shop.jpg') no-repeat center center / cover; position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0; overflow: hidden; }
         .shop-npc-interactive-zone { position: absolute; top: 0; left: 0; width: 50%; height: 100%; z-index: 8; cursor: pointer; }
         .shop-npc-portrait { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; z-index: 6; opacity: 0; }
         .shop-npc-portrait.animate-in { animation: slideInFromLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        #shop-dialog-bubble { position: absolute; left: 6.8%; bottom: 15.5%; width: 33%; min-height: 4.8vw; background: #ffffff; border-radius: 20px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12); border: 2px solid #eef2f5; padding: 1vw 1.6vw; display: flex; align-items: center; z-index: 9; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        #shop-dialog-bubble { position: absolute; left: 6.8%; bottom: 15.5%; width: 34%; min-height: 5vw; background: #ffffff; border-radius: 20px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12); border: 2px solid #eef2f5; padding: 1.1vw 1.8vw; display: flex; align-items: center; z-index: 9; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
         #shop-dialog-text { color: #388099; font-size: 1.25vw; font-weight: bold; letter-spacing: 1px; line-height: 1.4; }
-        .shop-right-panel-wrapper { position: absolute; right: 4.5%; width: 44%; height: 82%; background: rgba(255, 255, 255, 0.94); border-radius: 28px; backdrop-filter: blur(10px); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12); border: 2px solid #eef2f5; padding: 2.2vw 2.5vw; display: flex; flex-direction: column; justify-content: space-between; z-index: 10; opacity: 0; }
-        .shop-right-panel-wrapper.animate-in { animation: slideInFromRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        .shop-right-panel-wrapper { 
+            position: absolute; right: 4.5%; top: 50%; transform: translateY(-50%); 
+            width: 44%; height: 82%; 
+            background: rgba(255, 255, 255, 0.94); border-radius: 28px; 
+            backdrop-filter: blur(10px); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12); 
+            border: 2px solid #eef2f5; padding: 2.2vw 2.5vw; 
+            display: flex; flex-direction: column; justify-content: space-between; 
+            z-index: 10; opacity: 0; 
+        }
+        .shop-right-panel-wrapper.animate-in { animation: slideInFromRightCentered 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideInFromRightCentered { 
+            0% { transform: translate(500px, -50%); opacity: 0; } 
+            100% { transform: translate(0, -50%); opacity: 1; } 
+        }
+
         .shop-header-title { font-size: 2.2vw; font-weight: bold; color: #388099; }
-        .shop-header-sub { font-size: 1.1vw; font-weight: bold; color: #538199; margin-top: 0.3vw; }
-        .shop-goods-list { display: flex; flex-direction: column; gap: 1.1vw; margin-top: 1vw; }
-        .shop-goods-card { background: #ffffff; border: 1.5px solid #dbe8ed; border-radius: 18px; padding: 1vw 1.5vw; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .shop-header-sub { font-size: 1.15vw; font-weight: bold; color: #538199; margin-top: 0.4vw; display: flex; align-items: center; gap: 1vw; }
+        .shop-goods-list { display: flex; flex-direction: column; gap: 1.2vw; margin-top: 1.2vw; }
+        .shop-goods-card { background: #ffffff; border: 1.5px solid #dbe8ed; border-radius: 18px; padding: 1.1vw 1.6vw; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .goods-title { font-size: 1.3vw; font-weight: bold; color: #388099; }
-        .goods-sub { font-size: 0.95vw; color: #78909c; margin-top: 0.2vw; }
+        .goods-sub { font-size: 0.95vw; color: #78909c; margin-top: 0.25vw; }
 
         /* 浮動通知 Toast */
-        #game-toast { position: absolute; top: -60px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #388099; border: 2px solid #bce2ed; border-radius: 30px; padding: 0.6vw 2vw; font-size: 1.25vw; font-weight: bold; box-shadow: 0 8px 24px rgba(56, 128, 153, 0.25); z-index: 1000; pointer-events: none; opacity: 0; transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #game-toast { position: absolute; top: -60px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #388099; border: 2px solid #bce2ed; border-radius: 30px; padding: 0.6vw 2.2vw; font-size: 1.25vw; font-weight: bold; box-shadow: 0 8px 24px rgba(56, 128, 153, 0.25); z-index: 1000; pointer-events: none; opacity: 0; transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #game-toast.show { top: 5%; opacity: 1; }
 
-        /* 勝利結算畫面 (含首次通關寶石通知) */
-        #victory-screen { display: none; cursor: pointer; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(8px); z-index: 30; }
-        .victory-panel { background: #ffffff; border-radius: 28px; padding: 2.6vw 4.5vw; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15); border: 2px solid #eef2f5; display: flex; flex-direction: column; align-items: center; gap: 1vw; animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes bounceIn { 0% { transform: scale(0.7); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        /* 結算畫面 */
+        #victory-screen { 
+            display: none; background: rgba(0, 0, 0, 0.45); 
+            backdrop-filter: blur(8px); z-index: 30; 
+        }
+        .victory-panel { 
+            background: #ffffff; border-radius: 28px; padding: 2.8vw 5.2vw; 
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18); border: 2px solid #eef2f5; 
+            display: flex; flex-direction: column; align-items: center; gap: 1.4vw; 
+            min-width: 32vw;
+            animation: slideInFromRightToCenter 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+        }
+        @keyframes slideInFromRightToCenter { 
+            0% { transform: translateX(650px); opacity: 0; } 
+            100% { transform: translateX(0); opacity: 1; } 
+        }
+
         .victory-title { font-size: 3vw; font-weight: bold; color: #388099; letter-spacing: 2px; }
-        .victory-reward-group { display: flex; gap: 1.2vw; }
-        .victory-box { background: #fbfdfe; border: 1.5px solid #dbe8ed; border-radius: 18px; padding: 0.7vw 2vw; font-size: 1.4vw; font-weight: bold; display: flex; align-items: center; gap: 0.6vw; }
-        .first-clear-badge { background: #e0f2fe; color: #0284c7; border: 1.5px solid #bae6fd; border-radius: 20px; padding: 0.5vw 1.6vw; font-size: 1.1vw; font-weight: bold; display: flex; align-items: center; gap: 0.5vw; }
+        .defeat-title { font-size: 2.8vw; font-weight: bold; color: #ef4444; letter-spacing: 2px; }
+        
+        .victory-reward-group { display: flex; gap: 1.4vw; }
+        .victory-box { background: #fbfdfe; border: 1.5px solid #dbe8ed; border-radius: 18px; padding: 0.8vw 2.2vw; font-size: 1.4vw; font-weight: bold; display: flex; align-items: center; gap: 0.8vw; min-width: 10vw; justify-content: center; }
+        .first-clear-badge { background: #f0f9ff; color: #0284c7; border: 1.5px solid #bae6fd; border-radius: 20px; padding: 0.6vw 1.8vw; font-size: 1.15vw; font-weight: bold; display: flex; align-items: center; gap: 0.6vw; }
 
         /* 存讀檔 */
         #load-screen-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; display: none; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.25); }
@@ -242,7 +332,7 @@
         .back-text-btn { background: none; border: none; color: #388099; font-size: 1.6vw; font-weight: bold; cursor: pointer; }
 
         #save-screen { background: url('office.jpg') no-repeat center center / cover; }
-        .panel-container { width: 75%; height: 65%; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); border-radius: 24px; padding: 2vw; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #eef2f5; }
+        .panel-container { width: 75%; height: 65%; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); border-radius: 24px; padding: 2.2vw; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #eef2f5; }
         .slot-grid { display: grid; grid-template-columns: 1fr; gap: 1.2vw; }
         .slot-item { background: #ffffff; padding: 1.2vw 2vw; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eef2f5; color: #388099; }
 
@@ -253,6 +343,8 @@
         @keyframes pulseGlow { 0% { transform: translateY(0px); opacity: 0.85; } 100% { transform: translateY(-2px); opacity: 1; box-shadow: 0 8px 22px rgba(72, 202, 228, 0.45); } }
         .loading-dots { display: inline-block; width: 1.6vw; text-align: left; }
 
+        .ui-inline-icon { width: 1.5vw; height: 1.5vw; object-fit: contain; vertical-align: middle; display: inline-block; }
+
         #orientation-warning { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #ff4757; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; font-size: 24px; text-align: center; }
         @media screen and (orientation: portrait) { #orientation-warning { display: flex; } }
     </style>
@@ -260,7 +352,7 @@
 <body>
 
     <div id="orientation-warning">
-        📱<br><br>請將手機旋轉為「橫屏」以獲得最佳遊戲體驗！
+        請將手機旋轉為「橫屏」以獲得最佳遊戲體驗！
     </div>
 
     <!-- 背景音樂 -->
@@ -271,10 +363,15 @@
     <audio id="bg-music-battle" src="Victory Pixel.mp3" loop preload="auto"></audio>
 
     <div id="game-container">
+        <!-- 全局通用左上角返回按鈕 (非戰鬥時顯示) -->
+        <button id="global-back-btn" onclick="playClickSound(); handleGlobalBack()">
+            <span style="font-size: 1.4vw; line-height: 1;">‹</span> <span>返回</span>
+        </button>
+
         <!-- 戰鬥 UI -->
         <div id="in-game-ui">
-            <button class="btn-pause-game" onclick="playClickSound(); togglePause()">⏸ 暫停</button>
-            <div class="btn-mobile-attack" id="btn-mobile-attack">👊</div>
+            <button class="btn-pause-game" onclick="playClickSound(); togglePause()">暫停</button>
+            <div class="btn-mobile-attack" id="btn-mobile-attack">攻</div>
             <div id="joystick-zone"><div id="joystick-knob"></div></div>
         </div>
 
@@ -290,12 +387,12 @@
             </div>
         </div>
 
-        <!-- 暫停選單 (改為返回關卡選擇) -->
+        <!-- 暫停選單 -->
         <div id="pause-screen" class="ui-screen" style="display: none;">
             <div class="pause-panel">
                 <div class="pause-title">遊戲已暫停</div>
-                <button class="btn" style="width: 100%; font-size: 1.6vw; padding: 1vw 0;" onclick="playClickSound(); togglePause()">繼續遊戲</button>
-                <button class="btn btn-danger" style="width: 100%; font-size: 1.6vw; padding: 1vw 0;" onclick="playClickSound(); quitLevelToStageSelect()">中斷關卡 (返回關卡選擇)</button>
+                <button class="btn" style="width: 100%; font-size: 1.5vw; padding: 0.9vw 0;" onclick="playClickSound(); togglePause()">繼續遊戲</button>
+                <button class="btn btn-danger" style="width: 100%; font-size: 1.5vw; padding: 0.9vw 0;" onclick="playClickSound(); quitLevelToStageSelect()">中斷關卡 (返回關卡選擇)</button>
             </div>
         </div>
 
@@ -309,10 +406,6 @@
                     <svg viewBox="0 0 24 24"><path fill="#388099" d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C14.15,4.73 15.91,5.44 17.29,6.72L19.33,4.68C17.46,2.95 15.02,2 12.2,2C6.56,2 2,6.56 2,12C2,17.44 6.56,22 12.2,22C17.65,22 21.43,18.15 21.43,12.71C21.43,12.12 21.37,11.62 21.35,11.1Z"/></svg>
                     <span id="google-btn-text">Google 登入</span>
                 </button>
-                <div class="audio-control-panel">
-                    <button class="audio-btn" onclick="toggleMute()" title="靜音切換">🔊</button>
-                    <input type="range" class="audio-slider volume-slider-element" min="0" max="1" step="0.01" value="1" oninput="adjustVolume(this.value)">
-                </div>
             </div>
 
             <div class="bottom-right-btn-group">
@@ -323,7 +416,7 @@
 
             <div id="load-screen-modal">
                 <div class="load-game-card">
-                    <div class="load-game-title">Load game</div>
+                    <div class="load-game-title" style="font-size: 1.8vw; font-weight: bold;">讀取進度</div>
                     <div class="load-slot-list" id="load-slots-container"></div>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1vw;">
                         <span id="cloud-status-text" class="cloud-sync-status">目前模式: 本地端儲存 (未登入)</span>
@@ -347,25 +440,51 @@
                         <span class="currency-box-text" id="lobby-gem-display">0</span>
                     </div>
                 </div>
-                <div class="audio-control-panel">
-                    <button class="audio-btn" onclick="toggleMute()" title="靜音切換">🔊</button>
-                    <input type="range" class="audio-slider volume-slider-element" min="0" max="1" step="0.01" value="1" oninput="adjustVolume(this.value)">
-                </div>
             </div>
+            
             <div class="lobby-right-menu">
                 <button class="lobby-white-btn btn-campus" onclick="playClickSound(); playTransition(async () => openStageSelect())">前往校園</button>
                 <button class="lobby-white-btn btn-character" onclick="playClickSound(); playTransition(async () => openCharacterMenu())">人物選單</button>
                 <button class="lobby-white-btn btn-shop-main" onclick="playClickSound(); playTransition(async () => openShop())">SHOP</button>
+                <button class="lobby-white-btn btn-settings-main" onclick="playClickSound(); playTransition(async () => openSettings())">設置</button>
             </div>
+
             <div class="lobby-left-bottom-group">
-                <button class="btn-sub-action" onclick="playClickSound(); playTransition(async () => openSaveScreen())">💾 手動存檔</button>
+                <button class="btn-sub-action" onclick="playClickSound(); playTransition(async () => openSaveScreen())">手動存檔</button>
             </div>
         </div>
 
-        <!-- 3. 關卡選擇 (支援 1-1 ~ 1-5 關卡卡片) -->
+        <!-- 2.5 設置面板 (BGM 與 SFX 獨立控制) -->
+        <div id="settings-screen" class="ui-screen" style="display: none;">
+            <div class="settings-panel-box">
+                <div class="title" style="text-align: center; margin-bottom: 0.5vw;">系統設置</div>
+                
+                <div class="setting-row">
+                    <span>背景音樂音量 (BGM)</span>
+                    <div class="setting-slider-group">
+                        <input type="range" class="setting-slider" id="bgm-volume-slider" min="0" max="1" step="0.01" value="1" oninput="adjustBgmVolume(this.value)">
+                        <span class="setting-val-text" id="bgm-volume-num">100%</span>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <span>效果音音量 (SFX)</span>
+                    <div class="setting-slider-group">
+                        <input type="range" class="setting-slider" id="sfx-volume-slider" min="0" max="1" step="0.01" value="1" oninput="adjustSfxVolume(this.value)">
+                        <span class="setting-val-text" id="sfx-volume-num">100%</span>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 1.5vw;">
+                    <button class="btn" style="min-width: 12vw;" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">完成並返回</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 關卡選擇 -->
         <div id="stage-select-screen" class="ui-screen" style="display: none;">
             <div class="title">選擇挑戰關卡</div>
-            <div class="stage-card-grid" id="stage-card-container"></div>
+            <div class="stage-scroll-container" id="stage-card-container"></div>
             <div style="margin-top: 1.5vw;">
                 <button class="btn btn-danger" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">返回大廳</button>
             </div>
@@ -383,7 +502,6 @@
                     <div class="char-detail-body" id="char-detail-desc"></div>
                 </div>
             </div>
-            <button class="esc-exit-btn" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">按 ESC 返回大廳</button>
         </div>
 
         <!-- 5. 商店介面 -->
@@ -394,28 +512,33 @@
             <div class="shop-right-panel-wrapper" id="shop-right-panel">
                 <div>
                     <div class="shop-header-title">校園補給商店</div>
-                    <div class="shop-header-sub" id="shop-currency-display">金幣: 0 | 寶石: 0</div>
+                    <div class="shop-header-sub" id="shop-currency-display">
+                        <span style="display: flex; align-items: center; gap: 6px;"><img src="gold.png" class="ui-inline-icon"> <span id="shop-gold-num">0</span></span>
+                        <span style="display: flex; align-items: center; gap: 6px;"><img src="gem.png" class="ui-inline-icon"> <span id="shop-gem-num">0</span></span>
+                    </div>
                     <div class="shop-goods-list">
                         <div class="shop-goods-card">
                             <div>
                                 <div class="goods-title">攻擊力強化</div>
                                 <div class="goods-sub" id="atk-level-text">LV 1</div>
                             </div>
-                            <button class="btn" style="padding: 0.5vw 1.2vw; font-size: 1.1vw;" onclick="buyUpgrade('atk')">升級 (<span id="atk-cost">50</span>)</button>
+                            <button class="btn" style="padding: 0.6vw 1.5vw; font-size: 1.1vw; min-width: 8vw;" onclick="buyUpgrade('atk')">升級 (<span id="atk-cost">50</span>)</button>
                         </div>
                         <div class="shop-goods-card">
                             <div>
                                 <div class="goods-title">生命值上限</div>
                                 <div class="goods-sub" id="hp-level-text">LV 1</div>
                             </div>
-                            <button class="btn" style="padding: 0.5vw 1.2vw; font-size: 1.1vw;" onclick="buyUpgrade('hp')">升級 (<span id="hp-cost">50</span>)</button>
+                            <button class="btn" style="padding: 0.6vw 1.5vw; font-size: 1.1vw; min-width: 8vw;" onclick="buyUpgrade('hp')">升級 (<span id="hp-cost">50</span>)</button>
                         </div>
                         <div class="shop-goods-card">
                             <div>
                                 <div class="goods-title">夥伴祈願單抽</div>
                                 <div class="goods-sub">獲得全新戰鬥夥伴</div>
                             </div>
-                            <button class="btn" style="padding: 0.5vw 1.2vw; font-size: 1.1vw;" onclick="drawGacha()">單抽 (10 寶石)</button>
+                            <button class="btn" style="padding: 0.6vw 1.5vw; font-size: 1.1vw; min-width: 10vw; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="drawGacha()">
+                                單抽 (10 <img src="gem.png" style="width: 1.2vw; height: 1.2vw; object-fit: contain;">)
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -436,30 +559,41 @@
             </div>
         </div>
 
-        <!-- 7. 勝利結算畫面 (含首通寶石展示) -->
-        <div id="victory-screen" class="ui-screen" style="display: none;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">
-            <div class="victory-panel">
-                <div class="victory-title">🎉 關卡通關成功！</div>
+        <!-- 7. 通用結算畫面 -->
+        <div id="victory-screen" class="ui-screen" style="display: none;">
+            <div class="victory-panel" id="victory-panel-card">
+                <div id="settlement-title" class="victory-title">關卡通關成功！</div>
+                
                 <div id="first-clear-badge" class="first-clear-badge" style="display: none;">
-                    <span>✨ 首通達成！獲得額外獎勵 寶石 +1</span>
+                    <img src="gem.png" class="ui-inline-icon">
+                    <span>首次通關達成！獲得額外獎勵 寶石 +1</span>
                 </div>
+                
                 <div class="victory-reward-group">
                     <div class="victory-box" style="color: #f1c40f;">
-                        <span>🪙 金幣:</span>
+                        <img src="gold.png" class="ui-inline-icon">
+                        <span>金幣:</span>
                         <span id="victory-gold-text">0</span>
                     </div>
                     <div class="victory-box" id="victory-gem-box" style="color: #38bdf8; display: none;">
-                        <span>💎 寶石:</span>
+                        <img src="gem.png" class="ui-inline-icon">
+                        <span>寶石:</span>
                         <span>+1</span>
                     </div>
                 </div>
-                <div style="font-size: 1.1vw; color: #78909c; margin-top: 0.5vw;">( 點擊任意處返回關卡選擇 )</div>
+
+                <div id="settlement-btn-group" style="display: flex; gap: 1.2vw; margin-top: 0.5vw; width: 100%; justify-content: center;">
+                    <button class="btn" style="min-width: 11vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
+                </div>
             </div>
         </div>
     </div>
 
 <script>
-// ==================== 0. 音訊系統配置 ====================
+// ==================== 0. 音效系統 (獨立 BGM 與 SFX 音量控制) ====================
+let currentSfxVolume = 1.0;
+let currentBgmVolume = 1.0;
+
 class AudioPool {
     constructor(src, size = 4) {
         this.pool = []; this.index = 0; this.size = size;
@@ -469,9 +603,9 @@ class AudioPool {
             this.pool.push(audio);
         }
     }
-    play(volume = 1.0) {
+    play(volumeScale = 1.0) {
         const audio = this.pool[this.index];
-        audio.volume = volume;
+        audio.volume = Math.max(0, Math.min(1, currentSfxVolume * volumeScale));
         audio.currentTime = 0;
         audio.play().catch(() => {});
         this.index = (this.index + 1) % this.size;
@@ -484,7 +618,7 @@ const sndPools = {
     punchHit: new AudioPool('punch_hited.mp3', 6),
     hardpunch: new AudioPool('hardpunch.mp3', 4),
     hardpunchHit: new AudioPool('hardpunch_hited.mp3', 4),
-    victory: new AudioPool('hardpunch.mp3', 1) // 勝利終結音效池 (借用重擊力量音效)
+    victory: new AudioPool('hardpunch.mp3', 1)
 };
 function playClickSound() { sndPools.click.play(); }
 function playSnd(name) { if (sndPools[name]) sndPools[name].play(); }
@@ -507,18 +641,25 @@ function switchBgm(targetKey) {
         }
     });
     if (targetKey && bgmList[targetKey]) {
+        bgmList[targetKey].volume = currentBgmVolume;
         bgmList[targetKey].play().catch(() => {});
     }
     currentBgmKey = targetKey;
 }
 
-function adjustVolume(val) { 
-    Object.values(bgmList).forEach(audio => audio.volume = val);
-    document.querySelectorAll('.volume-slider-element').forEach(s => s.value = val); 
+function adjustBgmVolume(val) {
+    currentBgmVolume = parseFloat(val);
+    Object.values(bgmList).forEach(audio => audio.volume = currentBgmVolume);
+    const numEl = document.getElementById('bgm-volume-num');
+    if (numEl) numEl.innerText = `${Math.round(currentBgmVolume * 100)}%`;
+    if (currentGameData) { currentGameData.bgmVolume = currentBgmVolume; triggerAutoSave(); }
 }
-function toggleMute() { 
-    const isMuted = bgmList.login.volume > 0;
-    adjustVolume(isMuted ? 0 : 1.0); 
+
+function adjustSfxVolume(val) {
+    currentSfxVolume = parseFloat(val);
+    const numEl = document.getElementById('sfx-volume-num');
+    if (numEl) numEl.innerText = `${Math.round(currentSfxVolume * 100)}%`;
+    if (currentGameData) { currentGameData.sfxVolume = currentSfxVolume; triggerAutoSave(); }
 }
 
 window.addEventListener('pointerdown', function initAudioOnce() {
@@ -528,7 +669,44 @@ window.addEventListener('pointerdown', function initAudioOnce() {
     window.removeEventListener('pointerdown', initAudioOnce);
 }, { once: true });
 
-// ==================== 1. 全域資源非同步快取 & Toast 通知 ====================
+// ==================== 1. 全局導航管理 (ESC 與左上角通用返回按鈕) ====================
+let currentScreenId = 'login-screen';
+
+function updateGlobalBackButton(screenId) {
+    currentScreenId = screenId;
+    const backBtn = document.getElementById('global-back-btn');
+    if (!backBtn) return;
+
+    if (screenId === 'login-screen' || screenId === 'main-lobby-screen' || screenId === 'in-game' || screenId === 'victory-screen') {
+        backBtn.style.display = 'none';
+    } else {
+        backBtn.style.display = 'flex';
+    }
+}
+
+function handleGlobalBack() {
+    if (document.getElementById('load-screen-modal').style.display === 'flex') {
+        closeLoadScreen();
+        return;
+    }
+    playTransition(async () => {
+        enterMainLobby();
+    });
+}
+
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        if (isPlaying && document.getElementById('victory-screen').style.display !== 'flex') {
+            togglePause();
+            return;
+        }
+        if (currentScreenId !== 'login-screen' && currentScreenId !== 'main-lobby-screen' && !isPlaying) {
+            handleGlobalBack();
+        }
+    }
+});
+
+// ==================== 2. 全域資源非同步快取 & Toast ====================
 const assetCache = new Map();
 function preloadAsset(src) {
     if (!src) return Promise.resolve(null);
@@ -570,7 +748,7 @@ function showToast(msg) {
     toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 2200);
 }
 
-// ==================== 2. FIREBASE 與 1-1~1-5 關卡配置 ====================
+// ==================== 3. FIREBASE 與關卡配置 ====================
 const firebaseConfig = {
     apiKey: "AIzaSyCW0VkxjD8cYSJRdSh4dJihXfcFbb85FaY",
     authDomain: "schoolking-b41af.firebaseapp.com",
@@ -590,7 +768,7 @@ auth.onAuthStateChanged((user) => {
     const cloudStatus = document.getElementById('cloud-status-text');
     if (user) {
         btnText.innerText = user.displayName ? user.displayName.split(' ')[0] + " (登出)" : "已登入 (登出)";
-        cloudStatus.innerText = `☁️ 雲端同步已啟用 (${user.email})`;
+        cloudStatus.innerText = `雲端同步已啟用 (${user.email})`;
     } else {
         btnText.innerText = "Google 登入";
         cloudStatus.innerText = "目前模式: 本地端儲存 (未登入)";
@@ -616,7 +794,6 @@ const availablePartners = [
     { id: 'sapphire', name: '藍寶', tag: '疾風連擊型 (未實裝)', desc: '【角色介紹】\n田徑部的主將，擁有校園內無人能及的極限爆發步速與連續打擊力。\n\n【被動天賦】\n擊殺敵人後 3 秒內移動速度大幅躍升 35%，並產生殘影障壁。', lobbyImage: 'characterB_lobby01.png', blockImage: 'characterB_block01.png' }
 ];
 
-// 1-1 ~ 1-5 關卡配置規格
 const STAGES_CONFIG = [
     { id: '1-1', title: '關卡 1-1', desc: '教學關卡', waves: 3, perWave: 3, hp: 30, map: 'map_1-1.jpg' },
     { id: '1-2', title: '關卡 1-2', desc: '初階考核', waves: 3, perWave: 4, hp: 35, map: 'map_1-1.jpg' },
@@ -630,7 +807,9 @@ let currentGameData = {
     gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
     ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
     selectedPartner: '托帕',
-    clearedStages: [] // 記錄已首通的關卡 id (如 ['1-1', '1-2'])
+    clearedStages: [],
+    bgmVolume: 1.0,
+    sfxVolume: 1.0
 };
 
 async function triggerAutoSave() {
@@ -663,12 +842,14 @@ async function handleStartNewGame() {
         gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
         ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
         selectedPartner: '托帕',
-        clearedStages: []
+        clearedStages: [],
+        bgmVolume: currentBgmVolume,
+        sfxVolume: currentSfxVolume
     };
     playTransition(async () => enterMainLobby());
 }
 
-// ==================== 3. 轉場與各介面邏輯 ====================
+// ==================== 4. 轉場與畫面切換 ====================
 const gameContainer = document.getElementById('game-container');
 const fxCanvas = document.getElementById('clickEffectCanvas');
 const fxCtx = fxCanvas.getContext('2d');
@@ -710,7 +891,7 @@ async function playTransition(asyncAction) {
 }
 
 function hideAllScreens() {
-    ['login-screen', 'main-lobby-screen', 'stage-select-screen', 'character-menu-screen', 'shop-screen', 'save-screen', 'victory-screen', 'pause-screen', 'in-game-ui'].forEach(s => document.getElementById(s).style.display = 'none');
+    ['login-screen', 'main-lobby-screen', 'settings-screen', 'stage-select-screen', 'character-menu-screen', 'shop-screen', 'save-screen', 'victory-screen', 'pause-screen', 'in-game-ui'].forEach(s => document.getElementById(s).style.display = 'none');
     document.getElementById('player-gif-sprite').style.display = 'none';
     clearAllPunchGifs();
 }
@@ -736,12 +917,59 @@ async function enterMainLobby() {
     void portrait.offsetWidth;
     if (portrait) portrait.classList.add('animate-in');
     buttons.forEach(btn => btn.classList.add('animate-in'));
+    
+    updateGlobalBackButton('main-lobby-screen');
     triggerAutoSave();
 }
 
 function backToLobbyFromSubScreen() { return enterMainLobby(); }
 
-// 動態渲染 1-1 ~ 1-5 關卡卡片 (解鎖機制)
+// 設置介面
+function openSettings() {
+    hideAllScreens();
+    const settingsScreen = document.getElementById('settings-screen');
+    settingsScreen.style.display = 'flex';
+
+    document.getElementById('bgm-volume-slider').value = currentBgmVolume;
+    document.getElementById('bgm-volume-num').innerText = `${Math.round(currentBgmVolume * 100)}%`;
+    document.getElementById('sfx-volume-slider').value = currentSfxVolume;
+    document.getElementById('sfx-volume-num').innerText = `${Math.round(currentSfxVolume * 100)}%`;
+
+    updateGlobalBackButton('settings-screen');
+}
+
+// 關卡選擇
+let isStageDragging = false;
+let stageDragStartX = 0;
+let stageDragScrollLeft = 0;
+let stageMovedDistance = 0;
+
+function initStageScrollEvents(container) {
+    container.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        container.scrollLeft += e.deltaY * 0.95;
+    }, { passive: false });
+
+    container.addEventListener('pointerdown', (e) => {
+        isStageDragging = true;
+        stageDragStartX = e.pageX - container.offsetLeft;
+        stageDragScrollLeft = container.scrollLeft;
+        stageMovedDistance = 0;
+    });
+
+    window.addEventListener('pointermove', (e) => {
+        if (!isStageDragging) return;
+        const x = e.pageX - container.offsetLeft;
+        const walk = (x - stageDragStartX) * 1.35;
+        stageMovedDistance += Math.abs(walk);
+        container.scrollLeft = stageDragScrollLeft - walk;
+    });
+
+    window.addEventListener('pointerup', () => {
+        setTimeout(() => { isStageDragging = false; }, 50);
+    });
+}
+
 async function openStageSelect() { 
     await preloadAsset('office.jpg');
     hideAllScreens(); 
@@ -749,27 +977,32 @@ async function openStageSelect() {
     
     const container = document.getElementById('stage-card-container');
     container.innerHTML = '';
+    initStageScrollEvents(container);
 
     STAGES_CONFIG.forEach((stage, idx) => {
-        // 解鎖判斷：第一關預設解鎖，其餘關卡需上一關已首通
         const isUnlocked = (idx === 0) || (currentGameData.clearedStages && currentGameData.clearedStages.includes(STAGES_CONFIG[idx - 1].id));
         const isCleared = currentGameData.clearedStages && currentGameData.clearedStages.includes(stage.id);
 
         const card = document.createElement('div');
         card.className = `stage-card ${isUnlocked ? '' : 'locked'}`;
         
-        let statusBadge = isCleared ? '<span style="color:#10b981; font-weight:bold; font-size:0.95vw;">★ 已首通 (寶石已領)</span>' : (isUnlocked ? '<span style="color:#0284c7; font-weight:bold; font-size:0.95vw;">💎 首通送寶石 x1</span>' : '<span style="color:#94a3b8; font-size:0.95vw;">🔒 尚未解鎖</span>');
+        let statusBadge = isCleared 
+            ? `<div class="stage-reward-badge badge-cleared">已首通 (寶石已領)</div>` 
+            : (isUnlocked 
+                ? `<div class="stage-reward-badge badge-first"><img src="gem.png" class="ui-inline-icon"> 首通獎勵 寶石 +1</div>` 
+                : `<div class="stage-reward-badge badge-locked">尚未解鎖</div>`);
 
         card.innerHTML = `
-            <div style="font-size: 1.6vw; font-weight: bold;">${stage.title}</div>
-            <div style="font-size: 0.95vw; color: #78909c;">${stage.desc} (共 ${stage.waves} 波)</div>
-            <div style="font-size: 1.1vw; font-weight: bold; color: #ff4757;">敵人: ${stage.waves * stage.perWave} 體</div>
+            <div style="font-size: 1.6vw; font-weight: bold; width: 100%; text-align: center;">${stage.title}</div>
+            <div style="font-size: 1vw; color: #78909c;">${stage.desc} (共 ${stage.waves} 波)</div>
+            <div style="font-size: 1.15vw; font-weight: bold; color: #ff4757;">敵人: ${stage.waves * stage.perWave} 體</div>
             ${statusBadge}
-            <button class="btn" style="width: 100%; font-size: 1.1vw; padding: 0.5vw 0;" ${isUnlocked ? '' : 'disabled'}>${isUnlocked ? '開始挑戰' : '尚未開放'}</button>
+            <button class="btn" style="width: 100%; font-size: 1.15vw; padding: 0.6vw 0; border-radius: 16px;" ${isUnlocked ? '' : 'disabled'}>${isUnlocked ? '開始挑戰' : '尚未開放'}</button>
         `;
 
         if (isUnlocked) {
             card.onclick = () => {
+                if (stageMovedDistance > 8) return;
                 playClickSound();
                 playTransition(async () => startStageGame(stage));
             };
@@ -778,6 +1011,7 @@ async function openStageSelect() {
     });
 
     document.getElementById('stage-select-screen').style.display = 'flex'; 
+    updateGlobalBackButton('stage-select-screen');
 }
 
 // 商店邏輯
@@ -807,10 +1041,12 @@ async function openShop() {
     rightPanel.classList.add('animate-in');
 
     document.getElementById('shop-dialog-bubble').style.opacity = '0';
+    updateGlobalBackButton('shop-screen');
 }
 
 function updateShopUI() {
-    document.getElementById('shop-currency-display').innerText = `金幣: ${currentGameData.gold} | 寶石: ${currentGameData.gem}`;
+    document.getElementById('shop-gold-num').innerText = currentGameData.gold;
+    document.getElementById('shop-gem-num').innerText = currentGameData.gem;
     document.getElementById('atk-level-text').innerText = `LV ${currentGameData.atkLevel} (基礎攻擊力: ${10 + (currentGameData.atkLevel - 1) * 5})`;
     document.getElementById('atk-cost').innerText = currentGameData.atkLevel * 50;
     document.getElementById('hp-level-text').innerText = `LV ${currentGameData.hpLevel} (生命上限: ${100 + (currentGameData.hpLevel - 1) * 20})`;
@@ -863,10 +1099,10 @@ function drawGacha() {
         if (unowned.length > 0) {
             const newChar = unowned[Math.floor(Math.random() * unowned.length)];
             currentGameData.ownedPartners.push(newChar.name);
-            showToast(`🎉 恭喜抽中新夥伴：【${newChar.name}】！`);
+            showToast(`恭喜抽中新夥伴：【${newChar.name}】！`);
         } else {
             currentGameData.gold += 100; 
-            showToast("抽到重複角色，轉化為 100 金幣！");
+            showToast("抽到重複夥伴，轉化為 100 金幣！");
         }
         updateShopUI(); 
         triggerAutoSave();
@@ -902,8 +1138,14 @@ async function loadFromSlot(slotKey) {
             gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
             ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
             selectedPartner: '托帕',
-            clearedStages: []
+            clearedStages: [],
+            bgmVolume: 1.0,
+            sfxVolume: 1.0
         }, data);
+
+        if (currentGameData.bgmVolume !== undefined) adjustBgmVolume(currentGameData.bgmVolume);
+        if (currentGameData.sfxVolume !== undefined) adjustSfxVolume(currentGameData.sfxVolume);
+
         closeLoadScreen(); 
         await enterMainLobby();
     }
@@ -917,6 +1159,7 @@ function openSaveScreen() {
         container.appendChild(slotDiv);
     });
     document.getElementById('save-screen').style.display = 'flex';
+    updateGlobalBackButton('save-screen');
 }
 async function saveToSlot(slotKey) {
     if (currentUser) {
@@ -960,6 +1203,7 @@ async function openCharacterMenu() {
 
     updateWheelPositions();
     updateCharacterInfoPanel();
+    updateGlobalBackButton('character-menu-screen');
 }
 
 function selectPartnerByIndex(targetIndex) {
@@ -1008,7 +1252,7 @@ function updateWheelPositions() {
     });
 }
 
-// ==================== 4. 戰鬥核心系統 (Ready->Fight開局、首通寶石、鏡頭轉場) ====================
+// ==================== 5. 戰鬥核心系統 ====================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const playerSpriteImg = document.getElementById('player-gif-sprite');
@@ -1018,6 +1262,7 @@ let currentMapImg = new Image();
 let enemyA01 = new Image();
 let enemyA02 = new Image();
 let goldCoinImg = new Image();
+let gemImg = new Image();
 
 const camera = { x: 0, y: 0, width: 1920, height: 1080, mapWidth: 3840, mapHeight: 2160, zoom: 1.0, targetZoom: 1.0 };
 
@@ -1040,16 +1285,17 @@ let hitStopFrames = 0;
 function triggerScreenShake(intensity, frames) { screenShake.intensity = intensity; screenShake.time = frames; }
 function triggerHitStop(frames) { hitStopFrames = Math.max(hitStopFrames, frames); }
 
-// 當前進行的關卡資訊
 let currentActiveStage = STAGES_CONFIG[0];
 let currentWave = 1;
 let totalWavesInStage = 3;
-let waveState = 'ready_sliding'; // 'ready_sliding', 'fight_sliding', 'fighting', 'waiting_banner', 'wave_banner_sliding', 'victory_slowmo', 'victory_pan'
+let waveState = 'ready_sliding';
 let bannerTimer = 0;
 let bannerX = 2200;
 let slomoTimer = 0;
 let panTimer = 0;
 let lastKillPos = { x: 1920, y: 1080 };
+let isDefeated = false;
+let isVictoryLocked = false;
 
 const player = {
     x: 1855, y: 1000, size: 64, width: 128, height: 128, baseSpeed: 5.25, speed: 5.25,
@@ -1066,9 +1312,7 @@ const keys = { w: false, a: false, s: false, d: false };
 const joystick = { active: false, touchId: null, startX: 0, startY: 0, moveX: 0, moveY: 0, maxDist: 45 };
 
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { 
-        if (isPlaying && document.getElementById('victory-screen').style.display !== 'flex') togglePause(); 
-    }
+    if (isVictoryLocked || isDefeated) return;
     if (e.key === 'w' || e.key === 'W') keys.w = true;
     if (e.key === 'a' || e.key === 'A') { keys.a = true; if (player.punchAnimTimer <= 0) player.facingRight = false; }
     if (e.key === 's' || e.key === 'S') keys.s = true;
@@ -1089,6 +1333,7 @@ function initVirtualJoystick() {
     joystickZone.style.display = isTouch ? 'block' : 'none';
 
     joystickZone.addEventListener('touchstart', (e) => {
+        if (isVictoryLocked || isDefeated) return;
         e.preventDefault();
         const touch = e.changedTouches[0];
         joystick.active = true;
@@ -1100,7 +1345,7 @@ function initVirtualJoystick() {
     }, { passive: false });
 
     window.addEventListener('touchmove', (e) => {
-        if (!joystick.active) return;
+        if (!joystick.active || isVictoryLocked || isDefeated) return;
         for (let i = 0; i < e.changedTouches.length; i++) {
             if (e.changedTouches[i].identifier === joystick.touchId) {
                 handleJoystickMove(e.changedTouches[i].clientX, e.changedTouches[i].clientY);
@@ -1144,19 +1389,17 @@ function handleJoystickMove(clientX, clientY) {
 }
 
 let isAttackHeld = false;
-gameContainer.addEventListener('mousedown', (e) => { if (isPlaying && !isPaused) isAttackHeld = true; });
-gameContainer.addEventListener('mouseup', (e) => { if (isPlaying && !isPaused && isAttackHeld) { executeAttack(); isAttackHeld = false; } });
+gameContainer.addEventListener('mousedown', (e) => { if (isPlaying && !isPaused && !isDefeated && !isVictoryLocked) isAttackHeld = true; });
+gameContainer.addEventListener('mouseup', (e) => { if (isPlaying && !isPaused && !isDefeated && !isVictoryLocked && isAttackHeld) { executeAttack(); isAttackHeld = false; } });
 const btnMobileAttack = document.getElementById('btn-mobile-attack');
-btnMobileAttack.addEventListener('touchstart', (e) => { e.preventDefault(); if (isPlaying && !isPaused) isAttackHeld = true; });
-btnMobileAttack.addEventListener('touchend', (e) => { e.preventDefault(); if (isPlaying && !isPaused && isAttackHeld) { executeAttack(); isAttackHeld = false; } });
+btnMobileAttack.addEventListener('touchstart', (e) => { e.preventDefault(); if (isPlaying && !isPaused && !isDefeated && !isVictoryLocked) isAttackHeld = true; });
+btnMobileAttack.addEventListener('touchend', (e) => { e.preventDefault(); if (isPlaying && !isPaused && !isDefeated && !isVictoryLocked && isAttackHeld) { executeAttack(); isAttackHeld = false; } });
 
 let enemies = []; let dyingEnemies = []; let floatingTexts = []; let activePunchGifs = [];
 
 function spawnEnemyWaveForCurrentStage() {
     const count = currentActiveStage.perWave || 3;
     const hpVal = currentActiveStage.hp || 30;
-    
-    // 分散分佈於主角右側區域
     const spawnOffsets = [
         { dx: 585, dy: -265 },
         { dx: 730, dy: -45 },
@@ -1170,7 +1413,6 @@ function spawnEnemyWaveForCurrentStage() {
         const offset = spawnOffsets[i % spawnOffsets.length];
         let pX = player.x + offset.dx + (Math.random() - 0.5) * 50;
         let pY = player.y + offset.dy + (Math.random() - 0.5) * 50;
-        
         let ep = { x: pX, y: pY };
         clampToWalkableArea(ep, 64);
 
@@ -1178,7 +1420,7 @@ function spawnEnemyWaveForCurrentStage() {
             x: ep.x, y: ep.y, width: 128, height: 128, size: 64, hp: hpVal, maxHp: hpVal,
             kbVx: 0, kbVy: 0, kbTime: 0, invuln: 0, jumpTimer: i * 25, isJumping: false,
             jumpTargetX: 0, jumpTargetY: 0, jumpStartX: 0, jumpStartY: 0, jumpProgress: 0,
-            facingRight: false, spawnAlpha: 0.0 // 淡入生成
+            facingRight: false, spawnAlpha: 0.0
         });
     }
 }
@@ -1187,8 +1429,10 @@ async function startStageGame(stageConfig) {
     currentActiveStage = stageConfig;
     totalWavesInStage = stageConfig.waves;
     currentWave = 1;
+    isDefeated = false;
+    isVictoryLocked = false;
 
-    const [loadedMap, loadedE1, loadedE2, loadedGold] = await Promise.all([
+    const [loadedMap, loadedE1, loadedE2, loadedGold, loadedGem] = await Promise.all([
         preloadAsset(stageConfig.map),
         preloadAsset('enemyA_01.png'),
         preloadAsset('enemyA_02.png'),
@@ -1204,9 +1448,11 @@ async function startStageGame(stageConfig) {
     enemyA01 = loadedE1;
     enemyA02 = loadedE2;
     goldCoinImg = loadedGold;
+    gemImg = loadedGem;
 
     hideAllScreens(); 
     switchBgm('battle');
+    updateGlobalBackButton('in-game');
     
     camera.mapWidth = 3840; camera.mapHeight = 2160;
     camera.zoom = 1.0; camera.targetZoom = 1.0;
@@ -1224,7 +1470,6 @@ async function startStageGame(stageConfig) {
     floatingTexts = []; dyingEnemies = []; activePunchGifs = []; chargeParticles = []; droppedCoins = [];
     enemies = [];
 
-    // 開局依序播放 "Ready..." -> "Fight!" 滑動橫幅
     waveState = 'ready_sliding';
     bannerX = 2200;
 
@@ -1237,7 +1482,7 @@ async function startStageGame(stageConfig) {
 }
 
 function executeAttack() {
-    if (player.attackCooldown > 0 || player.punchAnimTimer > 0 || waveState === 'ready_sliding' || waveState === 'victory_slowmo' || waveState === 'victory_pan') return;
+    if (isDefeated || isVictoryLocked || player.attackCooldown > 0 || player.punchAnimTimer > 0 || waveState === 'ready_sliding' || waveState === 'victory_slowmo' || waveState === 'victory_pan') return;
     
     const isHeavy = player.chargeTime >= 30; 
     player.chargeTime = 0;
@@ -1373,6 +1618,7 @@ function togglePause() {
 
 function quitLevelToStageSelect() {
     isPlaying = false; isPaused = false;
+    isVictoryLocked = false;
     if (animFrameReq) cancelAnimationFrame(animFrameReq);
     document.getElementById('pause-screen').style.display = 'none';
     playTransition(async () => openStageSelect());
@@ -1390,19 +1636,18 @@ function gameLoop() {
         if (slomoFrameCounter % 3 === 0) updateLogic();
 
         if (slomoTimer <= 0) {
-            // 2 秒慢動作結束：鏡頭迅速平滑拉回主角身上，撥放勝利音效，停留 1 秒
             waveState = 'victory_pan';
-            panTimer = 60; // 1 秒
+            panTimer = 180;
             playSnd('victory');
         }
     } else if (waveState === 'victory_pan') {
         panTimer--;
-        camera.zoom += (1.0 - camera.zoom) * 0.12; // 縮放回標準
+        camera.zoom += (1.0 - camera.zoom) * 0.12;
 
         updateLogic();
 
         if (panTimer <= 0) {
-            finishLevelAndShowVictory();
+            finishLevelAndShowVictory(false);
             return;
         }
     } else {
@@ -1434,8 +1679,7 @@ function updateLogic() {
     if (player.punchAnimTimer > 0) player.punchAnimTimer--;
     if (player.invuln > 0) player.invuln--;
 
-    // 蓄力 (在 Ready 橫幅滑動期間禁止蓄力與移動)
-    const canControl = (waveState !== 'ready_sliding' && waveState !== 'victory_slowmo' && waveState !== 'victory_pan');
+    const canControl = (!isDefeated && !isVictoryLocked && waveState !== 'ready_sliding' && waveState !== 'victory_slowmo' && waveState !== 'victory_pan');
 
     if (isAttackHeld && player.punchAnimTimer <= 0 && canControl) {
         player.chargeTime++;
@@ -1493,13 +1737,11 @@ function updateLogic() {
     
     clampToWalkableArea(player, 45);
 
-    // 鏡頭焦點跟隨：特寫時聚焦點在最後擊殺點，其餘時間聚集在主角
     let focusTargetX = (waveState === 'victory_slowmo') ? lastKillPos.x : player.x;
     let focusTargetY = (waveState === 'victory_slowmo') ? lastKillPos.y : player.y;
     camera.x = Math.max(0, Math.min(focusTargetX - camera.width / 2, camera.mapWidth - camera.width));
     camera.y = Math.max(0, Math.min(focusTargetY - camera.height / 2, camera.mapHeight - camera.height));
 
-    // 金幣
     for (let i = droppedCoins.length - 1; i >= 0; i--) {
         const c = droppedCoins[i];
         if (c.state === 'air') {
@@ -1529,7 +1771,6 @@ function updateLogic() {
         }
     }
 
-    // 敵人
     for (let i = enemies.length - 1; i >= 0; i--) {
         let e = enemies[i];
         if (e.spawnAlpha < 1.0) e.spawnAlpha = Math.min(1.0, e.spawnAlpha + 0.05);
@@ -1568,12 +1809,18 @@ function updateLogic() {
 
         clampToWalkableArea(e, e.size * 0.7);
 
-        if (player.invuln <= 0 && Math.hypot(player.x - e.x, player.y - e.y) < player.size + e.size && waveState !== 'victory_slowmo' && waveState !== 'victory_pan') {
+        if (!isDefeated && !isVictoryLocked && player.invuln <= 0 && Math.hypot(player.x - e.x, player.y - e.y) < player.size + e.size && waveState !== 'victory_slowmo' && waveState !== 'victory_pan') {
             player.hp -= 10; player.invuln = 30;
             let angle = Math.atan2(player.y - e.y, player.x - e.x);
             player.kbVx = Math.cos(angle) * 5; player.kbVy = Math.sin(angle) * 5; player.kbTime = 15;
             triggerScreenShake(8, 10);
             spawnDamageText(10, player.x, player.y, true);
+
+            if (player.hp <= 0) {
+                player.hp = 0;
+                handlePlayerDefeat();
+                return;
+            }
         }
 
         if (e.hp <= 0) {
@@ -1601,7 +1848,11 @@ function updateLogic() {
                     waveState = 'waiting_banner';
                     bannerTimer = 60; 
                 } else {
-                    // 全關卡最後一隻敵人死亡：進入 2 秒慢動作特寫
+                    isVictoryLocked = true;
+                    isAttackHeld = false;
+                    player.chargeTime = 0;
+                    document.getElementById('in-game-ui').style.display = 'none';
+
                     waveState = 'victory_slowmo';
                     slomoTimer = 120;
                     triggerScreenShake(20, 24);
@@ -1623,28 +1874,25 @@ function updateLogic() {
         if (ft.life <= 0) floatingTexts.splice(i, 1);
     }
 
-    // 橫幅滑動軌跡共用邏輯 (高速進場 -> 中央慢速 1.5 秒 -> 高速滑離)
     function updateBannerPosition(onComplete) {
         if (bannerX > 1080) {
             bannerX -= 36;
         } else if (bannerX > 840) {
-            bannerX -= 2.6; // 中央減速
+            bannerX -= 2.6;
         } else {
             bannerX -= 38;
         }
-        if (bannerX < -550) {
+        if (bannerX < -650) {
             onComplete();
         }
     }
 
-    // 1. 開場 Ready 橫幅
     if (waveState === 'ready_sliding') {
         updateBannerPosition(() => {
             waveState = 'fight_sliding';
             bannerX = 2200;
         });
     }
-    // 2. 開場 Fight 橫幅 (進場瞬間喚醒第一波怪)
     else if (waveState === 'fight_sliding') {
         if (enemies.length === 0 && bannerX <= 1080) {
             spawnEnemyWaveForCurrentStage();
@@ -1653,7 +1901,6 @@ function updateLogic() {
             waveState = 'fighting';
         });
     }
-    // 3. 波次間隔等候
     else if (waveState === 'waiting_banner') {
         bannerTimer--;
         if (bannerTimer <= 0) {
@@ -1661,7 +1908,6 @@ function updateLogic() {
             bannerX = 2200;
         }
     }
-    // 4. 下一波敵人即將出現橫幅
     else if (waveState === 'wave_banner_sliding') {
         updateBannerPosition(() => {
             currentWave++;
@@ -1671,31 +1917,69 @@ function updateLogic() {
     }
 }
 
-function finishLevelAndShowVictory() {
+function handlePlayerDefeat() {
+    isDefeated = true;
     isPlaying = false;
     document.getElementById('in-game-ui').style.display = 'none';
     isAttackHeld = false;
-    
-    // 首通獎勵判定：若本關卡尚未在首通清單中，發放 1 寶石並標記首通
-    if (!currentGameData.clearedStages) currentGameData.clearedStages = [];
-    const isFirstTime = !currentGameData.clearedStages.includes(currentActiveStage.id);
+    triggerAutoSave();
 
-    if (isFirstTime) {
-        currentGameData.clearedStages.push(currentActiveStage.id);
-        currentGameData.gem = (currentGameData.gem || 0) + 1; // 首次通關獎勵 1 寶石
-        document.getElementById('first-clear-badge').style.display = 'flex';
-        document.getElementById('victory-gem-box').style.display = 'flex';
+    setTimeout(() => {
+        finishLevelAndShowVictory(true);
+    }, 600);
+}
+
+function finishLevelAndShowVictory(isDefeat = false) {
+    isPlaying = false;
+    document.getElementById('in-game-ui').style.display = 'none';
+    isAttackHeld = false;
+
+    const titleEl = document.getElementById('settlement-title');
+    const badgeEl = document.getElementById('first-clear-badge');
+    const gemBoxEl = document.getElementById('victory-gem-box');
+    const btnGroup = document.getElementById('settlement-btn-group');
+
+    const panelCard = document.getElementById('victory-panel-card');
+    panelCard.style.animation = 'none';
+    void panelCard.offsetWidth;
+    panelCard.style.animation = 'slideInFromRightToCenter 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+
+    if (isDefeat) {
+        titleEl.className = 'defeat-title';
+        titleEl.innerText = '你筋疲力盡倒下了...';
+        badgeEl.style.display = 'none';
+        gemBoxEl.style.display = 'none';
+
+        btnGroup.innerHTML = `
+            <button class="btn" style="min-width: 11vw;" onclick="playClickSound(); playTransition(async () => startStageGame(currentActiveStage))">再次挑戰</button>
+            <button class="btn btn-danger" style="min-width: 11vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
+        `;
     } else {
-        document.getElementById('first-clear-badge').style.display = 'none';
-        document.getElementById('victory-gem-box').style.display = 'none';
+        titleEl.className = 'victory-title';
+        titleEl.innerText = '關卡通關成功！';
+
+        if (!currentGameData.clearedStages) currentGameData.clearedStages = [];
+        const isFirstTime = !currentGameData.clearedStages.includes(currentActiveStage.id);
+
+        if (isFirstTime) {
+            currentGameData.clearedStages.push(currentActiveStage.id);
+            currentGameData.gem = (currentGameData.gem || 0) + 1;
+            badgeEl.style.display = 'flex';
+            gemBoxEl.style.display = 'flex';
+        } else {
+            badgeEl.style.display = 'none';
+            gemBoxEl.style.display = 'none';
+        }
+
+        btnGroup.innerHTML = `
+            <button class="btn" style="min-width: 14vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
+        `;
     }
 
     triggerAutoSave();
-    
     document.getElementById('victory-gold-text').innerText = `${sessionGold}`;
-    playTransition(async () => {
-        document.getElementById('victory-screen').style.display = 'flex';
-    });
+    document.getElementById('victory-screen').style.display = 'flex';
+    updateGlobalBackButton('victory-screen');
 }
 
 function drawShadow(x, y, radius, camX, camY) {
@@ -1808,7 +2092,7 @@ function renderGame() {
         targetGif = 'maincharacter_punch.gif';
         currentFacingRight = player.punchFacingRight;
     } else {
-        const isMoving = (keys.w || keys.a || keys.s || keys.d || (joystick.active && Math.hypot(joystick.moveX, joystick.moveY) > 0.1)) && player.kbTime <= 0;
+        const isMoving = (!isDefeated && !isVictoryLocked && (keys.w || keys.a || keys.s || keys.d || (joystick.active && Math.hypot(joystick.moveX, joystick.moveY) > 0.1))) && player.kbTime <= 0;
         targetGif = isMoving ? 'maincharacter_walk.gif' : 'maincharacter_idle.gif';
     }
 
@@ -1874,27 +2158,27 @@ function renderGame() {
 
     ctx.restore();
 
-    // ==================== 繪製所有通告橫幅 (統一往上移 75px: Y=205) ====================
+    // 通告橫幅 (純淨無光暈)
     if (waveState === 'ready_sliding' || waveState === 'fight_sliding' || waveState === 'wave_banner_sliding') {
         ctx.save();
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.28)';
-        ctx.shadowBlur = 18;
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
         ctx.fillStyle = '#ffffff';
 
         let bannerText = '';
-        let bW = 680; 
+        let bW = 780; 
         let bH = 80;
-        let bannerY = 205; // 由原本 280px 上提 75px
+        let bannerY = 205;
 
         if (waveState === 'ready_sliding') {
             bannerText = 'READY...';
-            bW = 520;
+            bW = 560;
         } else if (waveState === 'fight_sliding') {
             bannerText = 'FIGHT!';
-            bW = 460;
+            bW = 500;
         } else if (waveState === 'wave_banner_sliding') {
-            bannerText = `⚔️ 下一波敵人即將出現！ (${currentWave + 1}/${totalWavesInStage})`;
-            bW = 720;
+            bannerText = `下一波敵人即將出現！ (${currentWave + 1}/${totalWavesInStage})`;
+            bW = 780;
         }
 
         ctx.beginPath();
@@ -1915,14 +2199,24 @@ function renderGame() {
 
     // 戰鬥 HUD
     if (document.getElementById('victory-screen').style.display !== 'flex') {
-        ctx.fillStyle = 'white'; ctx.font = 'bold 28px jf-openhuninn, sans-serif';
-        ctx.fillText(`血量: ${player.hp} / ${player.maxHp}`, 40, 50);
-        ctx.fillStyle = '#f1c40f'; ctx.fillText(`🪙 金幣: ${sessionGold}`, 40, 90);
-        ctx.fillStyle = '#b5e3ff'; ctx.fillText(`關卡: ${currentActiveStage.id} (波次: ${currentWave} / ${totalWavesInStage})`, 40, 130);
+        ctx.fillStyle = 'white'; 
+        ctx.font = 'bold 28px jf-openhuninn, sans-serif';
+        ctx.fillText(`血量: ${player.hp} / ${player.maxHp}`, 40, 52);
+
+        if (goldCoinImg.complete && goldCoinImg.naturalWidth !== 0) {
+            ctx.drawImage(goldCoinImg, 40, 76, 28, 28);
+        }
+        ctx.fillStyle = '#f1c40f'; 
+        ctx.fillText(`金幣: ${sessionGold}`, 76, 98);
+
+        ctx.fillStyle = '#b5e3ff'; 
+        ctx.fillText(`關卡: ${currentActiveStage.id}  (波次: ${currentWave} / ${totalWavesInStage})`, 40, 138);
     }
 }
 
 function returnToStageSelectAfterVictory() {
+    isVictoryLocked = false;
+    isDefeated = false;
     document.getElementById('victory-screen').style.display = 'none';
     playerSpriteImg.style.display = 'none'; 
     return openStageSelect();
