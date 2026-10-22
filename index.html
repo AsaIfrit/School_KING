@@ -32,15 +32,14 @@
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            height: 100dvh; /* 動態相容手機瀏覽器網址列伸縮 */
+            height: 100dvh;
             background-color: #000; overflow: hidden;
             display: flex; justify-content: center; align-items: center; color: #fff;
         }
 
-        /* ================= 完美 16:9 全尺寸智慧自適應容器 ================= */
+        /* 完美 16:9 全尺寸智慧自適應容器 */
         #game-container {
             position: relative;
-            /* 智慧約束：依據視窗自動等比縮放，確保在任何手機/PC螢幕永遠完整可見 */
             width: min(100vw, calc(100dvh * 16 / 9));
             height: min(100dvh, calc(100vw * 9 / 16));
             aspect-ratio: 16 / 9;
@@ -77,30 +76,30 @@
             background: rgba(15, 15, 25, 0.95); z-index: 10; transition: opacity 0.4s ease;
         }
 
-        /* ================= 通用按鈕：左上角返回 / 右上角小圓形全螢幕 ================= */
+        /* ================= 頂部通用機能按鈕：全螢幕極致右上化，絕不遮擋 ================= */
+        #fullscreen-btn {
+            position: absolute; top: 2.2%; right: 2%; z-index: 60;
+            width: 2.3vw; height: 2.3vw; min-width: 32px; min-height: 32px;
+            background: rgba(255, 255, 255, 0.92); color: #388099;
+            border: 1.5px solid #dcdcdc; border-radius: 50%;
+            padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.18); backdrop-filter: blur(5px);
+            transition: transform 0.2s ease, background-color 0.2s;
+        }
+        #fullscreen-btn:hover { background: #ffffff; transform: scale(1.08); }
+        #fullscreen-btn svg { width: 1.1vw; height: 1.1vw; min-width: 15px; min-height: 15px; fill: #388099; }
+
+        /* 左上角通用返回按鈕 */
         #global-back-btn {
-            position: absolute; top: 4%; left: 3.5%; z-index: 50;
+            position: absolute; top: 2.2%; left: 2%; z-index: 50;
             background: rgba(255, 255, 255, 0.92); color: #388099;
             border: 1.5px solid #dcdcdc; border-radius: 20px;
-            padding: 0.5vw 1.3vw; font-size: 1.15vw; font-weight: bold;
+            padding: 0.45vw 1.2vw; font-size: 1.1vw; font-weight: bold;
             cursor: pointer; display: none; align-items: center; gap: 0.4vw;
             box-shadow: 0 4px 12px rgba(0,0,0,0.12); backdrop-filter: blur(5px);
             transition: all 0.2s ease;
         }
         #global-back-btn:hover { background: #ffffff; transform: scale(1.05); }
-
-        /* 縮小版精緻圓形全螢幕按鈕 (無文字、不擋暫停鍵) */
-        #fullscreen-btn {
-            position: absolute; top: 4%; right: 3%; z-index: 50;
-            width: 2.8vw; height: 2.8vw; min-width: 38px; min-height: 38px;
-            background: rgba(255, 255, 255, 0.92); color: #388099;
-            border: 1.5px solid #dcdcdc; border-radius: 50%;
-            padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15); backdrop-filter: blur(5px);
-            transition: transform 0.2s ease, background-color 0.2s;
-        }
-        #fullscreen-btn:hover { background: #ffffff; transform: scale(1.08); }
-        #fullscreen-btn svg { width: 1.3vw; height: 1.3vw; min-width: 18px; min-height: 18px; fill: #388099; }
 
         /* ================= 戰鬥內 UI 與暫停選單 ================= */
         #in-game-ui {
@@ -108,14 +107,14 @@
             pointer-events: none; z-index: 8; display: none;
         }
 
-        /* 暫停鍵安排在全螢幕鍵左側，保留安全距離絕不重疊 */
+        /* 暫停鍵安排在全螢幕按鈕左側，並列且間隔充足，徹底消除覆蓋 */
         .btn-pause-game {
-            position: absolute; top: 4%; right: calc(3% + 46px);
+            position: absolute; top: 2.2%; right: calc(2% + 42px);
             background: rgba(255, 255, 255, 0.9); color: #388099;
             border: 1.5px solid #dcdcdc; border-radius: 16px;
-            padding: 0.5vw 1.2vw; font-size: 1.05vw; font-weight: bold;
+            padding: 0.4vw 1.1vw; font-size: 1vw; font-weight: bold;
             cursor: pointer; pointer-events: auto;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: all 0.2s ease;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15); transition: all 0.2s ease;
         }
         .btn-pause-game:hover { transform: scale(1.05); background: #ffffff; }
 
@@ -165,11 +164,12 @@
         /* 登入畫面樣式 */
         #login-screen { background: #000; }
         #login-bg-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
-        .top-left-logo { position: absolute; top: 5%; left: 5%; z-index: 5; width: 18vw; max-width: 320px; min-width: 160px; pointer-events: none; filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.5)); }
+        .top-left-logo { position: absolute; top: 4%; left: 4%; z-index: 5; width: 18vw; max-width: 320px; min-width: 160px; pointer-events: none; filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.5)); }
         
-        .top-right-group { position: absolute; top: 4%; right: calc(3% + 46px); z-index: 15; display: flex; align-items: center; gap: 0.6vw; }
+        /* 登入畫面右上角按鈕群，向左避讓全螢幕鍵 */
+        .top-right-group { position: absolute; top: 2.2%; right: calc(2% + 42px); z-index: 15; display: flex; align-items: center; gap: 0.6vw; }
         
-        .google-login-btn { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.8); color: #388099; padding: 0.4vw 0.9vw; border-radius: 14px; font-size: 0.7vw; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 0.4vw; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease; }
+        .google-login-btn { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.8); color: #388099; padding: 0.35vw 0.85vw; border-radius: 14px; font-size: 0.7vw; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 0.4vw; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease; }
         .google-login-btn:hover { background: #ffffff; transform: translateY(-1px); }
         .google-login-btn svg { width: 0.8vw !important; height: 0.8vw !important; min-width: 10px; min-height: 10px; }
 
@@ -184,7 +184,8 @@
         .lobby-character-portrait.animate-in { animation: slideInFromLeft 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideInFromLeft { 0% { transform: translateX(-500px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 
-        .lobby-top-bar { position: absolute; top: 3.5%; right: calc(3% + 46px); z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.8vw; }
+        /* 大廳右上角頂部貨幣欄，精確向左避讓全螢幕按鈕 */
+        .lobby-top-bar { position: absolute; top: 2.2%; right: calc(2% + 42px); z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.8vw; }
         .lobby-currency-container { display: flex; gap: 1.2vw; }
         .currency-box { position: relative; background: #ffffff; border-radius: 20px; width: 10.5vw; height: 2.3vw; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border: 1px solid #eef2f5; padding: 0 1vw; }
         .currency-box-icon { position: absolute; left: -0.6vw; top: 50%; transform: translateY(-50%); width: 2.2vw; height: 2.2vw; object-fit: contain; }
@@ -285,7 +286,7 @@
         .char-detail-tag { display: inline-block; align-self: flex-start; padding: 0.3vw 0.8vw; background: rgba(255, 255, 255, 0.15); border-radius: 8px; font-size: 0.95vw; color: #b0bec5; }
         .char-detail-body { font-size: 1.1vw; color: #cfd8dc; line-height: 1.7; margin-top: 1.5vw; }
 
-        /* 商店畫面 (右側白色大方塊中線精準垂直置中) */
+        /* 商店畫面 */
         #shop-screen { background: url('shop.jpg') no-repeat center center / cover; position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0; overflow: hidden; }
         .shop-npc-interactive-zone { position: absolute; top: 0; left: 0; width: 50%; height: 100%; z-index: 8; cursor: pointer; }
         .shop-npc-portrait { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; z-index: 6; opacity: 0; }
@@ -586,7 +587,7 @@
             </div>
         </div>
 
-        <!-- 7. 通用結算畫面 (支援繼續下一關) -->
+        <!-- 7. 通用結算畫面 -->
         <div id="victory-screen" class="ui-screen" style="display: none;">
             <div class="victory-panel" id="victory-panel-card">
                 <div id="settlement-title" class="victory-title">關卡通關成功！</div>
@@ -706,7 +707,7 @@ function toggleFullscreen() {
     if (!isFullscreenNow) {
         if (requestFullscreen) {
             requestFullscreen.call(docEl).catch(() => {
-                showToast("瀏覽器已限制全螢幕，建議以橫屏體驗");
+                showToast("瀏覽器限制全螢幕，建議以橫屏體驗");
             });
         }
     } else {
@@ -1809,7 +1810,6 @@ function updateLogic() {
     camera.x = Math.max(0, Math.min(focusTargetX - camera.width / 2, camera.mapWidth - camera.width));
     camera.y = Math.max(0, Math.min(focusTargetY - camera.height / 2, camera.mapHeight - camera.height));
 
-    // 金幣
     for (let i = droppedCoins.length - 1; i >= 0; i--) {
         const c = droppedCoins[i];
         if (c.state === 'air') {
@@ -1839,7 +1839,6 @@ function updateLogic() {
         }
     }
 
-    // 敵人
     for (let i = enemies.length - 1; i >= 0; i--) {
         let e = enemies[i];
         if (e.spawnAlpha < 1.0) e.spawnAlpha = Math.min(1.0, e.spawnAlpha + 0.05);
