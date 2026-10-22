@@ -295,11 +295,106 @@
             z-index: 25;
         }
 
-        #shop-screen { background: url('office.jpg') no-repeat center center / cover; }
-        .panel-container { width: 75%; height: 65%; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); border-radius: 24px; padding: 2vw; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #eef2f5; }
-        .slot-grid, .shop-grid { display: grid; grid-template-columns: 1fr; gap: 1.2vw; }
-        .slot-item, .shop-item { background: #ffffff; padding: 1.2vw 2vw; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eef2f5; color: #388099; }
+        /* ================= 5. 全新二次元互動商店介面 (參考附圖設計) ================= */
+        #shop-screen {
+            background: #ffffff;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0; overflow: hidden;
+        }
 
+        /* 點擊觸發對話的左側透明熱區 */
+        .shop-npc-interactive-zone {
+            position: absolute; top: 0; left: 0; width: 50%; height: 100%;
+            z-index: 8; cursor: pointer;
+        }
+
+        /* NPC 立繪 */
+        .shop-npc-portrait {
+            position: absolute; left: 0; bottom: 0; width: 48%; height: 96%;
+            object-fit: contain; object-position: bottom left;
+            pointer-events: none; z-index: 6; opacity: 0;
+        }
+        .shop-npc-portrait.animate-in {
+            animation: slideInFromLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* NPC 打字對話框 (圓角白框) */
+        #shop-dialog-bubble {
+            position: absolute; left: 5%; bottom: 15%; width: 34%; min-height: 4.8vw;
+            background: #ffffff; border-radius: 20px;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+            border: 2px solid #eef2f5;
+            padding: 1vw 1.6vw; display: flex; align-items: center;
+            z-index: 9; opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        #shop-dialog-text {
+            color: #388099; font-size: 1.25vw; font-weight: bold;
+            letter-spacing: 1px; line-height: 1.4;
+        }
+
+        /* 商店右側功能面板 (由右向左滑入) */
+        .shop-right-panel-wrapper {
+            position: absolute; right: 4.5%; width: 44%; height: 82%;
+            background: #ffffff; border-radius: 28px;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
+            border: 2px solid #eef2f5;
+            padding: 2.2vw 2.5vw; display: flex; flex-direction: column;
+            justify-content: space-between; z-index: 10; opacity: 0;
+        }
+        .shop-right-panel-wrapper.animate-in {
+            animation: slideInFromRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .shop-header-title { font-size: 2.2vw; font-weight: bold; color: #388099; }
+        .shop-header-sub { font-size: 1.1vw; font-weight: bold; color: #538199; margin-top: 0.3vw; }
+        .shop-goods-list { display: flex; flex-direction: column; gap: 1.1vw; margin-top: 1vw; }
+        .shop-goods-card {
+            background: #fbfdfe; border: 1.5px solid #dbe8ed; border-radius: 18px;
+            padding: 1vw 1.5vw; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        .goods-title { font-size: 1.3vw; font-weight: bold; color: #388099; }
+        .goods-sub { font-size: 0.95vw; color: #78909c; margin-top: 0.2vw; }
+
+        /* 遊戲畫面頂部浮動通知 (Toast) */
+        #game-toast {
+            position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+            background: #ffffff; color: #388099;
+            border: 2px solid #bce2ed; border-radius: 30px;
+            padding: 0.6vw 2vw; font-size: 1.25vw; font-weight: bold;
+            box-shadow: 0 8px 24px rgba(56, 128, 153, 0.25);
+            z-index: 1000; pointer-events: none; opacity: 0;
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #game-toast.show {
+            top: 5%; opacity: 1;
+        }
+
+        /* 勝利結算畫面 (翻新為大廳統一的白色圓角面板) */
+        #victory-screen {
+            display: none; cursor: pointer; background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(8px); z-index: 30;
+        }
+        .victory-panel {
+            background: #ffffff; border-radius: 28px; padding: 3vw 5vw;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15); border: 2px solid #eef2f5;
+            display: flex; flex-direction: column; align-items: center; gap: 1.2vw;
+            animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .victory-title { font-size: 3.2vw; font-weight: bold; color: #388099; letter-spacing: 2px; }
+        .victory-coins-box {
+            background: #fbfdfe; border: 1.5px solid #dbe8ed; border-radius: 18px;
+            padding: 0.8vw 2.5vw; font-size: 1.6vw; font-weight: bold; color: #f1c40f;
+            display: flex; align-items: center; gap: 0.6vw;
+        }
+
+        /* 存檔彈窗與讀檔 */
         #load-screen-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; display: none; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.25); }
         .load-game-card { width: 48vw; min-width: 420px; background: #ffffff; border-radius: 20px; padding: 2.5vw 3vw 1.8vw 3vw; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); color: #388099; display: flex; flex-direction: column; gap: 1.2vw; }
         .load-slot-list { display: flex; flex-direction: column; gap: 1vw; }
@@ -308,21 +403,21 @@
         .cloud-sync-status { font-size: 0.95vw; color: #78909c; }
         .back-text-btn { background: none; border: none; color: #388099; font-size: 1.6vw; font-weight: bold; cursor: pointer; }
 
-        #victory-screen { display: none; cursor: pointer; background: rgba(0, 0, 0, 0.75); z-index: 30; }
+        #save-screen { background: url('office.jpg') no-repeat center center / cover; }
+        .panel-container { width: 75%; height: 65%; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); border-radius: 24px; padding: 2vw; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #eef2f5; }
+        .slot-grid { display: grid; grid-template-columns: 1fr; gap: 1.2vw; }
+        .slot-item { background: #ffffff; padding: 1.2vw 2vw; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eef2f5; color: #388099; }
 
-        /* ================= 智慧無黑屏等待：透明攔截層 + 原地 LOADING 浮現 ================= */
+        /* ================= 智慧原地等待轉場 (右下角 LOADING) ================= */
         #transition-overlay { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: transparent; /* 完全透明，原地停留當前畫面，不黑屏 */
-            pointer-events: none; z-index: 999; opacity: 0; 
+            background: transparent; pointer-events: none; z-index: 999; opacity: 0; 
             transition: opacity 0.2s ease; 
         }
         #transition-overlay.active { 
-            pointer-events: auto; /* 載入中攔截點擊，防止重複操作 */
-            opacity: 1; 
+            pointer-events: auto; opacity: 1; 
         }
 
-        /* 經典沉浸式右下角 LOADING 提示標籤 */
         #loading-corner-box {
             position: absolute; right: 3.5%; bottom: 3.5%;
             display: flex; align-items: baseline; gap: 4px;
@@ -337,17 +432,11 @@
             pointer-events: none;
             animation: pulseGlow 1.2s ease-in-out infinite alternate;
         }
-
         @keyframes pulseGlow {
             0% { transform: translateY(0px); opacity: 0.85; }
             100% { transform: translateY(-2px); opacity: 1; box-shadow: 0 8px 22px rgba(72, 202, 228, 0.45); }
         }
-
-        .loading-dots {
-            display: inline-block;
-            width: 1.6vw;
-            text-align: left;
-        }
+        .loading-dots { display: inline-block; width: 1.6vw; text-align: left; }
 
         #orientation-warning { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #ff4757; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; font-size: 24px; text-align: center; }
         @media screen and (orientation: portrait) { #orientation-warning { display: flex; } }
@@ -359,9 +448,12 @@
         📱<br><br>請將手機旋轉為「橫屏」以獲得最佳遊戲體驗！
     </div>
 
-    <!-- 背景音樂 -->
+    <!-- 背景音樂配置 (全新 BGM 庫) -->
     <audio id="bg-music-login" src="Glassy Blooms.mp3" loop preload="auto"></audio>
     <audio id="bg-music-lobby" src="Glassy Pastel Dreams.mp3" loop preload="auto"></audio>
+    <audio id="bg-music-stage" src="Pastel Office.mp3" loop preload="auto"></audio>
+    <audio id="bg-music-shop" src="Gacha Sparkle.mp3" loop preload="auto"></audio>
+    <audio id="bg-music-battle" src="Victory Pixel.mp3" loop preload="auto"></audio>
 
     <div id="game-container">
         <!-- 戰鬥 UI -->
@@ -376,6 +468,9 @@
         <img id="player-gif-sprite" src="maincharacter_idle.gif" alt="Player Character">
         <canvas id="clickEffectCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998;"></canvas>
         <canvas id="gameCanvas" width="1920" height="1080"></canvas>
+
+        <!-- 頂部圓角白框 Toast 通知 (替代原生 alert) -->
+        <div id="game-toast">已成功購買！</div>
 
         <!-- 全局無黑屏轉場層 (僅右下角精緻 Loading) -->
         <div id="transition-overlay">
@@ -464,8 +559,8 @@
             <div class="stage-card-grid">
                 <div class="stage-card" onclick="playClickSound(); playTransition(async () => startLevel(1, 'map_1-1.jpg'))">
                     <div style="font-size: 1.8vw; font-weight: bold;">關卡 1-1</div>
-                    <div style="font-size: 1vw; color: #78909c;">教學關卡</div>
-                    <div style="font-size: 1.2vw; font-weight: bold; color: #ff4757;">敵人: 3 體</div>
+                    <div style="font-size: 1vw; color: #78909c;">教學關卡 (共 3 波)</div>
+                    <div style="font-size: 1.2vw; font-weight: bold; color: #ff4757;">敵人: 9 體</div>
                     <button class="btn" style="width: 100%;">開始挑戰</button>
                 </div>
                 <div class="stage-card" style="opacity: 0.65; cursor: not-allowed;">
@@ -496,36 +591,52 @@
             <button class="esc-exit-btn" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">按 ESC 返回大廳</button>
         </div>
 
-        <!-- 5. SHOP 商店 -->
+        <!-- 5. 全新二次元互動商店介面 (參考附圖) -->
         <div id="shop-screen" class="ui-screen" style="display: none;">
-            <div class="title">SHOP 局外商店</div>
-            <div class="subtitle" id="shop-currency-display">金幣: 0 | 寶石: 0</div>
-            <div class="panel-container">
-                <div class="shop-grid">
-                    <div class="shop-item">
-                        <div>
-                            <div style="font-size: 1.4vw; font-weight: bold;">攻擊力強化</div>
-                            <div id="atk-level-text" style="font-size: 1vw; color: #78909c;">LV 1</div>
+            <!-- 左側點擊觸發 NPC 對話熱區 -->
+            <div class="shop-npc-interactive-zone" onclick="triggerNpcDialogue()"></div>
+
+            <!-- 左側 NPC 角色立繪 -->
+            <img id="shop-npc-img" class="shop-npc-portrait" src="shopNPC_01.png" alt="Shop NPC">
+
+            <!-- 點擊立繪後出現的打字機氣泡對話框 -->
+            <div id="shop-dialog-bubble">
+                <span id="shop-dialog-text"></span>
+            </div>
+
+            <!-- 右側功能滑入卡片 -->
+            <div class="shop-right-panel-wrapper" id="shop-right-panel">
+                <div>
+                    <div class="shop-header-title">校園補給商店</div>
+                    <div class="shop-header-sub" id="shop-currency-display">金幣: 0 | 寶石: 0</div>
+                    
+                    <div class="shop-goods-list">
+                        <div class="shop-goods-card">
+                            <div>
+                                <div class="goods-title">攻擊力強化</div>
+                                <div class="goods-sub" id="atk-level-text">LV 1</div>
+                            </div>
+                            <button class="btn" style="padding: 0.5vw 1.2vw; font-size: 1.1vw;" onclick="buyUpgrade('atk')">升級 (<span id="atk-cost">50</span>)</button>
                         </div>
-                        <button class="btn" style="padding: 0.5vw 1.2vw; font-size: 1.1vw;" onclick="playClickSound(); buyUpgrade('atk')">升級 (<span id="atk-cost">50</span>)</button>
-                    </div>
-                    <div class="shop-item">
-                        <div>
-                            <div style="font-size: 1.4vw; font-weight: bold;">生命值上限</div>
-                            <div id="hp-level-text" style="font-size: 1vw; color: #78909c;">LV 1</div>
+                        <div class="shop-goods-card">
+                            <div>
+                                <div class="goods-title">生命值上限</div>
+                                <div class="goods-sub" id="hp-level-text">LV 1</div>
+                            </div>
+                            <button class="btn" style="padding: 0.5vw 1.2vw; font-size: 1.1vw;" onclick="buyUpgrade('hp')">升級 (<span id="hp-cost">50</span>)</button>
                         </div>
-                        <button class="btn" style="padding: 0.5vw 1.2vw; font-size: 1.1vw;" onclick="playClickSound(); buyUpgrade('hp')">升級 (<span id="hp-cost">50</span>)</button>
-                    </div>
-                    <div class="shop-item">
-                        <div>
-                            <div style="font-size: 1.4vw; font-weight: bold;">角色祈願</div>
-                            <div style="font-size: 1vw; color: #78909c;">抽取夥伴</div>
+                        <div class="shop-goods-card">
+                            <div>
+                                <div class="goods-title">夥伴祈願單抽</div>
+                                <div class="goods-sub">獲得全新戰鬥夥伴</div>
+                            </div>
+                            <button class="btn" style="padding: 0.5vw 1.2vw; font-size: 1.1vw;" onclick="drawGacha()">單抽 (10 寶石)</button>
                         </div>
-                        <button class="btn" style="padding: 0.5vw 1.2vw; font-size: 1.1vw;" onclick="playClickSound(); drawGacha()">單抽 (10 寶石)</button>
                     </div>
                 </div>
+
                 <div style="text-align: right; margin-top: 1vw;">
-                    <button class="btn" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">返回大廳</button>
+                    <button class="btn btn-danger" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">返回大廳</button>
                 </div>
             </div>
         </div>
@@ -541,16 +652,21 @@
             </div>
         </div>
 
-        <!-- 7. 勝利結算畫面 -->
+        <!-- 7. 全新大廳風格勝利結算畫面 (白色質感面板 + 藍字) -->
         <div id="victory-screen" class="ui-screen" style="display: none;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">
-            <div class="title" style="color: #2ed573; font-size: 4.5vw; text-shadow: 0 0 20px rgba(46, 213, 115, 0.6);">🎉 戰鬥勝利！</div>
-            <div class="subtitle" id="victory-gold-text" style="color: #eccc68;">獲得金幣: 0</div>
-            <div style="font-size: 1.6vw; color: #aaa; margin-top: 2vw;">( 點擊畫面回到關卡選擇 )</div>
+            <div class="victory-panel">
+                <div class="victory-title">🎉 關卡通關成功！</div>
+                <div class="victory-coins-box">
+                    <span>🪙 本場戰利品:</span>
+                    <span id="victory-gold-text">0 金幣</span>
+                </div>
+                <div style="font-size: 1.1vw; color: #78909c; margin-top: 0.5vw;">( 點擊任意處返回關卡選擇 )</div>
+            </div>
         </div>
     </div>
 
 <script>
-// ==================== 0. 音效池與網路資源非同步快取器 ====================
+// ==================== 0. 音訊系統配置 ====================
 class AudioPool {
     constructor(src, size = 4) {
         this.pool = [];
@@ -581,7 +697,48 @@ const sndPools = {
 function playClickSound() { sndPools.click.play(); }
 function playSnd(name) { if (sndPools[name]) sndPools[name].play(); }
 
-// 全域資源非同步快取
+// 5 大場景 BGM
+const bgmList = {
+    login: document.getElementById('bg-music-login'),
+    lobby: document.getElementById('bg-music-lobby'),
+    stage: document.getElementById('bg-music-stage'),
+    shop: document.getElementById('bg-music-shop'),
+    battle: document.getElementById('bg-music-battle')
+};
+
+let currentBgmKey = null;
+
+function switchBgm(targetKey) {
+    if (currentBgmKey === targetKey) return;
+    Object.keys(bgmList).forEach(key => {
+        if (key !== targetKey && !bgmList[key].paused) {
+            bgmList[key].pause();
+            bgmList[key].currentTime = 0;
+        }
+    });
+    if (targetKey && bgmList[targetKey]) {
+        bgmList[targetKey].play().catch(() => {});
+    }
+    currentBgmKey = targetKey;
+}
+
+function adjustVolume(val) { 
+    Object.values(bgmList).forEach(audio => audio.volume = val);
+    document.querySelectorAll('.volume-slider-element').forEach(s => s.value = val); 
+}
+function toggleMute() { 
+    const isMuted = bgmList.login.volume > 0;
+    adjustVolume(isMuted ? 0 : 1.0); 
+}
+
+window.addEventListener('pointerdown', function initAudioOnce() {
+    if (document.getElementById('login-screen').style.display !== 'none' && bgmList.login.paused) {
+        switchBgm('login');
+    }
+    window.removeEventListener('pointerdown', initAudioOnce);
+}, { once: true });
+
+// ==================== 1. 全域資源非同步快取 & Toast 通知 ====================
 const assetCache = new Map();
 
 function preloadAsset(src) {
@@ -592,31 +749,18 @@ function preloadAsset(src) {
         const img = new Image();
         img.onload = () => {
             if ('decode' in img) {
-                img.decode().then(() => {
-                    assetCache.set(src, img);
-                    resolve(img);
-                }).catch(() => {
-                    assetCache.set(src, img);
-                    resolve(img);
-                });
+                img.decode().then(() => { assetCache.set(src, img); resolve(img); })
+                           .catch(() => { assetCache.set(src, img); resolve(img); });
             } else {
-                assetCache.set(src, img);
-                resolve(img);
+                assetCache.set(src, img); resolve(img);
             }
         };
-        img.onerror = () => {
-            console.warn(`資源載入略過或失敗: ${src}`);
-            resolve(img);
-        };
+        img.onerror = () => { console.warn(`資源載入略過: ${src}`); resolve(img); };
         img.src = src;
     });
 }
+function preloadMultipleAssets(urls) { return Promise.all(urls.map(url => preloadAsset(url))); }
 
-function preloadMultipleAssets(urls) {
-    return Promise.all(urls.map(url => preloadAsset(url)));
-}
-
-// 點點呼吸動畫計時器
 let dotsInterval = null;
 function startLoadingDots() {
     const dotsEl = document.getElementById('loading-dots-el');
@@ -625,47 +769,22 @@ function startLoadingDots() {
     dotsInterval = setInterval(() => {
         count = (count + 1) % 4;
         dotsEl.innerText = '.'.repeat(count);
-    }, 320);
+    }, 300);
 }
 function stopLoadingDots() {
-    if (dotsInterval) {
-        clearInterval(dotsInterval);
-        dotsInterval = null;
-    }
+    if (dotsInterval) { clearInterval(dotsInterval); dotsInterval = null; }
 }
 
-// 背景音樂控制
-const bgmLogin = document.getElementById('bg-music-login');
-const bgmLobby = document.getElementById('bg-music-lobby');
-
-function switchBgm(type) {
-    if (type === 'login') {
-        bgmLobby.pause();
-        if (bgmLogin.paused) bgmLogin.play().catch(() => {});
-    } else if (type === 'lobby') {
-        bgmLogin.pause();
-        if (bgmLobby.paused) bgmLobby.play().catch(() => {});
-    } else if (type === 'none') {
-        bgmLogin.pause();
-        bgmLobby.pause();
-    }
+let toastTimer = null;
+function showToast(msg) {
+    const toast = document.getElementById('game-toast');
+    toast.innerText = msg;
+    toast.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 2200);
 }
 
-function adjustVolume(val) { 
-    bgmLogin.volume = val; 
-    bgmLobby.volume = val; 
-    document.querySelectorAll('.volume-slider-element').forEach(s => s.value = val); 
-}
-function toggleMute() { adjustVolume(bgmLogin.volume > 0 ? 0 : 1.0); }
-
-window.addEventListener('pointerdown', function initAudioOnce() {
-    if (document.getElementById('login-screen').style.display !== 'none' && bgmLogin.paused) {
-        switchBgm('login');
-    }
-    window.removeEventListener('pointerdown', initAudioOnce);
-}, { once: true });
-
-// ==================== 1. FIREBASE 與存檔系統 ====================
+// ==================== 2. FIREBASE 與存檔系統 ====================
 const firebaseConfig = {
     apiKey: "AIzaSyCW0VkxjD8cYSJRdSh4dJihXfcFbb85FaY",
     authDomain: "schoolking-b41af.firebaseapp.com",
@@ -697,13 +816,13 @@ auth.onAuthStateChanged((user) => {
 function toggleGoogleLogin() {
     if (currentUser) { 
         auth.signOut().then(() => { 
-            alert("已登出 Google 帳號"); 
+            showToast("已登出 Google 帳號"); 
             checkAutoSaveAndToggleContinue(); 
             switchBgm('login');
         });
     } else { 
         auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(res => {
-            alert(`歡迎回來，${res.user.displayName}！`); 
+            showToast(`歡迎回來，${res.user.displayName}！`); 
             checkAutoSaveAndToggleContinue(); 
             switchBgm('login');
         }); 
@@ -779,7 +898,7 @@ async function handleStartNewGame() {
     playTransition(async () => enterMainLobby());
 }
 
-// ==================== 2. UI 互動與「原地無黑屏等待」轉場 ====================
+// ==================== 3. 轉場與各介面邏輯 ====================
 const gameContainer = document.getElementById('game-container');
 const fxCanvas = document.getElementById('clickEffectCanvas');
 const fxCtx = fxCanvas.getContext('2d');
@@ -811,21 +930,13 @@ function updateAndDrawFx() {
 }
 updateAndDrawFx();
 
-/**
- * 原地無縫轉場：
- * 1. 絕不閃黑屏，停留在當前最後畫面
- * 2. 右下角淡入精緻的 LOADING... 標籤並啟動呼吸點點動畫
- * 3. 待下一個場景全部素材就緒，一瞬間直接切過去，隱藏 LOADING 標籤
- */
 async function playTransition(asyncAction) {
     const overlay = document.getElementById('transition-overlay');
     startLoadingDots();
-    overlay.classList.add('active'); // 顯示右下角 LOADING，同時鎖定點擊防連按
+    overlay.classList.add('active');
 
     try {
-        if (asyncAction) {
-            await asyncAction();
-        }
+        if (asyncAction) await asyncAction();
     } catch (err) {
         console.error("轉場執行失敗:", err);
     } finally {
@@ -842,12 +953,8 @@ function hideAllScreens() {
 function clearAllPunchGifs() { document.querySelectorAll('.punch-gif-sprite').forEach(el => el.remove()); }
 
 async function enterMainLobby() {
-    // 預載大廳必備資產 (大廳背景、金幣、寶石、當前夥伴)
     const currentPartner = availablePartners.find(p => p.name === currentGameData.selectedPartner);
-    await preloadMultipleAssets([
-        'office.jpg', 'gold.png', 'gem.png',
-        currentPartner ? currentPartner.lobbyImage : null
-    ]);
+    await preloadMultipleAssets(['office.jpg', 'gold.png', 'gem.png', currentPartner ? currentPartner.lobbyImage : null]);
 
     hideAllScreens();
     switchBgm('lobby');
@@ -873,14 +980,44 @@ function backToLobbyFromSubScreen() { return enterMainLobby(); }
 async function openStageSelect() { 
     await preloadAsset('office.jpg');
     hideAllScreens(); 
-    switchBgm('none'); 
+    switchBgm('stage'); 
     document.getElementById('stage-select-screen').style.display = 'flex'; 
 }
 
+// ==================== 4. 商店系統與 NPC 對話互動 ====================
+const npcDialogues = [
+    "準備好了再出發吧...!",
+    "有沒有想要的東西呢?",
+    "不過要花錢就是了..."
+];
+
+let typingInterval = null;
+let dialogueFadeTimeout = null;
+
 async function openShop() { 
-    await preloadAsset('office.jpg');
+    await preloadMultipleAssets(['shopNPC_01.png', 'gold.png', 'gem.png']);
     hideAllScreens(); 
-    document.getElementById('shop-screen').style.display = 'flex'; 
+    switchBgm('shop'); 
+    
+    const shopScreen = document.getElementById('shop-screen');
+    shopScreen.style.display = 'flex'; 
+
+    updateShopUI();
+
+    const npcImg = document.getElementById('shop-npc-img');
+    const rightPanel = document.getElementById('shop-right-panel');
+    npcImg.classList.remove('animate-in');
+    rightPanel.classList.remove('animate-in');
+    void npcImg.offsetWidth;
+    npcImg.classList.add('animate-in');
+    rightPanel.classList.add('animate-in');
+
+    // 關閉先前的對話氣泡
+    const bubble = document.getElementById('shop-dialog-bubble');
+    bubble.style.opacity = '0';
+}
+
+function updateShopUI() {
     document.getElementById('shop-currency-display').innerText = `金幣: ${currentGameData.gold} | 寶石: ${currentGameData.gem}`;
     document.getElementById('atk-level-text').innerText = `LV ${currentGameData.atkLevel} (基礎攻擊力: ${10 + (currentGameData.atkLevel - 1) * 5})`;
     document.getElementById('atk-cost').innerText = currentGameData.atkLevel * 50;
@@ -888,28 +1025,72 @@ async function openShop() {
     document.getElementById('hp-cost').innerText = currentGameData.hpLevel * 50;
 }
 
+function triggerNpcDialogue() {
+    playClickSound();
+    const bubble = document.getElementById('shop-dialog-bubble');
+    const textEl = document.getElementById('shop-dialog-text');
+    
+    // 清除既有計時器
+    if (typingInterval) clearInterval(typingInterval);
+    if (dialogueFadeTimeout) clearTimeout(dialogueFadeTimeout);
+
+    // 隨機選句
+    const sentence = npcDialogues[Math.floor(Math.random() * npcDialogues.length)];
+    textEl.innerText = '';
+    bubble.style.opacity = '1';
+
+    let charIndex = 0;
+    typingInterval = setInterval(() => {
+        if (charIndex < sentence.length) {
+            textEl.innerText += sentence[charIndex];
+            charIndex++;
+        } else {
+            clearInterval(typingInterval);
+            // 打字完畢後停留 2.2 秒，淡出消失
+            dialogueFadeTimeout = setTimeout(() => {
+                bubble.style.opacity = '0';
+            }, 2200);
+        }
+    }, 60);
+}
+
 function buyUpgrade(type) {
     let cost = currentGameData[`${type}Level`] * 50;
     if (currentGameData.gold >= cost) {
-        currentGameData.gold -= cost; currentGameData[`${type}Level`] += 1;
-        openShop(); triggerAutoSave();
-    } else { alert("金幣不足！"); }
+        playClickSound();
+        currentGameData.gold -= cost; 
+        currentGameData[`${type}Level`] += 1;
+        updateShopUI(); 
+        triggerAutoSave();
+        showToast(type === 'atk' ? "攻擊力升級成功！" : "生命上限提升成功！");
+    } else { 
+        playClickSound();
+        showToast("金幣不足，快去戰鬥收集吧！"); 
+    }
 }
+
 function drawGacha() {
     if (currentGameData.gem >= 10) {
+        playClickSound();
         currentGameData.gem -= 10;
         const unowned = availablePartners.filter(p => !currentGameData.ownedPartners.includes(p.name));
         if (unowned.length > 0) {
             const newChar = unowned[Math.floor(Math.random() * unowned.length)];
             currentGameData.ownedPartners.push(newChar.name);
-            alert(`🎉 恭喜抽中：【${newChar.name}】！`);
+            showToast(`🎉 恭喜抽中新夥伴：【${newChar.name}】！`);
         } else {
-            currentGameData.gold += 100; alert("抽到重複角色，轉化為 100 金幣！");
+            currentGameData.gold += 100; 
+            showToast("抽到重複角色，轉化為 100 金幣！");
         }
-        openShop(); triggerAutoSave();
-    } else { alert("寶石不足！"); }
+        updateShopUI(); 
+        triggerAutoSave();
+    } else { 
+        playClickSound();
+        showToast("寶石不足！"); 
+    }
 }
 
+// 存讀檔
 async function openLoadScreen() {
     const container = document.getElementById('load-slots-container');
     container.innerHTML = '<div style="text-align:center; color:#388099; padding: 1vw;">讀取中...</div>';
@@ -952,22 +1133,19 @@ function openSaveScreen() {
 }
 async function saveToSlot(slotKey) {
     if (currentUser) {
-        try { await db.collection('users').doc(currentUser.uid).collection('saves').doc(`slot_${slotKey}`).set(currentGameData); alert(`已雲端同步至 ${slotKey}`); } 
-        catch (e) { alert("雲端存檔失敗"); return; }
+        try { await db.collection('users').doc(currentUser.uid).collection('saves').doc(`slot_${slotKey}`).set(currentGameData); showToast(`已雲端同步至 ${slotKey}`); } 
+        catch (e) { showToast("雲端存檔失敗"); return; }
     } else {
-        localStorage.setItem(SAVE_PREFIX + slotKey, JSON.stringify(currentGameData)); alert(`已儲存至本地 ${slotKey}`);
+        localStorage.setItem(SAVE_PREFIX + slotKey, JSON.stringify(currentGameData)); showToast(`已儲存至本地 ${slotKey}`);
     }
     closeSaveScreen();
 }
 function closeSaveScreen() { document.getElementById('save-screen').style.display = 'none'; enterMainLobby(); }
 
-// ==================== 3. 3D 地球儀式旋轉人物輪盤系統 ====================
+// 人選畫面
 let selectedPartnerIndex = 0;
 let wheelCardsElements = [];
-
-function getOwnedPartnersList() { 
-    return availablePartners.filter(p => currentGameData.ownedPartners.includes(p.name)); 
-}
+function getOwnedPartnersList() { return availablePartners.filter(p => currentGameData.ownedPartners.includes(p.name)); }
 
 async function openCharacterMenu() {
     const ownedList = getOwnedPartnersList();
@@ -1039,7 +1217,6 @@ function updateWheelPositions() {
 
         const angle = diff * 0.42; 
         const cosDepth = Math.cos(angle);
-        
         const xPx = Math.sin(angle) * 17.5; 
         const scale = Math.max(0.68, cosDepth * 1.0);
         const rotY = (angle * 180 / Math.PI) * 0.72; 
@@ -1055,7 +1232,7 @@ function updateWheelPositions() {
     });
 }
 
-// ==================== 4. 戰鬥核心系統 ====================
+// ==================== 5. 戰鬥核心系統 (3波敵人、橫幅滑動、最後一擊特寫) ====================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const playerSpriteImg = document.getElementById('player-gif-sprite');
@@ -1066,15 +1243,12 @@ let enemyA01 = new Image();
 let enemyA02 = new Image();
 let goldCoinImg = new Image();
 
-const camera = { x: 0, y: 0, width: 1920, height: 1080, mapWidth: 3840, mapHeight: 2160 };
+const camera = { x: 0, y: 0, width: 1920, height: 1080, mapWidth: 3840, mapHeight: 2160, zoom: 1.0, targetZoom: 1.0 };
 
 const WALKABLE_AREA = {
-    topY: 360,
-    bottomY: 1640,
-    topLeftX: 860,
-    bottomLeftX: 815,
-    topRightX: 3330,
-    bottomRightX: 3615
+    topY: 360, bottomY: 1640,
+    topLeftX: 860, bottomLeftX: 815,
+    topRightX: 3330, bottomRightX: 3615
 };
 
 function clampToWalkableArea(entity, margin = 45) {
@@ -1090,6 +1264,15 @@ let hitStopFrames = 0;
 
 function triggerScreenShake(intensity, frames) { screenShake.intensity = intensity; screenShake.time = frames; }
 function triggerHitStop(frames) { hitStopFrames = Math.max(hitStopFrames, frames); }
+
+// 波次管理與最後一擊特寫狀態
+let currentWave = 1;
+const TOTAL_WAVES = 3;
+let waveState = 'fighting'; // 'fighting', 'waiting_banner', 'banner_sliding', 'victory_slowmo'
+let bannerTimer = 0;
+let bannerX = 2200; // 橫幅 X 座標
+let slomoTimer = 0;
+let lastKillPos = { x: 1920, y: 1080 };
 
 const player = {
     x: 1855, y: 1000, size: 64, width: 128, height: 128, baseSpeed: 5.25, speed: 5.25,
@@ -1153,9 +1336,7 @@ function initVirtualJoystick() {
         if (!joystick.active) return;
         for (let i = 0; i < e.changedTouches.length; i++) {
             if (e.changedTouches[i].identifier === joystick.touchId) {
-                joystick.active = false;
-                joystick.moveX = 0;
-                joystick.moveY = 0;
+                joystick.active = false; joystick.moveX = 0; joystick.moveY = 0;
                 joystickKnob.style.transform = `translate3d(0, 0, 0)`;
                 break;
             }
@@ -1194,8 +1375,21 @@ btnMobileAttack.addEventListener('touchend', (e) => { e.preventDefault(); if (is
 
 let enemies = []; let dyingEnemies = []; let floatingTexts = []; let activePunchGifs = [];
 
+function spawnEnemyWave() {
+    const spawnTemplates = [
+        { x: 2440, y: 735, delay: 0 },
+        { x: 2585, y: 955, delay: 40 },
+        { x: 2450, y: 1205, delay: 80 }
+    ];
+    enemies = spawnTemplates.map(t => ({
+        x: t.x, y: t.y, width: 128, height: 128, size: 64, hp: 30, maxHp: 30,
+        kbVx: 0, kbVy: 0, kbTime: 0, invuln: 0, jumpTimer: t.delay, isJumping: false,
+        jumpTargetX: 0, jumpTargetY: 0, jumpStartX: 0, jumpStartY: 0, jumpProgress: 0,
+        facingRight: false, spawnAlpha: 0.0 // 淡入生成
+    }));
+}
+
 async function startLevel(levelNum, mapFileName) {
-    // 保持在關卡選擇畫面，後台預載完所有素材才進入戰鬥
     const [loadedMap, loadedE1, loadedE2, loadedGold] = await Promise.all([
         preloadAsset(mapFileName),
         preloadAsset('enemyA_01.png'),
@@ -1213,9 +1407,10 @@ async function startLevel(levelNum, mapFileName) {
     goldCoinImg = loadedGold;
 
     hideAllScreens(); 
-    switchBgm('none');
+    switchBgm('battle');
     
     camera.mapWidth = 3840; camera.mapHeight = 2160;
+    camera.zoom = 1.0; camera.targetZoom = 1.0;
     sessionGold = 0;
     player.maxHp = 100 + (currentGameData.hpLevel - 1) * 20; player.hp = player.maxHp;
     player.atk = 10 + (currentGameData.atkLevel - 1) * 5;
@@ -1229,11 +1424,10 @@ async function startLevel(levelNum, mapFileName) {
     hitStopFrames = 0;
     floatingTexts = []; dyingEnemies = []; activePunchGifs = []; chargeParticles = []; droppedCoins = [];
     
-    enemies = [
-        { x: 2440, y: 735, width: 128, height: 128, size: 64, hp: 30, maxHp: 30, kbVx: 0, kbVy: 0, kbTime: 0, invuln: 0, jumpTimer: 0, isJumping: false, jumpTargetX: 0, jumpTargetY: 0, jumpStartX: 0, jumpStartY: 0, jumpProgress: 0, facingRight: false },
-        { x: 2585, y: 955, width: 128, height: 128, size: 64, hp: 30, maxHp: 30, kbVx: 0, kbVy: 0, kbTime: 0, invuln: 0, jumpTimer: 40, isJumping: false, jumpTargetX: 0, jumpTargetY: 0, jumpStartX: 0, jumpStartY: 0, jumpProgress: 0, facingRight: false },
-        { x: 2450, y: 1205, width: 128, height: 128, size: 64, hp: 30, maxHp: 30, kbVx: 0, kbVy: 0, kbTime: 0, invuln: 0, jumpTimer: 80, isJumping: false, jumpTargetX: 0, jumpTargetY: 0, jumpStartX: 0, jumpStartY: 0, jumpProgress: 0, facingRight: false }
-    ];
+    // 初始化波次
+    currentWave = 1;
+    waveState = 'fighting';
+    spawnEnemyWave();
 
     document.getElementById('in-game-ui').style.display = 'block';
     playerSpriteImg.style.display = 'block';
@@ -1244,7 +1438,7 @@ async function startLevel(levelNum, mapFileName) {
 }
 
 function executeAttack() {
-    if (player.attackCooldown > 0 || player.punchAnimTimer > 0) return;
+    if (player.attackCooldown > 0 || player.punchAnimTimer > 0 || waveState === 'victory_slowmo') return;
     
     const isHeavy = player.chargeTime >= 30; 
     player.chargeTime = 0;
@@ -1358,18 +1552,13 @@ function spawnDroppedCoins(startX, startY, count = 3) {
         const speed = Math.random() * 3.5 + 4.5;
         
         droppedCoins.push({
-            x: startX,
-            y: startY,
-            z: 20,
+            x: startX, y: startY, z: 20,
             vx: Math.cos(lastDropAngle) * speed,
             vy: Math.sin(lastDropAngle) * (speed * 0.55),
             vz: Math.random() * 4.5 + 8.5,
-            bounces: 0,
-            maxBounces: 3,
-            state: 'air',
-            groundWaitTimer: 60,
-            attractSpeed: 8,
-            rotation: Math.random() * Math.PI * 2,
+            bounces: 0, maxBounces: 3,
+            state: 'air', groundWaitTimer: 60,
+            attractSpeed: 8, rotation: Math.random() * Math.PI * 2,
             rotSpeed: (Math.random() - 0.5) * 0.3
         });
     }
@@ -1385,20 +1574,37 @@ function togglePause() {
 }
 
 function quitLevel() {
-    isPlaying = false; 
-    isPaused = false;
+    isPlaying = false; isPaused = false;
     if (animFrameReq) cancelAnimationFrame(animFrameReq);
     document.getElementById('pause-screen').style.display = 'none';
     playTransition(async () => enterMainLobby());
 }
 
+// 遊戲主循環
+let slomoFrameCounter = 0;
 function gameLoop() {
     if (!isPlaying || isPaused) return;
 
-    if (hitStopFrames > 0) {
-        hitStopFrames--;
+    // 最後一擊慢動作卡幀邏輯 (每隔 3 幀才更新一次，並拉近鏡頭特寫)
+    if (waveState === 'victory_slowmo') {
+        slomoTimer--;
+        slomoFrameCounter++;
+        camera.zoom += (1.42 - camera.zoom) * 0.08; // 平滑鏡頭拉近特寫
+
+        if (slomoFrameCounter % 3 === 0) {
+            updateLogic();
+        }
+        if (slomoTimer <= 0) {
+            finishLevelAndShowVictory();
+            return;
+        }
     } else {
-        updateLogic();
+        camera.zoom += (1.0 - camera.zoom) * 0.1;
+        if (hitStopFrames > 0) {
+            hitStopFrames--;
+        } else {
+            updateLogic();
+        }
     }
 
     renderGame();
@@ -1414,15 +1620,15 @@ function updateLogic() {
         screenShake.offsetX = (Math.random() - 0.5) * 2 * currentIntensity;
         screenShake.offsetY = (Math.random() - 0.5) * 2 * currentIntensity;
     } else {
-        screenShake.offsetX = 0;
-        screenShake.offsetY = 0;
+        screenShake.offsetX = 0; screenShake.offsetY = 0;
     }
 
     if (player.attackCooldown > 0) player.attackCooldown--;
     if (player.punchAnimTimer > 0) player.punchAnimTimer--;
     if (player.invuln > 0) player.invuln--;
 
-    if (isAttackHeld && player.punchAnimTimer <= 0) {
+    // 蓄力與移動
+    if (isAttackHeld && player.punchAnimTimer <= 0 && waveState !== 'victory_slowmo') {
         player.chargeTime++;
         player.speed = player.baseSpeed * 0.72;
 
@@ -1432,15 +1638,11 @@ function updateLogic() {
         for (let i = 0; i < count; i++) {
             const angle = Math.random() * Math.PI * 2;
             const speed = (Math.random() * 3.5 + 2.5) * (player.chargeTime >= 30 ? 1.5 : 1.0);
-            
-            const vx = Math.cos(angle) * speed;
-            const vy = Math.sin(angle) * (speed * 0.52);
-
             chargeParticles.push({
                 x: player.x + (Math.random() - 0.5) * 20,
                 y: footY + (Math.random() - 0.5) * 8,
-                vx: vx,
-                vy: vy,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * (speed * 0.52),
                 size: Math.floor(Math.random() * 3) + 3,
                 life: Math.floor(Math.random() * 12) + 14,
                 maxLife: 26,
@@ -1453,18 +1655,14 @@ function updateLogic() {
 
     for (let i = chargeParticles.length - 1; i >= 0; i--) {
         const cp = chargeParticles[i];
-        cp.x += cp.vx;
-        cp.y += cp.vy;
-        cp.vx *= 0.93;
-        cp.vy *= 0.93;
-        cp.life--;
+        cp.x += cp.vx; cp.y += cp.vy; cp.vx *= 0.93; cp.vy *= 0.93; cp.life--;
         if (cp.life <= 0) chargeParticles.splice(i, 1);
     }
 
     if (player.punchAnimTimer > 0) {
     } else if (player.kbTime > 0) {
         player.x += player.kbVx; player.y += player.kbVy; player.kbTime--;
-    } else {
+    } else if (waveState !== 'victory_slowmo') {
         let moveX = 0; let moveY = 0;
         if (keys.w) moveY -= 1;
         if (keys.s) moveY += 1;
@@ -1472,8 +1670,7 @@ function updateLogic() {
         if (keys.d) moveX += 1;
 
         if (joystick.active) {
-            moveX += joystick.moveX;
-            moveY += joystick.moveY;
+            moveX += joystick.moveX; moveY += joystick.moveY;
         }
 
         const len = Math.hypot(moveX, moveY);
@@ -1481,87 +1678,62 @@ function updateLogic() {
             const normalizedLen = Math.min(len, 1);
             player.x += (moveX / len) * normalizedLen * player.speed;
             player.y += (moveY / len) * normalizedLen * player.speed;
-            
-            if (player.punchAnimTimer <= 0) {
-                if (moveX !== 0) player.facingRight = moveX > 0;
-            }
+            if (player.punchAnimTimer <= 0 && moveX !== 0) player.facingRight = moveX > 0;
         }
     }
     
     clampToWalkableArea(player, 45);
 
-    camera.x = Math.max(0, Math.min(player.x - camera.width / 2, camera.mapWidth - camera.width));
-    camera.y = Math.max(0, Math.min(player.y - camera.height / 2, camera.mapHeight - camera.height));
+    // 鏡頭焦點跟隨（特寫時聚焦於最後擊殺點）
+    let focusTargetX = (waveState === 'victory_slowmo') ? lastKillPos.x : player.x;
+    let focusTargetY = (waveState === 'victory_slowmo') ? lastKillPos.y : player.y;
+    camera.x = Math.max(0, Math.min(focusTargetX - camera.width / 2, camera.mapWidth - camera.width));
+    camera.y = Math.max(0, Math.min(focusTargetY - camera.height / 2, camera.mapHeight - camera.height));
 
+    // 金幣物理更新
     for (let i = droppedCoins.length - 1; i >= 0; i--) {
         const c = droppedCoins[i];
-
         if (c.state === 'air') {
-            c.x += c.vx;
-            c.y += c.vy;
-            c.z += c.vz;
-            c.vz -= 0.65;
-            c.rotation += c.rotSpeed;
-
+            c.x += c.vx; c.y += c.vy; c.z += c.vz; c.vz -= 0.65; c.rotation += c.rotSpeed;
             clampToWalkableArea(c, 25);
-
             if (c.z <= 0) {
-                c.z = 0;
-                c.bounces++;
+                c.z = 0; c.bounces++;
                 if (c.bounces < c.maxBounces) {
-                    c.vz = -c.vz * 0.48;
-                    c.vx *= 0.65;
-                    c.vy *= 0.65;
+                    c.vz = -c.vz * 0.48; c.vx *= 0.65; c.vy *= 0.65;
                 } else {
-                    c.vz = 0;
-                    c.vx = 0;
-                    c.vy = 0;
-                    c.state = 'ground';
+                    c.vz = 0; c.vx = 0; c.vy = 0; c.state = 'ground';
                 }
             }
         } else if (c.state === 'ground') {
             c.groundWaitTimer--;
-            if (c.groundWaitTimer <= 0) {
-                c.state = 'attract';
-            }
+            if (c.groundWaitTimer <= 0) c.state = 'attract';
         } else if (c.state === 'attract') {
-            const targetX = player.x;
-            const targetY = player.y + 10;
-            const dx = targetX - c.x;
-            const dy = targetY - c.y;
-            const dist = Math.hypot(dx, dy);
-
+            const dx = player.x - c.x; const dy = (player.y + 10) - c.y; const dist = Math.hypot(dx, dy);
             c.attractSpeed += 1.1;
             if (dist <= c.attractSpeed + 15) {
-                sessionGold += 1;
-                currentGameData.gold += 1;
+                sessionGold += 1; currentGameData.gold += 1;
                 droppedCoins.splice(i, 1);
-                
-                if (enemies.length === 0 && dyingEnemies.length === 0 && droppedCoins.length === 0) {
-                    checkLevelVictory();
-                }
                 continue;
             } else {
-                c.x += (dx / dist) * c.attractSpeed;
-                c.y += (dy / dist) * c.attractSpeed;
+                c.x += (dx / dist) * c.attractSpeed; c.y += (dy / dist) * c.attractSpeed;
             }
         }
     }
 
+    // 敵人邏輯與受擊
     for (let i = enemies.length - 1; i >= 0; i--) {
         let e = enemies[i];
+        if (e.spawnAlpha < 1.0) e.spawnAlpha = Math.min(1.0, e.spawnAlpha + 0.05); // 淡入
         if (e.invuln > 0) e.invuln--;
 
         if (e.kbTime > 0) {
-            e.isJumping = false;
-            e.x += e.kbVx; e.y += e.kbVy; e.kbTime--;
-        } else {
+            e.isJumping = false; e.x += e.kbVx; e.y += e.kbVy; e.kbTime--;
+        } else if (waveState === 'fighting') {
             if (!e.isJumping) {
                 e.jumpTimer++;
                 if (e.jumpTimer >= 120) {
                     e.isJumping = true; e.jumpTimer = 0; e.jumpProgress = 0;
                     e.jumpStartX = e.x; e.jumpStartY = e.y;
-                    
                     let distToPlayer = Math.hypot(player.x - e.x, player.y - e.y);
                     let jumpAngle = Math.atan2(player.y - e.y, player.x - e.x);
                     let actualJumpDist = Math.min(128, distToPlayer);
@@ -1571,9 +1743,7 @@ function updateLogic() {
                         y: e.y + Math.sin(jumpAngle) * actualJumpDist
                     };
                     clampToWalkableArea(targetPoint, e.size * 0.7);
-
-                    e.jumpTargetX = targetPoint.x;
-                    e.jumpTargetY = targetPoint.y;
+                    e.jumpTargetX = targetPoint.x; e.jumpTargetY = targetPoint.y;
                     e.facingRight = (player.x >= e.x);
                 }
             } else {
@@ -1589,7 +1759,8 @@ function updateLogic() {
 
         clampToWalkableArea(e, e.size * 0.7);
 
-        if (player.invuln <= 0 && Math.hypot(player.x - e.x, player.y - e.y) < player.size + e.size) {
+        // 碰觸主角扣血
+        if (player.invuln <= 0 && Math.hypot(player.x - e.x, player.y - e.y) < player.size + e.size && waveState !== 'victory_slowmo') {
             player.hp -= 10; player.invuln = 30;
             let angle = Math.atan2(player.y - e.y, player.x - e.x);
             player.kbVx = Math.cos(angle) * 5; player.kbVy = Math.sin(angle) * 5; player.kbTime = 15;
@@ -1597,8 +1768,10 @@ function updateLogic() {
             spawnDamageText(10, player.x, player.y, true);
         }
 
+        // 敵人陣亡
         if (e.hp <= 0) {
             spawnDroppedCoins(e.x, e.y, 3);
+            lastKillPos = { x: e.x, y: e.y };
 
             let deathAngle = Math.atan2(e.y - player.y, e.x - player.x);
             let targetBounce = {
@@ -1610,33 +1783,81 @@ function updateLogic() {
             dyingEnemies.push({
                 x: e.x, y: e.y, size: e.size,
                 startBounceX: e.x, startBounceY: e.y,
-                targetBounceX: targetBounce.x,
-                targetBounceY: targetBounce.y,
+                targetBounceX: targetBounce.x, targetBounceY: targetBounce.y,
                 life: 60, maxLife: 60, facingRight: e.facingRight
             });
 
             enemies.splice(i, 1);
+
+            // 檢查是否消滅本波所有敵人
+            if (enemies.length === 0) {
+                if (currentWave < TOTAL_WAVES) {
+                    // 1 秒後進入橫幅提示狀態
+                    waveState = 'waiting_banner';
+                    bannerTimer = 60; 
+                } else {
+                    // 全關卡最後一隻敵人死亡：進入 2 秒卡幀慢動作特寫！
+                    waveState = 'victory_slowmo';
+                    slomoTimer = 120; // 60 FPS 下約 2 秒
+                    triggerScreenShake(20, 24);
+                }
+            }
         }
     }
 
+    // 亡魂退場動畫
     for (let i = dyingEnemies.length - 1; i >= 0; i--) {
         let de = dyingEnemies[i]; de.life--;
         let p = 1 - (de.life / de.maxLife);
         de.x = de.startBounceX + (de.targetBounceX - de.startBounceX) * p;
         de.y = de.startBounceY + (de.targetBounceY - de.startBounceY) * p;
-
-        if (de.life <= 0) {
-            dyingEnemies.splice(i, 1);
-            if (enemies.length === 0 && dyingEnemies.length === 0 && droppedCoins.length === 0) {
-                checkLevelVictory();
-            }
-        }
+        if (de.life <= 0) dyingEnemies.splice(i, 1);
     }
 
+    // 飄字更新
     for (let i = floatingTexts.length - 1; i >= 0; i--) {
         let ft = floatingTexts[i]; ft.vy += 0.2; ft.x += ft.vx; ft.y += ft.vy; ft.life--;
         if (ft.life <= 0) floatingTexts.splice(i, 1);
     }
+
+    // 波次橫幅滑動更新邏輯
+    if (waveState === 'waiting_banner') {
+        bannerTimer--;
+        if (bannerTimer <= 0) {
+            waveState = 'banner_sliding';
+            bannerX = 2200; // 自畫面右側外啟動
+            bannerTimer = 0;
+        }
+    } else if (waveState === 'banner_sliding') {
+        bannerTimer++;
+        // 橫幅滑動軌跡：快速滑至中央 (960)，減速滑行 2 秒 (120 幀)，隨後快速滑離左側 (-600)
+        if (bannerX > 1100) {
+            bannerX -= 32; // 快速進場
+        } else if (bannerX > 820) {
+            bannerX -= 2.3; // 中央減速滑動 2 秒
+        } else {
+            bannerX -= 34; // 快速退場
+        }
+
+        if (bannerX < -500) {
+            // 橫幅滑出完畢，刷新下一波敵人！
+            currentWave++;
+            waveState = 'fighting';
+            spawnEnemyWave();
+        }
+    }
+}
+
+function finishLevelAndShowVictory() {
+    isPlaying = false;
+    document.getElementById('in-game-ui').style.display = 'none';
+    isAttackHeld = false;
+    triggerAutoSave();
+    
+    document.getElementById('victory-gold-text').innerText = `${sessionGold} 金幣`;
+    playTransition(async () => {
+        document.getElementById('victory-screen').style.display = 'flex';
+    });
 }
 
 function drawShadow(x, y, radius, camX, camY) {
@@ -1651,6 +1872,14 @@ function drawShadow(x, y, radius, camX, camY) {
 function renderGame() {
     ctx.clearRect(0, 0, 1920, 1080);
     
+    ctx.save();
+    // 支援最後一擊鏡頭特寫縮放
+    if (camera.zoom !== 1.0) {
+        ctx.translate(960, 540);
+        ctx.scale(camera.zoom, camera.zoom);
+        ctx.translate(-960, -540);
+    }
+
     const renderCamX = camera.x - screenShake.offsetX;
     const renderCamY = camera.y - screenShake.offsetY;
 
@@ -1665,14 +1894,14 @@ function renderGame() {
     if (chargeParticles.length > 0) {
         ctx.save();
         for (let cp of chargeParticles) {
-            const alpha = Math.max(0, cp.life / cp.maxLife);
             ctx.fillStyle = cp.color;
-            ctx.globalAlpha = alpha;
+            ctx.globalAlpha = Math.max(0, cp.life / cp.maxLife);
             ctx.fillRect(Math.floor(cp.x - renderCamX), Math.floor(cp.y - renderCamY), cp.size, cp.size);
         }
         ctx.restore();
     }
 
+    // 金幣
     for (let c of droppedCoins) {
         const coinSize = 34;
         const screenX = c.x - renderCamX;
@@ -1698,6 +1927,7 @@ function renderGame() {
         ctx.restore();
     }
 
+    // 敵人繪製 (支援透明度淡入)
     for (let e of enemies) {
         drawShadow(e.x, e.y, e.size, renderCamX, renderCamY);
 
@@ -1706,7 +1936,9 @@ function renderGame() {
         if (!e.facingRight) ctx.scale(-1, 1);
 
         let imgToDraw = e.isJumping ? enemyA02 : enemyA01;
-        if (e.invuln > 0 && Math.floor(e.invuln / 2) % 2 === 0) ctx.globalAlpha = 0.4;
+        let baseAlpha = (e.spawnAlpha !== undefined) ? e.spawnAlpha : 1.0;
+        if (e.invuln > 0 && Math.floor(e.invuln / 2) % 2 === 0) baseAlpha *= 0.4;
+        ctx.globalAlpha = baseAlpha;
 
         if (imgToDraw && imgToDraw.complete && imgToDraw.naturalWidth !== 0) {
             ctx.drawImage(imgToDraw, -e.width / 2, -e.height / 2, e.width, e.height);
@@ -1717,6 +1949,7 @@ function renderGame() {
         ctx.restore();
     }
 
+    // 死亡消散
     for (let de of dyingEnemies) {
         ctx.save();
         ctx.translate(de.x - renderCamX, de.y - renderCamY);
@@ -1735,6 +1968,7 @@ function renderGame() {
         ctx.restore();
     }
 
+    // 主角 GIF DOM 同步
     let targetGif = 'maincharacter_idle.gif';
     let currentFacingRight = player.facingRight;
 
@@ -1752,16 +1986,22 @@ function renderGame() {
     const rect = gameContainer.getBoundingClientRect();
     const scaleX = rect.width / 1920; 
     const scaleY = rect.height / 1080;
-    const w = 140 * scaleX; 
-    const h = 140 * scaleY;
+    const w = 140 * scaleX * camera.zoom; 
+    const h = 140 * scaleY * camera.zoom;
     playerSpriteImg.style.width = `${w}px`; 
     playerSpriteImg.style.height = `${h}px`;
 
-    const screenPosX = (player.x - renderCamX) * scaleX - w / 2;
-    const screenPosY = (player.y - renderCamY) * scaleY - h / 2;
+    let screenPosX = (player.x - renderCamX) * scaleX - w / 2;
+    let screenPosY = (player.y - renderCamY) * scaleY - h / 2;
+    if (camera.zoom !== 1.0) {
+        screenPosX = ((player.x - renderCamX - 960) * camera.zoom + 960) * scaleX - w / 2;
+        screenPosY = ((player.y - renderCamY - 540) * camera.zoom + 540) * scaleY - h / 2;
+    }
+
     const flipStr = currentFacingRight ? 'scaleX(-1)' : 'scaleX(1)';
     playerSpriteImg.style.transform = `translate3d(${screenPosX}px, ${screenPosY}px, 0) ${flipStr}`;
 
+    // 主角蓄力光圈
     if (player.chargeTime >= 30) {
         const progress = Math.min(1.0, (player.chargeTime - 30) / 30.0);
         ctx.beginPath(); 
@@ -1771,16 +2011,21 @@ function renderGame() {
         ctx.stroke();
     }
 
+    // 揮拳特效 DOM
     for (let pObj of activePunchGifs) {
-        const pSize = pObj.baseSize * pObj.scale * scaleX;
-        const screenX = (pObj.worldX - renderCamX) * scaleX - pSize / 2;
-        const screenY = (pObj.worldY - renderCamY) * scaleY - pSize / 2;
-
+        const pSize = pObj.baseSize * pObj.scale * scaleX * camera.zoom;
+        let sX = (pObj.worldX - renderCamX) * scaleX - pSize / 2;
+        let sY = (pObj.worldY - renderCamY) * scaleY - pSize / 2;
+        if (camera.zoom !== 1.0) {
+            sX = ((pObj.worldX - renderCamX - 960) * camera.zoom + 960) * scaleX - pSize / 2;
+            sY = ((pObj.worldY - renderCamY - 540) * camera.zoom + 540) * scaleY - pSize / 2;
+        }
         pObj.element.style.width = `${pSize}px`;
         pObj.element.style.height = `${pSize}px`;
-        pObj.element.style.transform = `translate3d(${screenX}px, ${screenY}px, 0) rotate(${pObj.angle}rad)`;
+        pObj.element.style.transform = `translate3d(${sX}px, ${sY}px, 0) rotate(${pObj.angle}rad)`;
     }
 
+    // 傷害飄字
     for (let ft of floatingTexts) {
         const progress = ft.life / ft.maxLife; 
         const scale = (ft.isCrit ? 1.8 : 1.4) * (0.25 + 0.75 * progress) * 1.5;
@@ -1790,7 +2035,6 @@ function renderGame() {
         ctx.globalAlpha = Math.max(0, progress); 
         ctx.font = `900 ${fontSize}px jf-openhuninn, sans-serif`;
         ctx.textAlign = 'center'; 
-        
         ctx.strokeStyle = '#000000';
         ctx.lineWidth = Math.max(3, Math.floor(fontSize * 0.16));
         ctx.lineJoin = 'round';
@@ -1801,19 +2045,39 @@ function renderGame() {
         ctx.restore();
     }
 
+    ctx.restore(); // 恢復鏡頭縮放
+
+    // 繪製「下一波敵人即將出現！」滑動橫幅
+    if (waveState === 'banner_sliding') {
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+        ctx.shadowBlur = 16;
+        ctx.fillStyle = '#ffffff';
+        // 圓角白色提示框橫幅
+        const bW = 680; const bH = 80;
+        ctx.beginPath();
+        ctx.roundRect(bannerX - bW / 2, 280, bW, bH, [24]);
+        ctx.fill();
+
+        ctx.strokeStyle = '#bce2ed';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.fillStyle = '#388099';
+        ctx.font = 'bold 36px jf-openhuninn, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`⚔️ 下一波敵人即將出現！ (${currentWave + 1}/${TOTAL_WAVES})`, bannerX, 320);
+        ctx.restore();
+    }
+
+    // 戰鬥常駐 HUD
     if (document.getElementById('victory-screen').style.display !== 'flex') {
         ctx.fillStyle = 'white'; ctx.font = 'bold 28px jf-openhuninn, sans-serif';
         ctx.fillText(`血量: ${player.hp} / ${player.maxHp}`, 40, 50);
         ctx.fillStyle = '#f1c40f'; ctx.fillText(`🪙 金幣: ${sessionGold}`, 40, 90);
+        ctx.fillStyle = '#b5e3ff'; ctx.fillText(`波次: ${currentWave} / ${TOTAL_WAVES}`, 40, 130);
     }
-}
-
-function checkLevelVictory() {
-    isPlaying = false; document.getElementById('in-game-ui').style.display = 'none'; isAttackHeld = false; triggerAutoSave();
-    setTimeout(() => {
-        document.getElementById('victory-gold-text').innerText = `獲得金幣: ${sessionGold}`;
-        playTransition(async () => { document.getElementById('victory-screen').style.display = 'flex'; });
-    }, 500);
 }
 
 function returnToStageSelectAfterVictory() {
