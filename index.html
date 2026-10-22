@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>School KING</title>
+    <!-- 引入 jf open 粉圓字型 & 圓潤備用字體 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+
+    <!-- 引入 Firebase SDK (Authentication & Firestore) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        @font-face {
+            font-family: 'jf-openhuninn';
+            src: url('https://cdn.jsdelivr.net/gh/justfont/open-huninn-font@1.1/font/jf-openhuninn-1.1.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            font-family: 'jf-openhuninn', 'M PLUS Rounded 1c', 'Quicksand', 'Segoe UI', Arial, sans-serif;
+            touch-action: none;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #000; overflow: hidden;
+            display: flex; justify-content: center; align-items: center; color: #fff;
+        }
+
+        /* 16:9 遊戲畫面容器 */
+        #game-container {
+            position: relative; width: 100vw; height: 56.25vw;
+            max-height: 100vh; max-width: 177.78vh;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+            background-color: #1a1a24; overflow: hidden;
+        }
+
+        canvas { width: 100%; height: 100%; display: block; }
+
+        /* 主角動態 GIF DOM 層 */
+        #player-gif-sprite {
+            position: absolute; width: 140px; height: 140px;
+            pointer-events: none; z-index: 5; display: none;
+            left: 0; top: 0;
+            will-change: transform;
+            transform-origin: center center;
+        }
+
+        /* 出拳 GIF 動態 DOM 樣式 */
+        .punch-gif-sprite {
+            position: absolute;
+            pointer-events: none;
+            z-index: 7;
+            left: 0; top: 0;
+            will-change: transform;
+            transform-origin: center center;
+        }
+
+        /* UI 覆蓋層 */
+        .ui-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: rgba(15, 15, 25, 0.95); z-index: 10; transition: opacity 0.4s ease;
+        }
+
+        /* ================= 戰鬥內 UI 與暫停選單 ================= */
+        #in-game-ui {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 8; display: none;
+        }
+
+        .btn-pause-game {
+            position: absolute; top: 4%; right: 4%;
+            background: rgba(255, 255, 255, 0.9); color: #388099;
+            border: 1.5px solid #dcdcdc; border-radius: 16px;
+            padding: 0.6vw 1.2vw; font-size: 1.2vw; font-weight: bold;
+            cursor: pointer; pointer-events: auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: all 0.2s ease;
+        }
+        .btn-pause-game:hover { transform: scale(1.05); background: #ffffff; }
+
+        .btn-mobile-attack {
+            position: absolute; bottom: 8%; right: 6%;
+            width: 8vw; height: 8vw; min-width: 76px; min-height: 76px;
+            background: rgba(255, 255, 255, 0.88); color: #388099;
+            border: 3px solid #b2d3de; border-radius: 50%;
+            font-size: 2.8vw; font-weight: bold;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; pointer-events: auto;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.25); transition: transform 0.1s ease;
+        }
+        .btn-mobile-attack:active { transform: scale(0.9); background: #e0f0f5; }
+
+        /* 手機虛擬搖桿容器與桿頭 */
+        #joystick-zone {
+            position: absolute; bottom: 6%; left: 5%;
+            width: 14vw; height: 14vw; min-width: 130px; min-height: 130px;
+            border-radius: 50%; background: rgba(255, 255, 255, 0.15);
+            border: 2px dashed rgba(255, 255, 255, 0.35);
+            pointer-events: auto; display: none; touch-action: none;
+            z-index: 9;
+        }
+        #joystick-knob {
+            position: absolute; top: 50%; left: 50%;
+            width: 5.5vw; height: 5.5vw; min-width: 50px; min-height: 50px;
+            margin-left: -2.75vw; margin-top: -2.75vw;
+            border-radius: 50%; background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #388099;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            pointer-events: none;
+            transform: translate3d(0, 0, 0);
+        }
+
+        #pause-screen {
+            background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); z-index: 20;
+        }
+        .pause-panel {
+            background: #ffffff; border-radius: 24px; padding: 3vw 5vw;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid #eef2f5;
+            display: flex; flex-direction: column; align-items: center; gap: 1.5vw;
+        }
+        .pause-title { font-size: 3vw; font-weight: bold; color: #388099; margin-bottom: 1vw; letter-spacing: 2px; }
+
+        /* 登入畫面樣式 */
+        #login-screen { background: #000; }
+        #login-bg-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+        .top-left-logo { position: absolute; top: 5%; left: 5%; z-index: 5; width: 18vw; max-width: 320px; min-width: 160px; pointer-events: none; filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.5)); }
+        
+        .top-right-group { position: absolute; top: 4%; right: 4%; z-index: 15; display: flex; align-items: center; gap: 0.5vw; }
+        .audio-control-panel { display: flex; align-items: center; gap: 0.4vw; background: rgba(0, 0, 0, 0.35); padding: 0.3vw 0.6vw; border-radius: 12px; backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .audio-btn { background: none; border: none; color: #ffffff; font-size: 0.8vw; cursor: pointer; }
+        .audio-slider { width: 3.5vw; min-width: 35px; height: 3px; -webkit-appearance: none; appearance: none; background: rgba(255, 255, 255, 0.4); border-radius: 2px; outline: none; cursor: pointer; }
+        .audio-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 8px; height: 8px; border-radius: 50%; background: #ffffff; cursor: pointer; }
+        
+        .google-login-btn { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.8); color: #388099; padding: 0.3vw 0.7vw; border-radius: 12px; font-size: 0.65vw; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 0.3vw; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease; }
+        .google-login-btn:hover { background: #ffffff; transform: translateY(-1px); }
+        .google-login-btn svg { width: 0.7vw !important; height: 0.7vw !important; min-width: 8px; min-height: 8px; }
+
+        .bottom-right-btn-group { position: absolute; right: 8%; bottom: 8%; z-index: 5; display: flex; flex-direction: column; gap: 1.2vw; width: 16vw; min-width: 180px; }
+        .btn-custom { width: 100%; padding: 0.8vw 1.5vw; font-size: 1.4vw; font-weight: bold; color: #388099; background-color: #ffffff; border: 1.5px solid #dcdcdc; border-radius: 30px; cursor: pointer; text-align: center; box-shadow: 4px 6px 0px rgba(100, 100, 100, 0.4); transition: all 0.15s ease; }
+        .btn-custom:hover { transform: translateY(-2px); box-shadow: 4px 8px 0px rgba(100, 100, 100, 0.5); background-color: #f9f9f9; }
+        .btn-continue { background-color: #ffffff; color: #2e86de; border: 2px solid #a5d8ff; }
+
+        /* 大廳樣式 */
+        #main-lobby-screen { background: url('office.jpg') no-repeat center center / cover; justify-content: flex-start; align-items: flex-start; padding: 0; }
+        .lobby-character-portrait { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; z-index: 6; opacity: 0; }
+        .lobby-character-portrait.animate-in { animation: slideInFromLeft 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideInFromLeft { 0% { transform: translateX(-500px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+
+        .lobby-top-bar { position: absolute; top: 3.5%; right: 4%; z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.8vw; }
+        .lobby-currency-container { display: flex; gap: 1.2vw; }
+        .currency-box { position: relative; background: #ffffff; border-radius: 20px; width: 9.5vw; height: 2.2vw; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border: 1px solid #eef2f5; }
+        .currency-box-icon { position: absolute; left: -0.6vw; top: 50%; transform: translateY(-50%); width: 2.2vw; height: 2.2vw; object-fit: contain; }
+        .currency-box-text { font-size: 1.1vw; font-weight: bold; color: #538199; text-align: center; width: 100%; padding-left: 1vw; }
+
+        .lobby-right-menu { position: absolute; right: 4%; top: 22%; display: flex; flex-direction: column; align-items: flex-end; gap: 1.6vw; z-index: 12; }
+        .lobby-white-btn { background: #ffffff; color: #4a8ca7; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); transition: transform 0.2s ease, box-shadow 0.2s ease; display: flex; align-items: center; justify-content: center; letter-spacing: 2px; opacity: 0; }
+        .lobby-white-btn.animate-in { animation: slideInFromRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .btn-campus.animate-in { animation-delay: 0s; }
+        .btn-character.animate-in { animation-delay: 0.25s; }
+        .btn-shop-main.animate-in { animation-delay: 0.50s; }
+        @keyframes slideInFromRight { 0% { transform: translateX(500px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+        .btn-campus { width: 24vw; height: 5.2vw; font-size: 2.3vw; border-radius: 28px; }
+        .btn-character { width: 17vw; height: 4vw; font-size: 1.6vw; border-radius: 22px; }
+        .btn-shop-main { width: 17vw; height: 4vw; font-size: 1.7vw; border-radius: 22px; }
+
+        .lobby-left-bottom-group { position: absolute; left: 3%; bottom: 4%; display: flex; gap: 0.8vw; z-index: 12; }
+        .btn-sub-action { background: rgba(255, 255, 255, 0.9); color: #388099; border: none; padding: 0.5vw 1.2vw; border-radius: 18px; font-size: 0.95vw; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); backdrop-filter: blur(5px); }
+
+        .title { font-size: 3vw; font-weight: bold; color: #388099; margin-bottom: 0.5vw; letter-spacing: 2px; }
+        .subtitle { font-size: 1.5vw; font-weight: bold; color: #538199; margin-bottom: 1.2vw; }
+        .btn { padding: 0.8vw 1.8vw; font-size: 1.3vw; font-weight: bold; color: #388099; background: #ffffff; border: 1.5px solid #dcdcdc; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); text-align: center; }
+        .btn-danger { color: #ff4757; border-color: #ffccd1; }
+
+        #stage-select-screen { background: url('office.jpg') no-repeat center center / cover; }
+        .stage-card-grid { display: flex; gap: 2vw; margin-top: 1.5vw; }
+        .stage-card { width: 18vw; height: 22vw; background: #ffffff; border-radius: 24px; color: #388099; padding: 1.5vw; display: flex; flex-direction: column; justify-content: space-between; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.12); border: 1px solid #eef2f5; cursor: pointer; }
+
+        /* ================= 4. 人物選單：3D 地球儀透視容器 ================= */
+        #character-menu-screen {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(10px);
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .char-select-main-wrapper {
+            width: 94%;
+            height: 85%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .char-wheel-left-area {
+            position: relative;
+            width: 48%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1200px;
+            transform-style: preserve-3d;
+            pointer-events: auto;
+            overflow: visible;
+        }
+
+        .char-wheel-card-img {
+            position: absolute;
+            width: 8.5vw;
+            height: 33vw;
+            object-fit: contain;
+            cursor: pointer;
+            filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.12));
+            will-change: transform, opacity;
+            transform-origin: center center;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-drag: none;
+            /* 原生 GPU 3D 平滑轉動，解決跳轉與殘影 */
+            transition: transform 0.42s cubic-bezier(0.18, 0.89, 0.32, 1.05), opacity 0.42s ease, filter 0.42s ease;
+        }
+
+        .char-detail-panel {
+            width: 42%;
+            height: 94%;
+            background: rgba(45, 45, 48, 0.88);
+            border-radius: 28px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 2.8vw 2.5vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #ffffff;
+            box-sizing: border-box;
+        }
+
+        .char-detail-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6vw;
+        }
+
+        .char-detail-name {
+            font-size: 2.6vw;
+            font-weight: bold;
+            color: #ffffff;
+            letter-spacing: 2px;
+            transition: color 0.15s ease;
+        }
+
+        .char-detail-tag {
+            display: inline-block;
+            align-self: flex-start;
+            padding: 0.3vw 0.8vw;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            font-size: 0.95vw;
+            color: #b0bec5;
+        }
+
+        .char-detail-body {
+            font-size: 1.1vw;
+            color: #cfd8dc;
+            line-height: 1.7;
+            margin-top: 1.5vw;
+        }
+
+        .esc-exit-btn {
+            position: absolute;
+            bottom: 3.5%;
+            left: 3.5%;
+            background: #ffffff;
+            color: #388099;
+            padding: 0.6vw 1.8vw;
+            border-radius: 25px;
+            font-size: 1.1vw;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1.5px solid #dcdcdc;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            z-index: 25;
+        }
+
+        #shop-screen { background: url('office.jpg') no-repeat center center / cover; }
+        .panel-container { width: 75%; height: 65%; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); border-radius: 24px; padding: 2vw; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #eef2f5; }
+        .slot-grid, .shop-grid { display: grid; grid-template-columns: 1fr; gap: 1.2vw; }
+        .slot-item, .shop-item { background: #ffffff; padding: 1.2vw 2vw; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eef2f5; color: #388099; }
+
+        #load-screen-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; display: none; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.25); }
+        .load-game-card { width: 48vw; min-width: 420px; background: #ffffff; border-radius: 20px; padding: 2.5vw 3vw 1.8vw 3vw; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); color: #388099; display: flex; flex-direction: column; gap: 1.2vw; }
+        .load-slot-list { display: flex; flex-direction: column; gap: 1vw; }
+        .load-slot-item { background: #ffffff; border: 1.5px solid #dbe6ea; border-radius: 14px; padding: 0.9vw 1.8vw; display: flex; justify-content: space-between; align-items: center; }
+        .load-btn-action { background: transparent; border: none; color: #388099; font-size: 1.3vw; font-weight: 600; cursor: pointer; }
+        .cloud-sync-status { font-size: 0.95vw; color: #78909c; }
+        .back-text-btn { background: none; border: none; color: #388099; font-size: 1.6vw; font-weight: bold; cursor: pointer; }
+
+        #victory-screen { display: none; cursor: pointer; background: rgba(0, 0, 0, 0.75); z-index: 30; }
+        #transition-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0); pointer-events: none; z-index: 999; opacity: 0; transition: opacity 0.3s ease; display: flex; justify-content: center; align-items: center; }
+        #transition-overlay.active { pointer-events: auto; opacity: 1; }
+        .transition-anim { width: 15vw; height: 15vw; border: 8px solid rgba(255, 255, 255, 0.3); border-top: 8px solid #388099; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #orientation-warning { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #ff4757; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; font-size: 24px; text-align: center; }
+        @media screen and (orientation: portrait) { #orientation-warning { display: flex; } }
+    </style>
+</head>
+<body>
+
+    <div id="orientation-warning">
+        📱<br><br>請將手機旋轉為「橫屏」以獲得最佳遊戲體驗！
+    </div>
+
+    <!-- 背景音樂 -->
+    <audio id="bg-music-login" src="Glassy Blooms.mp3" loop preload="auto"></audio>
+    <audio id="bg-music-lobby" src="Glassy Pastel Dreams.mp3" loop preload="auto"></audio>
+
+    <div id="game-container">
+        <!-- 戰鬥 UI -->
+        <div id="in-game-ui">
+            <button class="btn-pause-game" onclick="playClickSound(); togglePause()">⏸ 暫停</button>
+            <div class="btn-mobile-attack" id="btn-mobile-attack">👊</div>
+            <div id="joystick-zone">
+                <div id="joystick-knob"></div>
+            </div>
+        </div>
+
+        <img id="player-gif-sprite" src="maincharacter_idle.gif" alt="Player Character">
+        <canvas id="clickEffectCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998;"></canvas>
+        <canvas id="gameCanvas" width="1920" height="1080"></canvas>
+
+        <div id="transition-overlay"><div class="transition-anim"></div></div>
+
+        <!-- 暫停選單 -->
+        <div id="pause-screen" class="ui-screen" style="display: none;">
+            <div class="pause-panel">
+                <div class="pause-title">遊戲已暫停</div>
+                <button class="btn" style="width: 100%; font-size: 1.6vw; padding: 1vw 0;" onclick="playClickSound(); togglePause()">繼續遊戲</button>
+                <button class="btn btn-danger" style="width: 100%; font-size: 1.6vw; padding: 1vw 0;" onclick="playClickSound(); quitLevel()">中斷關卡 (返回大廳)</button>
+            </div>
+        </div>
+
+        <!-- 1. 登入介面 -->
+        <div id="login-screen" class="ui-screen">
+            <video id="login-bg-video" autoplay loop muted playsinline>
+                <source src="loginscreen_movie.mp4" type="video/mp4">
+            </video>
+            <img src="IEA LOGO.png" class="top-left-logo" alt="IEA LOGO">
+
+            <div class="top-right-group">
+                <button id="google-auth-btn" class="google-login-btn" onclick="playClickSound(); toggleGoogleLogin()">
+                    <svg viewBox="0 0 24 24"><path fill="#388099" d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C14.15,4.73 15.91,5.44 17.29,6.72L19.33,4.68C17.46,2.95 15.02,2 12.2,2C6.56,2 2,6.56 2,12C2,17.44 6.56,22 12.2,22C17.65,22 21.43,18.15 21.43,12.71C21.43,12.12 21.37,11.62 21.35,11.1Z"/></svg>
+                    <span id="google-btn-text">Google 登入</span>
+                </button>
+                <div class="audio-control-panel">
+                    <button class="audio-btn" onclick="toggleMute()" title="靜音切換">🔊</button>
+                    <input type="range" class="audio-slider volume-slider-element" min="0" max="1" step="0.01" value="1" oninput="adjustVolume(this.value)">
+                </div>
+            </div>
+
+            <div class="bottom-right-btn-group">
+                <button id="btn-continue-game" class="btn-custom btn-continue" style="display: none;" onclick="playClickSound(); playTransition(() => { loadFromSlot('Auto'); })">Continue</button>
+                <button class="btn-custom" onclick="playClickSound(); handleStartNewGame()">Start game</button>
+                <button class="btn-custom" onclick="playClickSound(); openLoadScreen()">Load game</button>
+            </div>
+
+            <div id="load-screen-modal">
+                <div class="load-game-card">
+                    <div class="load-game-title">Load game</div>
+                    <div class="load-slot-list" id="load-slots-container"></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1vw;">
+                        <span id="cloud-status-text" class="cloud-sync-status">目前模式: 本地端儲存 (未登入)</span>
+                        <button class="back-text-btn" onclick="playClickSound(); closeLoadScreen()">Back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 大廳介面 -->
+        <div id="main-lobby-screen" class="ui-screen" style="display: none;">
+            <img id="lobby-character-img" class="lobby-character-portrait" src="characterA_lobby01.png" alt="Lobby Character">
+            <div class="lobby-top-bar">
+                <div class="lobby-currency-container">
+                    <div class="currency-box">
+                        <img src="gold.png" class="currency-box-icon" alt="Gold">
+                        <span class="currency-box-text" id="lobby-gold-display">0</span>
+                    </div>
+                    <div class="currency-box">
+                        <img src="gem.png" class="currency-box-icon" alt="Gem">
+                        <span class="currency-box-text" id="lobby-gem-display">0</span>
+                    </div>
+                </div>
+                <div class="audio-control-panel">
+                    <button class="audio-btn" onclick="toggleMute()" title="靜音切換">🔊</button>
+                    <input type="range" class="audio-slider volume-slider-element" min="0" max="1" step="0.01" value="1" oninput="adjustVolume(this.value)">
+                </div>
+            </div>
+            <div class="lobby-right-menu">
+                <button class="lobby-white-btn btn-campus" onclick="playClickSound(); playTransition(() => openStageSelect())">前往校園</button>
+                <button class="lobby-white-btn btn-character" onclick="playClickSound(); playTransition(() => openCharacterMenu())">人物選單</button>
+                <button class="lobby-white-btn btn-shop-main" onclick="playClickSound(); playTransition(() => openShop())">SHOP</button>
+            </div>
+            <div class="lobby-left-bottom-group">
+                <button class="btn-sub-action" onclick="playClickSound(); playTransition(() => openSaveScreen())">💾 手動存檔</button>
+            </div>
+        </div>
+
+        <!-- 3. 關卡選擇 -->
+        <div id="stage-select-screen" class="ui-screen" style="display: none;">
+            <div class="title">選擇挑戰關卡</div>
+            <div class="stage-card-grid">
+                <div class="stage-card" onclick="playClickSound(); playTransition(() => startLevel(1, 'map_1-1.jpg'))">
+                    <div style="font-size: 1.8vw; font-weight: bold;">關卡 1-1</div>
+                    <div style="font-size: 1vw; color: #78909c;">教學關卡</div>
+                    <div style="font-size: 1.2vw; font-weight: bold; color: #ff4757;">敵人: 3 體</div>
+                    <button class="btn" style="width: 100%;">開始挑戰</button>
+                </div>
+                <div class="stage-card" style="opacity: 0.65; cursor: not-allowed;">
+                    <div style="font-size: 1.8vw; font-weight: bold;">關卡 1-2</div>
+                    <div style="font-size: 1vw; color: #78909c;">尚未解鎖</div>
+                    <div style="font-size: 1.2vw; color: #999;">🔒 敬請期待</div>
+                    <button class="btn" style="width: 100%; background: #f0f0f0; color: #aaa;" disabled>尚未開放</button>
+                </div>
+            </div>
+            <div style="margin-top: 2vw;">
+                <button class="btn btn-danger" onclick="playClickSound(); playTransition(() => backToLobbyFromSubScreen())">返回大廳</button>
+            </div>
+        </div>
+
+        <!-- 4. 人選畫面：3D 地球儀圓周旋轉輪盤 + 右側黑色圓角說明欄 -->
+        <div id="character-menu-screen" class="ui-screen" style="display: none;">
+            <div class="char-select-main-wrapper">
+                <div class="char-wheel-left-area" id="char-wheel-container"></div>
+                
+                <div class="char-detail-panel" id="char-detail-panel">
+                    <div class="char-detail-header">
+                        <div class="char-detail-name" id="char-detail-name">托帕</div>
+                        <div class="char-detail-tag" id="char-detail-tag">近戰衝擊型夥伴</div>
+                    </div>
+                    <div class="char-detail-body" id="char-detail-desc">
+                        【角色介紹】<br>
+                        個性元氣開朗的校園格鬥家，擅長以重拳破防並具備優異的擊退性能。<br><br>
+                        【被動天賦】<br>
+                        普通拳擊命中時，蓄力速度提升 15%，擊退距離略微加長。<br><br>
+                        (未來可在此擴充更多角色背景、專屬招式或技能數值介紹)
+                    </div>
+                </div>
+            </div>
+            <button class="esc-exit-btn" onclick="playClickSound(); playTransition(() => backToLobbyFromSubScreen())">按 ESC 返回大廳</button>
+        </div>
+
+        <!-- 5. SHOP 商店 -->
+        <div id="shop-screen" class="ui-screen" style="display: none;">
+            <div class="title">SHOP 局外商店</div>
+            <div class="subtitle" id="shop-currency-display">金幣: 0 | 寶石: 0</div>
+            <div class="panel-container">
+                <div class="shop-grid">
+                    <div class="shop-item">
+                        <div>
+                            <div style="font-size: 1.4vw; font-weight: bold;">攻擊力強化</div>
+                            <div id="atk-level-text" style="font-size: 1vw; color: #78909c;">LV 1</div>
+                        </div>
+                        <button class="btn" style="padding: 0.5vw 1.2vw; font-size: 1.1vw;" onclick="playClickSound(); buyUpgrade('atk')">升級 (<span id="atk-cost">50</span>)</button>
+                    </div>
+                    <div class="shop-item">
+                        <div>
+                            <div style="font-size: 1.4vw; font-weight: bold;">生命值上限</div>
+                            <div id="hp-level-text" style="font-size: 1vw; color: #78909c;">LV 1</div>
+                        </div>
+                        <button class="btn" style="padding: 0.5vw 1.2vw; font-size: 1.1vw;" onclick="playClickSound(); buyUpgrade('hp')">升級 (<span id="hp-cost">50</span>)</button>
+                    </div>
+                    <div class="shop-item">
+                        <div>
+                            <div style="font-size: 1.4vw; font-weight: bold;">角色祈願</div>
+                            <div style="font-size: 1vw; color: #78909c;">抽取夥伴</div>
+                        </div>
+                        <button class="btn" style="padding: 0.5vw 1.2vw; font-size: 1.1vw;" onclick="playClickSound(); drawGacha()">單抽 (10 寶石)</button>
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top: 1vw;">
+                    <button class="btn" onclick="playClickSound(); playTransition(() => backToLobbyFromSubScreen())">返回大廳</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. 存檔視窗 -->
+        <div id="save-screen" class="ui-screen" style="display: none;">
+            <div class="title">選擇存檔</div>
+            <div class="panel-container">
+                <div class="slot-grid" id="save-slots-container"></div>
+                <div style="text-align: right; margin-top: 1vw;">
+                    <button class="btn btn-danger" onclick="playClickSound(); playTransition(() => closeSaveScreen())">返回大廳</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. 勝利結算畫面 -->
+        <div id="victory-screen" class="ui-screen" style="display: none;" onclick="playClickSound(); playTransition(() => returnToStageSelectAfterVictory())">
+            <div class="title" style="color: #2ed573; font-size: 4.5vw; text-shadow: 0 0 20px rgba(46, 213, 115, 0.6);">🎉 戰鬥勝利！</div>
+            <div class="subtitle" id="victory-gold-text" style="color: #eccc68;">獲得金幣: 0</div>
+            <div style="font-size: 1.6vw; color: #aaa; margin-top: 2vw;">( 點擊畫面回到關卡選擇 )</div>
+        </div>
+    </div>
+
+<script>
+// ==================== 0. 音效池 (Audio Pool) 與資源管理 ====================
+class AudioPool {
+    constructor(src, size = 4) {
+        this.pool = [];
+        this.index = 0;
+        this.size = size;
+        for (let i = 0; i < size; i++) {
+            const audio = new Audio(src);
+            audio.preload = 'auto';
+            this.pool.push(audio);
+        }
+    }
+    play(volume = 1.0) {
+        const audio = this.pool[this.index];
+        audio.volume = volume;
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
+        this.index = (this.index + 1) % this.size;
+    }
+}
+
+// 建立高效能音訊池
+const sndPools = {
+    click: new AudioPool('click.mp3', 3),
+    punch: new AudioPool('punch.mp3', 6),
+    punchHit: new AudioPool('punch_hited.mp3', 6),
+    hardpunch: new AudioPool('hardpunch.mp3', 4),
+    hardpunchHit: new AudioPool('hardpunch_hited.mp3', 4)
+};
+
+function playClickSound() { sndPools.click.play(); }
+function playSnd(name) { if (sndPools[name]) sndPools[name].play(); }
+
+// 預載圖片資產庫
+const assetImages = {};
+function preloadImage(key, src) {
+    const img = new Image();
+    img.src = src;
+    assetImages[key] = img;
+    return img;
+}
+const enemyA01 = preloadImage('enemyA01', 'enemyA_01.png');
+const enemyA02 = preloadImage('enemyA02', 'enemyA_02.png');
+const goldCoinImg = preloadImage('goldCoin', 'gold.png');
+preloadImage('charWalk', 'maincharacter_walk.gif');
+preloadImage('charIdle', 'maincharacter_idle.gif');
+preloadImage('charPunch', 'maincharacter_punch.gif');
+preloadImage('punchFx', 'punch.gif');
+
+// 背景音樂控制
+const bgmLogin = document.getElementById('bg-music-login');
+const bgmLobby = document.getElementById('bg-music-lobby');
+
+function switchBgm(type) {
+    if (type === 'login') {
+        bgmLobby.pause();
+        if (bgmLogin.paused) {
+            bgmLogin.play().catch(() => {});
+        }
+    } else if (type === 'lobby') {
+        bgmLogin.pause();
+        if (bgmLobby.paused) {
+            bgmLobby.play().catch(() => {});
+        }
+    } else if (type === 'none') {
+        bgmLogin.pause();
+        bgmLobby.pause();
+    }
+}
+
+function adjustVolume(val) { 
+    bgmLogin.volume = val; 
+    bgmLobby.volume = val; 
+    document.querySelectorAll('.volume-slider-element').forEach(s => s.value = val); 
+}
+function toggleMute() { adjustVolume(bgmLogin.volume > 0 ? 0 : 1.0); }
+
+window.addEventListener('pointerdown', function initAudioOnce() {
+    if (document.getElementById('login-screen').style.display !== 'none' && bgmLogin.paused) {
+        switchBgm('login');
+    }
+    window.removeEventListener('pointerdown', initAudioOnce);
+}, { once: true });
+
+// ==================== 1. FIREBASE 與存檔系統 (新增2位未實裝展示夥伴，共5人) ====================
+const firebaseConfig = {
+    apiKey: "AIzaSyCW0VkxjD8cYSJRdSh4dJihXfcFbb85FaY",
+    authDomain: "schoolking-b41af.firebaseapp.com",
+    projectId: "schoolking-b41af",
+    storageBucket: "schoolking-b41af.firebasestorage.app",
+    messagingSenderId: "242119341308",
+    appId: "1:242119341308:web:19aa469106c589d4d29379"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth(); 
+const db = firebase.firestore(); 
+let currentUser = null;
+
+auth.onAuthStateChanged((user) => { 
+    currentUser = user; 
+    const btnText = document.getElementById('google-btn-text');
+    const cloudStatus = document.getElementById('cloud-status-text');
+
+    if (user) {
+        btnText.innerText = user.displayName ? user.displayName.split(' ')[0] + " (登出)" : "已登入 (登出)";
+        cloudStatus.innerText = `☁️ 雲端同步已啟用 (${user.email})`;
+    } else {
+        btnText.innerText = "Google 登入";
+        cloudStatus.innerText = "目前模式: 本地端儲存 (未登入)";
+    }
+    checkAutoSaveAndToggleContinue(); 
+});
+
+function toggleGoogleLogin() {
+    if (currentUser) { 
+        auth.signOut().then(() => { 
+            alert("已登出 Google 帳號"); 
+            checkAutoSaveAndToggleContinue(); 
+            switchBgm('login');
+        });
+    } else { 
+        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(res => {
+            alert(`歡迎回來，${res.user.displayName}！`); 
+            checkAutoSaveAndToggleContinue(); 
+            switchBgm('login');
+        }); 
+    }
+}
+
+// 包含 2 位未實裝展示角色的 5 位完整陣容
+const availablePartners = [
+    { 
+        id: 'topaz', name: '托帕', tag: '近戰衝擊型夥伴', 
+        desc: '【角色介紹】\n個性元氣開朗的校園格鬥家，擅長以重拳破防並具備優異的擊退性能。\n\n【被動天賦】\n普通拳擊命中時，蓄力速度提升 15%，擊退距離略微加長。',
+        lobbyImage: 'characterA_lobby01.png', blockImage: 'characterA_block01.png' 
+    },
+    { 
+        id: 'blackthorn', name: '黑棘', tag: '迅捷穿透型夥伴', 
+        desc: '【角色介紹】\n身手敏捷的學生會執行部成員，攻擊步頻極高，擅長在敵群中靈活穿梭。\n\n【被動天賦】\n自身移動速度額外提升 10%，閃避間隔縮短。',
+        lobbyImage: 'characterB_lobby01.png', blockImage: 'characterB_block01.png' 
+    },
+    { 
+        id: 'larimar', name: '拉利瑪', tag: '強襲重裝型夥伴', 
+        desc: '【角色介紹】\n沉著冷靜的守護者，擁有強悍的生命力與不屈的防禦姿態。\n\n【被動天賦】\n受到碰撞傷害時硬直時間降低 25%，生命值上限提升 20 點。',
+        lobbyImage: 'characterC_lobby01.png', blockImage: 'characterC_block01.png' 
+    },
+    { 
+        id: 'amber', name: '琥珀', tag: '機巧支援型 (未實裝)', 
+        desc: '【角色介紹】\n科研社的王牌發明家，擅長運用精密的校園戰術道具牽制對手。\n\n【被動天賦】\n每隔一段時間於周遭生成電磁脈衝，短暫麻痺靠近的敵人。',
+        lobbyImage: 'characterA_lobby01.png', blockImage: 'characterA_block01.png' 
+    },
+    { 
+        id: 'sapphire', name: '藍寶', tag: '疾風連擊型 (未實裝)', 
+        desc: '【角色介紹】\n田徑部的主將，擁有校園內無人能及的極限爆發步速與連續打擊力。\n\n【被動天賦】\n擊殺敵人後 3 秒內移動速度大幅躍升 35%，並產生殘影障壁。',
+        lobbyImage: 'characterB_lobby01.png', blockImage: 'characterB_block01.png' 
+    }
+];
+
+const SAVE_PREFIX = "SCHOOL_KING_SAVE_SLOT_";
+// 預設將 5 位角色均納入擁有名單以進行輪盤展示
+let currentGameData = { 
+    gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
+    ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
+    selectedPartner: '托帕' 
+};
+
+async function triggerAutoSave() {
+    if (currentUser) {
+        try { await db.collection('users').doc(currentUser.uid).collection('saves').doc('slot_Auto').set(currentGameData); } 
+        catch (e) { console.error("雲端自動存檔失敗", e); }
+    } else {
+        localStorage.setItem(SAVE_PREFIX + 'Auto', JSON.stringify(currentGameData));
+    }
+}
+async function getSaveSlotDataAsync(slotKey) {
+    if (currentUser) {
+        try { const doc = await db.collection('users').doc(currentUser.uid).collection('saves').doc(`slot_${slotKey}`).get(); if (doc.exists) return doc.data(); } 
+        catch (e) { console.error("雲端存檔讀取失敗", e); }
+    }
+    const data = localStorage.getItem(SAVE_PREFIX + slotKey); return data ? JSON.parse(data) : null;
+}
+async function checkAutoSaveAndToggleContinue() {
+    const autoData = await getSaveSlotDataAsync('Auto');
+    const btn = document.getElementById('btn-continue-game');
+    if (btn) btn.style.display = autoData ? 'block' : 'none';
+}
+
+async function handleStartNewGame() {
+    const autoData = await getSaveSlotDataAsync('Auto');
+    if (autoData) {
+        if (!confirm("開啟新遊戲將會覆蓋【存檔槽 Auto】的內容，確定要繼續嗎？")) return;
+    }
+    currentGameData = { 
+        gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
+        ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
+        selectedPartner: '托帕' 
+    };
+    playTransition(() => enterMainLobby());
+}
+
+// ==================== 2. UI 互動與動畫切換 ====================
+const gameContainer = document.getElementById('game-container');
+const fxCanvas = document.getElementById('clickEffectCanvas');
+const fxCtx = fxCanvas.getContext('2d');
+let clickParticles = [];
+function resizeFxCanvas() { fxCanvas.width = gameContainer.getBoundingClientRect().width; fxCanvas.height = gameContainer.getBoundingClientRect().height; }
+window.addEventListener('resize', resizeFxCanvas); resizeFxCanvas();
+
+window.addEventListener('pointerdown', (e) => {
+    const rect = gameContainer.getBoundingClientRect();
+    const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
+    if (clickX >= 0 && clickX <= rect.width && clickY >= 0 && clickY <= rect.height) {
+        for (let i = 0; i < 12; i++) {
+            const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 2.5 + 0.8;
+            clickParticles.push({ x: clickX, y: clickY, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, alpha: 1.0, decay: Math.random() * 0.04 + 0.03, size: Math.random() * 2 + 2 });
+        }
+    }
+});
+
+function updateAndDrawFx() {
+    fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+    fxCtx.save(); fxCtx.globalCompositeOperation = 'screen'; 
+    for (let i = clickParticles.length - 1; i >= 0; i--) {
+        let p = clickParticles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.04; p.alpha -= p.decay;
+        if (p.alpha <= 0) { clickParticles.splice(i, 1); continue; }
+        fxCtx.globalAlpha = p.alpha; fxCtx.fillStyle = '#b5e3ff'; fxCtx.shadowBlur = 8; fxCtx.shadowColor = '#b5e3ff';
+        fxCtx.fillRect(Math.floor(p.x), Math.floor(p.y), p.size, p.size);
+    }
+    fxCtx.restore(); requestAnimationFrame(updateAndDrawFx);
+}
+updateAndDrawFx();
+
+function playTransition(cb, dur = 400) {
+    const overlay = document.getElementById('transition-overlay'); overlay.classList.add('active');
+    setTimeout(() => { if (cb) cb(); setTimeout(() => overlay.classList.remove('active'), 100); }, dur / 2);
+}
+
+function hideAllScreens() {
+    ['login-screen', 'main-lobby-screen', 'stage-select-screen', 'character-menu-screen', 'shop-screen', 'save-screen', 'victory-screen', 'pause-screen', 'in-game-ui'].forEach(s => document.getElementById(s).style.display = 'none');
+    document.getElementById('player-gif-sprite').style.display = 'none';
+    clearAllPunchGifs();
+}
+function clearAllPunchGifs() { document.querySelectorAll('.punch-gif-sprite').forEach(el => el.remove()); }
+
+function enterMainLobby() {
+    hideAllScreens();
+    switchBgm('lobby');
+    document.getElementById('main-lobby-screen').style.display = 'flex';
+    document.getElementById('lobby-gold-display').innerText = currentGameData.gold || 0;
+    document.getElementById('lobby-gem-display').innerText = currentGameData.gem || 0;
+    const currentPartner = availablePartners.find(p => p.name === currentGameData.selectedPartner);
+    const lobbyImg = document.getElementById('lobby-character-img');
+    if (currentPartner && lobbyImg) lobbyImg.src = currentPartner.lobbyImage;
+
+    const portrait = document.getElementById('lobby-character-img');
+    const buttons = document.querySelectorAll('.lobby-white-btn');
+    if (portrait) portrait.classList.remove('animate-in');
+    buttons.forEach(btn => btn.classList.remove('animate-in'));
+    void portrait.offsetWidth;
+    if (portrait) portrait.classList.add('animate-in');
+    buttons.forEach(btn => btn.classList.add('animate-in'));
+    triggerAutoSave();
+}
+
+function backToLobbyFromSubScreen() { enterMainLobby(); }
+function openStageSelect() { hideAllScreens(); switchBgm('none'); document.getElementById('stage-select-screen').style.display = 'flex'; }
+function openShop() { 
+    hideAllScreens(); document.getElementById('shop-screen').style.display = 'flex'; 
+    document.getElementById('shop-currency-display').innerText = `金幣: ${currentGameData.gold} | 寶石: ${currentGameData.gem}`;
+    document.getElementById('atk-level-text').innerText = `LV ${currentGameData.atkLevel} (基礎攻擊力: ${10 + (currentGameData.atkLevel - 1) * 5})`;
+    document.getElementById('atk-cost').innerText = currentGameData.atkLevel * 50;
+    document.getElementById('hp-level-text').innerText = `LV ${currentGameData.hpLevel} (生命上限: ${100 + (currentGameData.hpLevel - 1) * 20})`;
+    document.getElementById('hp-cost').innerText = currentGameData.hpLevel * 50;
+}
+function buyUpgrade(type) {
+    let cost = currentGameData[`${type}Level`] * 50;
+    if (currentGameData.gold >= cost) {
+        currentGameData.gold -= cost; currentGameData[`${type}Level`] += 1;
+        openShop(); triggerAutoSave();
+    } else { alert("金幣不足！"); }
+}
+function drawGacha() {
+    if (currentGameData.gem >= 10) {
+        currentGameData.gem -= 10;
+        const unowned = availablePartners.filter(p => !currentGameData.ownedPartners.includes(p.name));
+        if (unowned.length > 0) {
+            const newChar = unowned[Math.floor(Math.random() * unowned.length)];
+            currentGameData.ownedPartners.push(newChar.name);
+            alert(`🎉 恭喜抽中：【${newChar.name}】！`);
+        } else {
+            currentGameData.gold += 100; alert("抽到重複角色，轉化為 100 金幣！");
+        }
+        openShop(); triggerAutoSave();
+    } else { alert("寶石不足！"); }
+}
+
+async function openLoadScreen() {
+    const container = document.getElementById('load-slots-container');
+    container.innerHTML = '<div style="text-align:center; color:#388099; padding: 1vw;">讀取中...</div>';
+    document.getElementById('load-screen-modal').style.display = 'flex';
+    const slots = ['Auto', '1', '2'];
+    for (let i = 0; i < slots.length; i++) {
+        const slotKey = slots[i];
+        const slotData = await getSaveSlotDataAsync(slotKey);
+        if (i === 0) container.innerHTML = '';
+        const slotDiv = document.createElement('div');
+        slotDiv.className = 'load-slot-item';
+        let slotTitle = slotKey === 'Auto' ? 'Auto (自動存檔)' : `存檔槽 ${slotKey}`;
+        let slotText = slotData ? `${slotTitle} - 金幣:${slotData.gold||0} 寶石:${slotData.gem||0}` : `${slotTitle} (空)`;
+        slotDiv.innerHTML = `<div class="load-slot-text">${slotText}</div><button class="load-btn-action" onclick="playClickSound(); playTransition(() => loadFromSlot('${slotKey}'))" ${slotData ? '' : 'disabled'}>Load</button>`;
+        container.appendChild(slotDiv);
+    }
+}
+function closeLoadScreen() { document.getElementById('load-screen-modal').style.display = 'none'; }
+async function loadFromSlot(slotKey) {
+    const data = await getSaveSlotDataAsync(slotKey);
+    if (data) {
+        currentGameData = Object.assign({ 
+            gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
+            ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
+            selectedPartner: '托帕' 
+        }, data);
+        closeLoadScreen(); enterMainLobby();
+    }
+}
+function openSaveScreen() {
+    hideAllScreens(); const container = document.getElementById('save-slots-container'); container.innerHTML = '';
+    ['Auto', '1', '2'].forEach(slotKey => {
+        const slotDiv = document.createElement('div'); slotDiv.className = 'slot-item';
+        slotDiv.innerHTML = `<div class="slot-info">${slotKey === 'Auto' ? 'Auto' : `存檔槽 ${slotKey}`}</div><button class="btn" onclick="playClickSound(); saveToSlot('${slotKey}')">儲存</button>`;
+        container.appendChild(slotDiv);
+    });
+    document.getElementById('save-screen').style.display = 'flex';
+}
+async function saveToSlot(slotKey) {
+    if (currentUser) {
+        try { await db.collection('users').doc(currentUser.uid).collection('saves').doc(`slot_${slotKey}`).set(currentGameData); alert(`已雲端同步至 ${slotKey}`); } 
+        catch (e) { alert("雲端存檔失敗"); return; }
+    } else {
+        localStorage.setItem(SAVE_PREFIX + slotKey, JSON.stringify(currentGameData)); alert(`已儲存至本地 ${slotKey}`);
+    }
+    closeSaveScreen();
+}
+function closeSaveScreen() { document.getElementById('save-screen').style.display = 'none'; enterMainLobby(); }
+
+// ==================== 4. 0延遲 3D 地球儀式旋轉人物輪盤系統 (圖層深度優化 + 5人完整展示) ====================
+let selectedPartnerIndex = 0;
+let wheelCardsElements = [];
+
+function getOwnedPartnersList() { 
+    return availablePartners.filter(p => currentGameData.ownedPartners.includes(p.name)); 
+}
+
+function openCharacterMenu() {
+    hideAllScreens(); 
+    document.getElementById('character-menu-screen').style.display = 'flex';
+    const ownedList = getOwnedPartnersList();
+    
+    // 找到當前選定角色的索引
+    const curIdx = ownedList.findIndex(p => p.name === currentGameData.selectedPartner);
+    selectedPartnerIndex = curIdx !== -1 ? curIdx : 0;
+
+    const container = document.getElementById('char-wheel-container'); 
+    container.innerHTML = '';
+    wheelCardsElements = [];
+
+    // 建立 5 位角色的實體卡牌
+    ownedList.forEach((partner, index) => {
+        const img = document.createElement('img'); 
+        img.className = 'char-wheel-card-img'; 
+        img.draggable = false;
+        img.src = partner.blockImage;
+
+        // 0 毫秒極速響應：按下瞬間立刻更新說明與滑動
+        img.addEventListener('pointerdown', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            selectPartnerByIndex(index);
+        });
+
+        container.appendChild(img);
+        wheelCardsElements.push(img);
+    });
+
+    updateWheelPositions();
+    updateCharacterInfoPanel();
+}
+
+function selectPartnerByIndex(targetIndex) {
+    const ownedList = getOwnedPartnersList();
+    if (!ownedList[targetIndex]) return;
+
+    playClickSound();
+    selectedPartnerIndex = targetIndex;
+    currentGameData.selectedPartner = ownedList[targetIndex].name;
+
+    // 即刻更新說明欄與進行 3D 地球儀轉向
+    updateCharacterInfoPanel();
+    updateWheelPositions();
+    triggerAutoSave();
+}
+
+function updateCharacterInfoPanel() {
+    const partner = availablePartners.find(p => p.name === currentGameData.selectedPartner);
+    if (!partner) return;
+    const nameEl = document.getElementById('char-detail-name');
+    const tagEl = document.getElementById('char-detail-tag');
+    const descEl = document.getElementById('char-detail-desc');
+    if (nameEl) nameEl.innerText = partner.name;
+    if (tagEl) tagEl.innerText = partner.tag || '校園戰鬥夥伴';
+    if (descEl) descEl.innerHTML = (partner.desc || '暫無角色介紹').replace(/\n/g, '<br>');
+}
+
+// 核心：3D 圓周地球儀投影 + 背部繞行圖層層級 (Z-Index) 與淡出遮蔽
+function updateWheelPositions() {
+    const ownedList = getOwnedPartnersList();
+    const total = ownedList.length;
+    if (total === 0) return;
+
+    wheelCardsElements.forEach((img, idx) => {
+        // 計算環形最短角位差
+        let diff = (idx - selectedPartnerIndex) % total;
+        if (diff > total / 2) diff -= total;
+        if (diff < -total / 2) diff += total;
+
+        // 每張卡牌夾角約 24 度 (0.42 弧度)
+        const angle = diff * 0.42; 
+        const cosDepth = Math.cos(angle);
+        
+        // 圓周正弦 X 軸位移、餘弦 Z 軸深度縮放
+        const xPx = Math.sin(angle) * 17.5; 
+        const scale = Math.max(0.68, cosDepth * 1.0);
+        const rotY = (angle * 180 / Math.PI) * 0.72; 
+
+        // 圖層優先級 (Z-Index) 與背面過渡邏輯：
+        // 當左右卡牌跨越到對側背後時 (|diff| >= 2)，退至最底層並淡出，絕不穿幫遮擋正面卡牌
+        const isBackside = Math.abs(diff) >= 2;
+        const opacity = isBackside ? 0.15 : Math.max(0.40, cosDepth * 1.0);
+        const zIndexVal = isBackside ? 10 : Math.round(50 + cosDepth * 30);
+
+        img.style.transform = `translate3d(${xPx}vw, 0px, 0px) rotateY(${rotY}deg) scale(${scale})`;
+        img.style.opacity = opacity;
+        img.style.zIndex = zIndexVal;
+        img.style.pointerEvents = isBackside ? 'none' : 'auto';
+    });
+}
+
+// ==================== 5. 戰鬥核心系統 ====================
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const playerSpriteImg = document.getElementById('player-gif-sprite');
+
+let isPlaying = false; let isPaused = false; let animFrameReq = null; let sessionGold = 0;
+let currentMapImg = new Image();
+const camera = { x: 0, y: 0, width: 1920, height: 1080, mapWidth: 3840, mapHeight: 2160 };
+
+// map_1-1 (3840x2160) 黑色多邊形約束參數
+const WALKABLE_AREA = {
+    topY: 360,
+    bottomY: 1640,
+    topLeftX: 860,
+    bottomLeftX: 815,
+    topRightX: 3330,
+    bottomRightX: 3615
+};
+
+function clampToWalkableArea(entity, margin = 45) {
+    entity.y = Math.max(WALKABLE_AREA.topY + margin, Math.min(WALKABLE_AREA.bottomY - margin, entity.y));
+    const t = (entity.y - WALKABLE_AREA.topY) / (WALKABLE_AREA.bottomY - WALKABLE_AREA.topY);
+    const minX = WALKABLE_AREA.topLeftX + t * (WALKABLE_AREA.bottomLeftX - WALKABLE_AREA.topLeftX);
+    const maxX = WALKABLE_AREA.topRightX + t * (WALKABLE_AREA.bottomRightX - WALKABLE_AREA.topRightX);
+    entity.x = Math.max(minX + margin, Math.min(maxX - margin, entity.x));
+}
+
+let screenShake = { time: 0, intensity: 0, offsetX: 0, offsetY: 0 };
+let hitStopFrames = 0;
+
+function triggerScreenShake(intensity, frames) {
+    screenShake.intensity = intensity;
+    screenShake.time = frames;
+}
+function triggerHitStop(frames) {
+    hitStopFrames = Math.max(hitStopFrames, frames);
+}
+
+// 玩家屬性 (出生於紅點 1855, 1000)
+const player = {
+    x: 1855, y: 1000, size: 64, width: 128, height: 128, baseSpeed: 5.25, speed: 5.25,
+    hp: 100, maxHp: 100, atk: 10, facingRight: false, attackCooldown: 0, invuln: 0,
+    kbVx: 0, kbVy: 0, kbTime: 0, isCharging: false, chargeTime: 0,
+    punchAnimTimer: 0, punchFacingRight: false
+};
+
+let chargeParticles = [];
+let droppedCoins = [];
+let lastDropAngle = 0;
+
+const keys = { w: false, a: false, s: false, d: false };
+const joystick = { active: false, touchId: null, startX: 0, startY: 0, moveX: 0, moveY: 0, maxDist: 45 };
+
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { 
+        if (isPlaying && document.getElementById('victory-screen').style.display !== 'flex') togglePause(); 
+    }
+    if (e.key === 'w' || e.key === 'W') keys.w = true;
+    if (e.key === 'a' || e.key === 'A') { keys.a = true; if (player.punchAnimTimer <= 0) player.facingRight = false; }
+    if (e.key === 's' || e.key === 'S') keys.s = true;
+    if (e.key === 'd' || e.key === 'D') { keys.d = true; if (player.punchAnimTimer <= 0) player.facingRight = true; }
+});
+window.addEventListener('keyup', (e) => {
+    if (e.key === 'w' || e.key === 'W') keys.w = false;
+    if (e.key === 'a' || e.key === 'A') keys.a = false;
+    if (e.key === 's' || e.key === 'S') keys.s = false;
+    if (e.key === 'd' || e.key === 'D') keys.d = false;
+});
+
+const joystickZone = document.getElementById('joystick-zone');
+const joystickKnob = document.getElementById('joystick-knob');
+
+function initVirtualJoystick() {
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    joystickZone.style.display = isTouch ? 'block' : 'none';
+
+    joystickZone.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.changedTouches[0];
+        joystick.active = true;
+        joystick.touchId = touch.identifier;
+        const rect = joystickZone.getBoundingClientRect();
+        joystick.startX = rect.left + rect.width / 2;
+        joystick.startY = rect.top + rect.height / 2;
+        handleJoystickMove(touch.clientX, touch.clientY);
+    }, { passive: false });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!joystick.active) return;
+        for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === joystick.touchId) {
+                handleJoystickMove(e.changedTouches[i].clientX, e.changedTouches[i].clientY);
+                break;
+            }
+        }
+    }, { passive: false });
+
+    const stopJoystick = (e) => {
+        if (!joystick.active) return;
+        for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === joystick.touchId) {
+                joystick.active = false;
+                joystick.moveX = 0;
+                joystick.moveY = 0;
+                joystickKnob.style.transform = `translate3d(0, 0, 0)`;
+                break;
+            }
+        }
+    };
+    window.addEventListener('touchend', stopJoystick);
+    window.addEventListener('touchcancel', stopJoystick);
+}
+initVirtualJoystick();
+
+function handleJoystickMove(clientX, clientY) {
+    const dx = clientX - joystick.startX;
+    const dy = clientY - joystick.startY;
+    const dist = Math.hypot(dx, dy);
+    const angle = Math.atan2(dy, dx);
+    const clampedDist = Math.min(dist, joystick.maxDist);
+
+    joystick.moveX = (clampedDist / joystick.maxDist) * Math.cos(angle);
+    joystick.moveY = (clampedDist / joystick.maxDist) * Math.sin(angle);
+
+    const knobX = Math.cos(angle) * clampedDist;
+    const knobY = Math.sin(angle) * clampedDist;
+    joystickKnob.style.transform = `translate3d(${knobX}px, ${knobY}px, 0)`;
+
+    if (Math.abs(joystick.moveX) > 0.2 && player.punchAnimTimer <= 0) {
+        player.facingRight = joystick.moveX > 0;
+    }
+}
+
+let isAttackHeld = false;
+gameContainer.addEventListener('mousedown', (e) => { if (isPlaying && !isPaused) isAttackHeld = true; });
+gameContainer.addEventListener('mouseup', (e) => { if (isPlaying && !isPaused && isAttackHeld) { executeAttack(); isAttackHeld = false; } });
+const btnMobileAttack = document.getElementById('btn-mobile-attack');
+btnMobileAttack.addEventListener('touchstart', (e) => { e.preventDefault(); if (isPlaying && !isPaused) isAttackHeld = true; });
+btnMobileAttack.addEventListener('touchend', (e) => { e.preventDefault(); if (isPlaying && !isPaused && isAttackHeld) { executeAttack(); isAttackHeld = false; } });
+
+let enemies = []; let dyingEnemies = []; let floatingTexts = []; let activePunchGifs = [];
+
+function startLevel(levelNum, mapFileName) {
+    hideAllScreens(); 
+    switchBgm('none');
+    currentMapImg.src = mapFileName; camera.mapWidth = 3840; camera.mapHeight = 2160;
+    
+    sessionGold = 0;
+    player.maxHp = 100 + (currentGameData.hpLevel - 1) * 20; player.hp = player.maxHp;
+    player.atk = 10 + (currentGameData.atkLevel - 1) * 5;
+    
+    player.x = 1855; 
+    player.y = 1000;
+    player.facingRight = false; player.chargeTime = 0; player.invuln = 0; player.kbTime = 0;
+    player.punchAnimTimer = 0;
+
+    screenShake = { time: 0, intensity: 0, offsetX: 0, offsetY: 0 };
+    hitStopFrames = 0;
+    floatingTexts = []; dyingEnemies = []; activePunchGifs = []; chargeParticles = []; droppedCoins = [];
+    
+    enemies = [
+        { x: 2440, y: 735, width: 128, height: 128, size: 64, hp: 30, maxHp: 30, kbVx: 0, kbVy: 0, kbTime: 0, invuln: 0, jumpTimer: 0, isJumping: false, jumpTargetX: 0, jumpTargetY: 0, jumpStartX: 0, jumpStartY: 0, jumpProgress: 0, facingRight: false },
+        { x: 2585, y: 955, width: 128, height: 128, size: 64, hp: 30, maxHp: 30, kbVx: 0, kbVy: 0, kbTime: 0, invuln: 0, jumpTimer: 40, isJumping: false, jumpTargetX: 0, jumpTargetY: 0, jumpStartX: 0, jumpStartY: 0, jumpProgress: 0, facingRight: false },
+        { x: 2450, y: 1205, width: 128, height: 128, size: 64, hp: 30, maxHp: 30, kbVx: 0, kbVy: 0, kbTime: 0, invuln: 0, jumpTimer: 80, isJumping: false, jumpTargetX: 0, jumpTargetY: 0, jumpStartX: 0, jumpStartY: 0, jumpProgress: 0, facingRight: false }
+    ];
+
+    document.getElementById('in-game-ui').style.display = 'block';
+    playerSpriteImg.style.display = 'block';
+    isPlaying = true; isPaused = false;
+    
+    if (animFrameReq) cancelAnimationFrame(animFrameReq);
+    animFrameReq = requestAnimationFrame(gameLoop);
+}
+
+function executeAttack() {
+    if (player.attackCooldown > 0 || player.punchAnimTimer > 0) return;
+    
+    const isHeavy = player.chargeTime >= 30; 
+    player.chargeTime = 0;
+    player.attackCooldown = 18; 
+    player.punchAnimTimer = 18;
+
+    if (isHeavy) { playSnd('hardpunch'); } 
+    else { playSnd('punch'); }
+
+    let nearest = null; let minDist = Infinity;
+    for (let e of enemies) {
+        let d = Math.hypot(e.x - player.x, e.y - player.y);
+        if (d < minDist) { minDist = d; nearest = e; }
+    }
+
+    if (nearest) {
+        let dx = nearest.x - player.x;
+        let dy = nearest.y - player.y;
+        let angleDeg = Math.atan2(dy, dx) * (180 / Math.PI);
+
+        if (angleDeg >= -90 && angleDeg <= 90) {
+            player.punchFacingRight = true;
+        } else {
+            player.punchFacingRight = false;
+        }
+    } else {
+        player.punchFacingRight = player.facingRight;
+    }
+
+    let angle = player.facingRight ? 0 : Math.PI;
+    if (nearest) { angle = Math.atan2(nearest.y - player.y, nearest.x - player.x); }
+
+    const hitRadius = isHeavy ? 220 : 160;
+    const basePunchSize = 128;
+    const punchScale = isHeavy ? 1.6 : 1.2;
+
+    const hitCheckDistanceOffset = player.size + 40;
+    const worldHitX = player.x + Math.cos(angle) * hitCheckDistanceOffset;
+    const worldHitY = player.y + Math.sin(angle) * hitCheckDistanceOffset;
+
+    const gifDisplayDistance = 165;
+    const worldPunchX = player.x + Math.cos(angle) * gifDisplayDistance;
+    const worldPunchY = player.y + Math.sin(angle) * gifDisplayDistance;
+
+    const punchImg = document.createElement('img');
+    punchImg.className = 'punch-gif-sprite';
+    punchImg.src = `punch.gif?t=${Date.now()}`;
+    document.getElementById('game-container').appendChild(punchImg);
+
+    const punchObj = {
+        element: punchImg,
+        worldX: worldPunchX,
+        worldY: worldPunchY,
+        angle: angle,
+        baseSize: basePunchSize,
+        scale: punchScale
+    };
+    activePunchGifs.push(punchObj);
+
+    setTimeout(() => {
+        punchImg.remove();
+        const idx = activePunchGifs.indexOf(punchObj);
+        if (idx !== -1) activePunchGifs.splice(idx, 1);
+    }, 300);
+
+    let hitAny = false;
+    for (let e of enemies) {
+        let d = Math.hypot(e.x - worldHitX, e.y - worldHitY);
+        if (d <= hitRadius + e.size) {
+            if (e.invuln <= 0) {
+                hitAny = true;
+                let mult = isHeavy ? 1.6 : 1.0;
+                let dmg = player.atk * mult;
+                let kbDist = isHeavy ? 280 : 140;
+                let eAngle = Math.atan2(e.y - player.y, e.x - player.x);
+
+                e.hp -= dmg;
+                e.invuln = 8;
+                e.kbVx = Math.cos(eAngle) * (kbDist / 25);
+                e.kbVy = Math.sin(eAngle) * (kbDist / 25);
+                e.kbTime = 25;
+                e.jumpTimer = 0;
+                e.isJumping = false;
+
+                spawnDamageText(Math.round(dmg), e.x, e.y, false, isHeavy);
+            }
+        }
+    }
+
+    if (hitAny) {
+        if (isHeavy) {
+            playSnd('hardpunchHit');
+            triggerScreenShake(16, 14);
+            triggerHitStop(7);
+        } else {
+            playSnd('punchHit');
+            triggerScreenShake(6, 8);
+            triggerHitStop(3);
+        }
+    }
+}
+
+function spawnDamageText(val, x, y, isPlayerDamaged, isCrit = false) {
+    floatingTexts.push({
+        text: isPlayerDamaged ? `-${val}` : val.toString(),
+        x: x, y: y - 30, vx: (Math.random() - 0.5) * 2.5, vy: -3.5 - Math.random() * 2,
+        life: 55, maxLife: 55,
+        color: isPlayerDamaged ? '#ff4757' : (isCrit ? '#ff9f43' : '#f1c40f'),
+        isCrit: isCrit
+    });
+}
+
+function spawnDroppedCoins(startX, startY, count = 3) {
+    for (let i = 0; i < count; i++) {
+        lastDropAngle += (Math.PI * 0.45) + Math.random() * (Math.PI * 0.35);
+        const speed = Math.random() * 3.5 + 4.5;
+        
+        droppedCoins.push({
+            x: startX,
+            y: startY,
+            z: 20,
+            vx: Math.cos(lastDropAngle) * speed,
+            vy: Math.sin(lastDropAngle) * (speed * 0.55),
+            vz: Math.random() * 4.5 + 8.5,
+            bounces: 0,
+            maxBounces: 3,
+            state: 'air',
+            groundWaitTimer: 60,
+            attractSpeed: 8,
+            rotation: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 0.3
+        });
+    }
+}
+
+function togglePause() {
+    isPaused = !isPaused; 
+    document.getElementById('pause-screen').style.display = isPaused ? 'flex' : 'none';
+    if (!isPaused) {
+        if (animFrameReq) cancelAnimationFrame(animFrameReq);
+        animFrameReq = requestAnimationFrame(gameLoop);
+    }
+}
+
+function quitLevel() {
+    isPlaying = false; 
+    isPaused = false;
+    if (animFrameReq) cancelAnimationFrame(animFrameReq);
+    document.getElementById('pause-screen').style.display = 'none';
+    playTransition(() => enterMainLobby());
+}
+
+function gameLoop() {
+    if (!isPlaying || isPaused) return;
+
+    if (hitStopFrames > 0) {
+        hitStopFrames--;
+    } else {
+        updateLogic();
+    }
+
+    renderGame();
+    animFrameReq = requestAnimationFrame(gameLoop);
+}
+
+function updateLogic() {
+    if (document.getElementById('victory-screen').style.display === 'flex') return;
+
+    if (screenShake.time > 0) {
+        screenShake.time--;
+        const currentIntensity = screenShake.intensity * (screenShake.time / 14);
+        screenShake.offsetX = (Math.random() - 0.5) * 2 * currentIntensity;
+        screenShake.offsetY = (Math.random() - 0.5) * 2 * currentIntensity;
+    } else {
+        screenShake.offsetX = 0;
+        screenShake.offsetY = 0;
+    }
+
+    if (player.attackCooldown > 0) player.attackCooldown--;
+    if (player.punchAnimTimer > 0) player.punchAnimTimer--;
+    if (player.invuln > 0) player.invuln--;
+
+    if (isAttackHeld && player.punchAnimTimer <= 0) {
+        player.chargeTime++;
+        player.speed = player.baseSpeed * 0.72;
+
+        const count = player.chargeTime >= 30 ? 4 : 2;
+        const footY = player.y + player.size * 0.8 + 10;
+        
+        for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = (Math.random() * 3.5 + 2.5) * (player.chargeTime >= 30 ? 1.5 : 1.0);
+            
+            const vx = Math.cos(angle) * speed;
+            const vy = Math.sin(angle) * (speed * 0.52);
+
+            chargeParticles.push({
+                x: player.x + (Math.random() - 0.5) * 20,
+                y: footY + (Math.random() - 0.5) * 8,
+                vx: vx,
+                vy: vy,
+                size: Math.floor(Math.random() * 3) + 3,
+                life: Math.floor(Math.random() * 12) + 14,
+                maxLife: 26,
+                color: Math.random() > 0.3 ? '#ffffff' : '#e0f7fa'
+            });
+        }
+    } else {
+        player.speed = player.baseSpeed;
+    }
+
+    for (let i = chargeParticles.length - 1; i >= 0; i--) {
+        const cp = chargeParticles[i];
+        cp.x += cp.vx;
+        cp.y += cp.vy;
+        cp.vx *= 0.93;
+        cp.vy *= 0.93;
+        cp.life--;
+        if (cp.life <= 0) chargeParticles.splice(i, 1);
+    }
+
+    if (player.punchAnimTimer > 0) {
+    } else if (player.kbTime > 0) {
+        player.x += player.kbVx; player.y += player.kbVy; player.kbTime--;
+    } else {
+        let moveX = 0; let moveY = 0;
+        if (keys.w) moveY -= 1;
+        if (keys.s) moveY += 1;
+        if (keys.a) moveX -= 1;
+        if (keys.d) moveX += 1;
+
+        if (joystick.active) {
+            moveX += joystick.moveX;
+            moveY += joystick.moveY;
+        }
+
+        const len = Math.hypot(moveX, moveY);
+        if (len > 0) {
+            const normalizedLen = Math.min(len, 1);
+            player.x += (moveX / len) * normalizedLen * player.speed;
+            player.y += (moveY / len) * normalizedLen * player.speed;
+            
+            if (player.punchAnimTimer <= 0) {
+                if (moveX !== 0) player.facingRight = moveX > 0;
+            }
+        }
+    }
+    
+    clampToWalkableArea(player, 45);
+
+    camera.x = Math.max(0, Math.min(player.x - camera.width / 2, camera.mapWidth - camera.width));
+    camera.y = Math.max(0, Math.min(player.y - camera.height / 2, camera.mapHeight - camera.height));
+
+    for (let i = droppedCoins.length - 1; i >= 0; i--) {
+        const c = droppedCoins[i];
+
+        if (c.state === 'air') {
+            c.x += c.vx;
+            c.y += c.vy;
+            c.z += c.vz;
+            c.vz -= 0.65;
+            c.rotation += c.rotSpeed;
+
+            clampToWalkableArea(c, 25);
+
+            if (c.z <= 0) {
+                c.z = 0;
+                c.bounces++;
+                if (c.bounces < c.maxBounces) {
+                    c.vz = -c.vz * 0.48;
+                    c.vx *= 0.65;
+                    c.vy *= 0.65;
+                } else {
+                    c.vz = 0;
+                    c.vx = 0;
+                    c.vy = 0;
+                    c.state = 'ground';
+                }
+            }
+        } else if (c.state === 'ground') {
+            c.groundWaitTimer--;
+            if (c.groundWaitTimer <= 0) {
+                c.state = 'attract';
+            }
+        } else if (c.state === 'attract') {
+            const targetX = player.x;
+            const targetY = player.y + 10;
+            const dx = targetX - c.x;
+            const dy = targetY - c.y;
+            const dist = Math.hypot(dx, dy);
+
+            c.attractSpeed += 1.1;
+            if (dist <= c.attractSpeed + 15) {
+                sessionGold += 1;
+                currentGameData.gold += 1;
+                droppedCoins.splice(i, 1);
+                
+                if (enemies.length === 0 && dyingEnemies.length === 0 && droppedCoins.length === 0) {
+                    checkLevelVictory();
+                }
+                continue;
+            } else {
+                c.x += (dx / dist) * c.attractSpeed;
+                c.y += (dy / dist) * c.attractSpeed;
+            }
+        }
+    }
+
+    for (let i = enemies.length - 1; i >= 0; i--) {
+        let e = enemies[i];
+        if (e.invuln > 0) e.invuln--;
+
+        if (e.kbTime > 0) {
+            e.isJumping = false;
+            e.x += e.kbVx; e.y += e.kbVy; e.kbTime--;
+        } else {
+            if (!e.isJumping) {
+                e.jumpTimer++;
+                if (e.jumpTimer >= 120) {
+                    e.isJumping = true; e.jumpTimer = 0; e.jumpProgress = 0;
+                    e.jumpStartX = e.x; e.jumpStartY = e.y;
+                    
+                    let distToPlayer = Math.hypot(player.x - e.x, player.y - e.y);
+                    let jumpAngle = Math.atan2(player.y - e.y, player.x - e.x);
+                    let actualJumpDist = Math.min(128, distToPlayer);
+
+                    let targetPoint = {
+                        x: e.x + Math.cos(jumpAngle) * actualJumpDist,
+                        y: e.y + Math.sin(jumpAngle) * actualJumpDist
+                    };
+                    clampToWalkableArea(targetPoint, e.size * 0.7);
+
+                    e.jumpTargetX = targetPoint.x;
+                    e.jumpTargetY = targetPoint.y;
+                    e.facingRight = (player.x >= e.x);
+                }
+            } else {
+                e.jumpProgress += 0.025;
+                if (e.jumpProgress >= 1) {
+                    e.x = e.jumpTargetX; e.y = e.jumpTargetY; e.isJumping = false;
+                } else {
+                    e.x = e.jumpStartX + (e.jumpTargetX - e.jumpStartX) * e.jumpProgress;
+                    e.y = e.jumpStartY + (e.jumpTargetY - e.jumpStartY) * e.jumpProgress;
+                }
+            }
+        }
+
+        clampToWalkableArea(e, e.size * 0.7);
+
+        if (player.invuln <= 0 && Math.hypot(player.x - e.x, player.y - e.y) < player.size + e.size) {
+            player.hp -= 10; player.invuln = 30;
+            let angle = Math.atan2(player.y - e.y, player.x - e.x);
+            player.kbVx = Math.cos(angle) * 5; player.kbVy = Math.sin(angle) * 5; player.kbTime = 15;
+            triggerScreenShake(8, 10);
+            spawnDamageText(10, player.x, player.y, true);
+        }
+
+        if (e.hp <= 0) {
+            spawnDroppedCoins(e.x, e.y, 3);
+
+            let deathAngle = Math.atan2(e.y - player.y, e.x - player.x);
+            let targetBounce = {
+                x: e.x + Math.cos(deathAngle) * 128,
+                y: e.y + Math.sin(deathAngle) * 128
+            };
+            clampToWalkableArea(targetBounce, e.size * 0.7);
+
+            dyingEnemies.push({
+                x: e.x, y: e.y, size: e.size,
+                startBounceX: e.x, startBounceY: e.y,
+                targetBounceX: targetBounce.x,
+                targetBounceY: targetBounce.y,
+                life: 60, maxLife: 60, facingRight: e.facingRight
+            });
+
+            enemies.splice(i, 1);
+        }
+    }
+
+    for (let i = dyingEnemies.length - 1; i >= 0; i--) {
+        let de = dyingEnemies[i]; de.life--;
+        let p = 1 - (de.life / de.maxLife);
+        de.x = de.startBounceX + (de.targetBounceX - de.startBounceX) * p;
+        de.y = de.startBounceY + (de.targetBounceY - de.startBounceY) * p;
+
+        if (de.life <= 0) {
+            dyingEnemies.splice(i, 1);
+            if (enemies.length === 0 && dyingEnemies.length === 0 && droppedCoins.length === 0) {
+                checkLevelVictory();
+            }
+        }
+    }
+
+    for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        let ft = floatingTexts[i]; ft.vy += 0.2; ft.x += ft.vx; ft.y += ft.vy; ft.life--;
+        if (ft.life <= 0) floatingTexts.splice(i, 1);
+    }
+}
+
+function drawShadow(x, y, radius, camX, camY) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
+    ctx.beginPath();
+    ctx.ellipse(x - camX, y - camY + radius * 0.8 + 15, radius * 0.5, (radius * 0.5) * 0.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+}
+
+function renderGame() {
+    ctx.clearRect(0, 0, 1920, 1080);
+    
+    const renderCamX = camera.x - screenShake.offsetX;
+    const renderCamY = camera.y - screenShake.offsetY;
+
+    if (currentMapImg.complete) { 
+        ctx.drawImage(currentMapImg, -renderCamX, -renderCamY); 
+    } else { 
+        ctx.fillStyle = '#1a1a24'; ctx.fillRect(-renderCamX, -renderCamY, camera.mapWidth, camera.mapHeight); 
+    }
+
+    drawShadow(player.x, player.y, player.size, renderCamX, renderCamY);
+
+    if (chargeParticles.length > 0) {
+        ctx.save();
+        for (let cp of chargeParticles) {
+            const alpha = Math.max(0, cp.life / cp.maxLife);
+            ctx.fillStyle = cp.color;
+            ctx.globalAlpha = alpha;
+            ctx.fillRect(Math.floor(cp.x - renderCamX), Math.floor(cp.y - renderCamY), cp.size, cp.size);
+        }
+        ctx.restore();
+    }
+
+    for (let c of droppedCoins) {
+        const coinSize = 34;
+        const screenX = c.x - renderCamX;
+        const screenY = (c.y - c.z) - renderCamY;
+
+        ctx.save();
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.24)';
+        ctx.beginPath();
+        const shadowScale = Math.max(0.2, 1 - (c.z / 150));
+        ctx.ellipse(screenX, c.y - renderCamY + 8, (coinSize / 2) * shadowScale, (coinSize / 4) * shadowScale, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        ctx.save();
+        ctx.translate(screenX, screenY);
+        ctx.rotate(c.rotation);
+        if (goldCoinImg.complete && goldCoinImg.naturalWidth !== 0) {
+            ctx.drawImage(goldCoinImg, -coinSize / 2, -coinSize / 2, coinSize, coinSize);
+        } else {
+            ctx.fillStyle = '#f1c40f';
+            ctx.beginPath(); ctx.arc(0, 0, coinSize / 2, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.restore();
+    }
+
+    for (let e of enemies) {
+        drawShadow(e.x, e.y, e.size, renderCamX, renderCamY);
+
+        ctx.save();
+        ctx.translate(e.x - renderCamX, e.y - renderCamY);
+        if (!e.facingRight) ctx.scale(-1, 1);
+
+        let imgToDraw = e.isJumping ? enemyA02 : enemyA01;
+        if (e.invuln > 0 && Math.floor(e.invuln / 2) % 2 === 0) ctx.globalAlpha = 0.4;
+
+        if (imgToDraw.complete && imgToDraw.naturalWidth !== 0) {
+            ctx.drawImage(imgToDraw, -e.width / 2, -e.height / 2, e.width, e.height);
+        } else {
+            ctx.fillStyle = e.invuln > 0 ? '#ffffff' : '#2ed573';
+            ctx.beginPath(); ctx.arc(0, 0, e.size, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.restore();
+    }
+
+    for (let de of dyingEnemies) {
+        ctx.save();
+        ctx.translate(de.x - renderCamX, de.y - renderCamY);
+        if (!de.facingRight) ctx.scale(-1, 1);
+
+        let alpha = de.life / de.maxLife;
+        if (Math.floor(de.life / 4) % 2 === 0) alpha *= 0.3; 
+        ctx.globalAlpha = Math.max(0, alpha);
+
+        if (enemyA01.complete && enemyA01.naturalWidth !== 0) {
+            ctx.drawImage(enemyA01, -64, -64, 128, 128);
+        } else {
+            ctx.fillStyle = '#ff4757';
+            ctx.beginPath(); ctx.arc(0, 0, de.size, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.restore();
+    }
+
+    let targetGif = 'maincharacter_idle.gif';
+    let currentFacingRight = player.facingRight;
+
+    if (player.punchAnimTimer > 0) {
+        targetGif = 'maincharacter_punch.gif';
+        currentFacingRight = player.punchFacingRight;
+    } else {
+        const isMoving = (keys.w || keys.a || keys.s || keys.d || (joystick.active && Math.hypot(joystick.moveX, joystick.moveY) > 0.1)) && player.kbTime <= 0;
+        targetGif = isMoving ? 'maincharacter_walk.gif' : 'maincharacter_idle.gif';
+    }
+
+    if (playerSpriteImg.getAttribute('src') !== targetGif) playerSpriteImg.src = targetGif;
+    playerSpriteImg.style.opacity = (player.invuln > 0 && Math.floor(player.invuln / 5) % 2 === 0) ? '0.3' : '1';
+
+    const rect = gameContainer.getBoundingClientRect();
+    const scaleX = rect.width / 1920; 
+    const scaleY = rect.height / 1080;
+    const w = 140 * scaleX; 
+    const h = 140 * scaleY;
+    playerSpriteImg.style.width = `${w}px`; 
+    playerSpriteImg.style.height = `${h}px`;
+
+    const screenPosX = (player.x - renderCamX) * scaleX - w / 2;
+    const screenPosY = (player.y - renderCamY) * scaleY - h / 2;
+    const flipStr = currentFacingRight ? 'scaleX(-1)' : 'scaleX(1)';
+    playerSpriteImg.style.transform = `translate3d(${screenPosX}px, ${screenPosY}px, 0) ${flipStr}`;
+
+    if (player.chargeTime >= 30) {
+        const progress = Math.min(1.0, (player.chargeTime - 30) / 30.0);
+        ctx.beginPath(); 
+        ctx.arc(player.x - renderCamX, player.y - renderCamY - 65, 18, -Math.PI/2, -Math.PI/2 + progress * Math.PI * 2);
+        ctx.lineWidth = 6; 
+        ctx.strokeStyle = `hsl(${120 - progress * 90}, 100%, 50%)`; 
+        ctx.stroke();
+    }
+
+    for (let pObj of activePunchGifs) {
+        const pSize = pObj.baseSize * pObj.scale * scaleX;
+        const screenX = (pObj.worldX - renderCamX) * scaleX - pSize / 2;
+        const screenY = (pObj.worldY - renderCamY) * scaleY - pSize / 2;
+
+        pObj.element.style.width = `${pSize}px`;
+        pObj.element.style.height = `${pSize}px`;
+        pObj.element.style.transform = `translate3d(${screenX}px, ${screenY}px, 0) rotate(${pObj.angle}rad)`;
+    }
+
+    for (let ft of floatingTexts) {
+        const progress = ft.life / ft.maxLife; 
+        const scale = (ft.isCrit ? 1.8 : 1.4) * (0.25 + 0.75 * progress) * 1.5;
+        const fontSize = Math.floor(40 * scale);
+
+        ctx.save(); 
+        ctx.globalAlpha = Math.max(0, progress); 
+        ctx.font = `900 ${fontSize}px jf-openhuninn, sans-serif`;
+        ctx.textAlign = 'center'; 
+        
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = Math.max(3, Math.floor(fontSize * 0.16));
+        ctx.lineJoin = 'round';
+        ctx.strokeText(ft.text, ft.x - renderCamX, ft.y - renderCamY);
+
+        ctx.fillStyle = ft.color;
+        ctx.fillText(ft.text, ft.x - renderCamX, ft.y - renderCamY); 
+        ctx.restore();
+    }
+
+    if (document.getElementById('victory-screen').style.display !== 'flex') {
+        ctx.fillStyle = 'white'; ctx.font = 'bold 28px jf-openhuninn, sans-serif';
+        ctx.fillText(`血量: ${player.hp} / ${player.maxHp}`, 40, 50);
+        ctx.fillStyle = '#f1c40f'; ctx.fillText(`🪙 金幣: ${sessionGold}`, 40, 90);
+    }
+}
+
+function checkLevelVictory() {
+    isPlaying = false; document.getElementById('in-game-ui').style.display = 'none'; isAttackHeld = false; triggerAutoSave();
+    setTimeout(() => {
+        document.getElementById('victory-gold-text').innerText = `獲得金幣: ${sessionGold}`;
+        playTransition(() => { document.getElementById('victory-screen').style.display = 'flex'; });
+    }, 500);
+}
+
+function returnToStageSelectAfterVictory() {
+    document.getElementById('victory-screen').style.display = 'none';
+    playerSpriteImg.style.display = 'none'; openStageSelect();
+}
+</script>
+</body>
+</html>
