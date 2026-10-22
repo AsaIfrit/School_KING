@@ -355,19 +355,19 @@
 
     <div id="game-container">
         <!-- 左上角返回按鈕 -->
-        <button id="global-back-btn" onclick="playClickSound(); handleGlobalBack()">
+        <button id="global-back-btn" onclick="handleGlobalBack()">
             <span style="font-size: 1.4vw; line-height: 1;">‹</span> <span>返回</span>
         </button>
 
         <!-- 右上角全螢幕切換按鈕 -->
-        <button id="fullscreen-btn" onclick="playClickSound(); toggleFullscreen()" title="切換全螢幕">
+        <button id="fullscreen-btn" onclick="toggleFullscreen()" title="切換全螢幕">
             <svg id="fs-expand-icon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
             <svg id="fs-compress-icon" viewBox="0 0 24 24" style="display:none;"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
         </button>
 
         <!-- 戰鬥 UI -->
         <div id="in-game-ui">
-            <button class="btn-pause-game" onclick="playClickSound(); togglePause()">暫停</button>
+            <button class="btn-pause-game" onclick="togglePause()">暫停</button>
             <div class="btn-mobile-attack" id="btn-mobile-attack">攻</div>
             <div id="joystick-zone"><div id="joystick-knob"></div></div>
         </div>
@@ -388,8 +388,8 @@
         <div id="pause-screen" class="ui-screen" style="display: none;">
             <div class="pause-panel">
                 <div class="pause-title">遊戲已暫停</div>
-                <button class="btn" style="width: 100%; font-size: 1.5vw; padding: 0.9vw 0;" onclick="playClickSound(); togglePause()">繼續遊戲</button>
-                <button class="btn btn-danger" style="width: 100%; font-size: 1.5vw; padding: 0.9vw 0;" onclick="playClickSound(); quitLevelToStageSelect()">中斷關卡 (返回關卡選擇)</button>
+                <button class="btn" style="width: 100%; font-size: 1.5vw; padding: 0.9vw 0;" onclick="togglePause()">繼續遊戲</button>
+                <button class="btn btn-danger" style="width: 100%; font-size: 1.5vw; padding: 0.9vw 0;" onclick="quitLevelToStageSelect()">中斷關卡 (返回關卡選擇)</button>
             </div>
         </div>
 
@@ -399,16 +399,16 @@
             <img src="IEA LOGO.png" class="top-left-logo" alt="IEA LOGO">
 
             <div class="top-right-group">
-                <button id="google-auth-btn" class="google-login-btn" onclick="playClickSound(); toggleGoogleLogin()">
+                <button id="google-auth-btn" class="google-login-btn" onclick="toggleGoogleLogin()">
                     <svg viewBox="0 0 24 24"><path fill="#388099" d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C14.15,4.73 15.91,5.44 17.29,6.72L19.33,4.68C17.46,2.95 15.02,2 12.2,2C6.56,2 2,6.56 2,12C2,17.44 6.56,22 12.2,22C17.65,22 21.43,18.15 21.43,12.71C21.43,12.12 21.37,11.62 21.35,11.1Z"/></svg>
                     <span id="google-btn-text">Google 登入</span>
                 </button>
             </div>
 
             <div class="bottom-right-btn-group">
-                <button id="btn-continue-game" class="btn-custom btn-continue" style="display: none;" onclick="playClickSound(); playTransition(async () => { await loadFromSlot('Auto'); })">Continue</button>
-                <button class="btn-custom" onclick="playClickSound(); handleStartNewGame()">Start game</button>
-                <button class="btn-custom" onclick="playClickSound(); openLoadScreen()">Load game</button>
+                <button id="btn-continue-game" class="btn-custom btn-continue" style="display: none;" onclick="playTransition(async () => { await loadFromSlot('Auto'); })">Continue</button>
+                <button class="btn-custom" onclick="handleStartNewGame()">Start game</button>
+                <button class="btn-custom" onclick="openLoadScreen()">Load game</button>
             </div>
 
             <div id="load-screen-modal">
@@ -417,7 +417,7 @@
                     <div class="load-slot-list" id="load-slots-container"></div>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1vw;">
                         <span id="cloud-status-text" class="cloud-sync-status">目前模式: 本地端儲存 (未登入)</span>
-                        <button class="back-text-btn" onclick="playClickSound(); closeLoadScreen()">Back</button>
+                        <button class="back-text-btn" onclick="closeLoadScreen()">Back</button>
                     </div>
                 </div>
             </div>
@@ -440,14 +440,14 @@
             </div>
             
             <div class="lobby-right-menu">
-                <button class="lobby-white-btn btn-campus" onclick="playClickSound(); playTransition(async () => openStageSelect())">前往校園</button>
-                <button class="lobby-white-btn btn-character" onclick="playClickSound(); playTransition(async () => openCharacterMenu())">人物選單</button>
-                <button class="lobby-white-btn btn-shop-main" onclick="playClickSound(); playTransition(async () => openShop())">SHOP</button>
-                <button class="lobby-white-btn btn-settings-main" onclick="playClickSound(); playTransition(async () => openSettings())">設置</button>
+                <button class="lobby-white-btn btn-campus" onclick="playTransition(async () => openStageSelect())">前往校園</button>
+                <button class="lobby-white-btn btn-character" onclick="playTransition(async () => openCharacterMenu())">人物選單</button>
+                <button class="lobby-white-btn btn-shop-main" onclick="playTransition(async () => openShop())">SHOP</button>
+                <button class="lobby-white-btn btn-settings-main" onclick="playTransition(async () => openSettings())">設置</button>
             </div>
 
             <div class="lobby-left-bottom-group">
-                <button class="btn-sub-action" onclick="playClickSound(); playTransition(async () => openSaveScreen())">手動存檔</button>
+                <button class="btn-sub-action" onclick="playTransition(async () => openSaveScreen())">手動存檔</button>
             </div>
         </div>
 
@@ -473,7 +473,7 @@
                 </div>
 
                 <div style="text-align: center; margin-top: 1.5vw;">
-                    <button class="btn" style="min-width: 12vw;" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">完成並返回</button>
+                    <button class="btn" style="min-width: 12vw;" onclick="playTransition(async () => backToLobbyFromSubScreen())">完成並返回</button>
                 </div>
             </div>
         </div>
@@ -483,7 +483,7 @@
             <div class="title">選擇挑戰關卡</div>
             <div class="stage-scroll-container" id="stage-card-container"></div>
             <div style="margin-top: 1.5vw;">
-                <button class="btn btn-danger" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">返回大廳</button>
+                <button class="btn btn-danger" onclick="playTransition(async () => backToLobbyFromSubScreen())">返回大廳</button>
             </div>
         </div>
 
@@ -546,7 +546,7 @@
                     </div>
                 </div>
                 <div style="text-align: right; margin-top: 1vw;">
-                    <button class="btn btn-danger" onclick="playClickSound(); playTransition(async () => backToLobbyFromSubScreen())">返回大廳</button>
+                    <button class="btn btn-danger" onclick="playTransition(async () => backToLobbyFromSubScreen())">返回大廳</button>
                 </div>
             </div>
         </div>
@@ -557,7 +557,7 @@
             <div class="panel-container">
                 <div class="slot-grid" id="save-slots-container"></div>
                 <div style="text-align: right; margin-top: 1vw;">
-                    <button class="btn btn-danger" onclick="playClickSound(); playTransition(async () => closeSaveScreen())">返回大廳</button>
+                    <button class="btn btn-danger" onclick="playTransition(async () => closeSaveScreen())">返回大廳</button>
                 </div>
             </div>
         </div>
@@ -591,84 +591,59 @@
     </div>
 
 <script>
-// ==================== 0. 極簡超輕量 Web Audio 跨平台雙通引擎 (PC + 手機完美保證) ====================
+// ==================== 0. 原生高相容音訊池引擎 (PC + 手機必定發聲) ====================
 let currentSfxVolume = 1.0, currentBgmVolume = 1.0;
-let audioCtx = null;
-const sfxBuffers = {};
 
-function getAudioContext() {
-    if (!audioCtx) {
-        const AudioClass = window.AudioContext || window.webkitAudioContext;
-        if (AudioClass) audioCtx = new AudioClass();
+class SoundPool {
+    constructor(src, size = 4) {
+        this.pool = [];
+        this.index = 0;
+        this.size = size;
+        for (let i = 0; i < size; i++) {
+            const a = new Audio(src);
+            a.preload = 'auto';
+            this.pool.push(a);
+        }
     }
-    return audioCtx;
-}
-
-// 快速解碼音訊資料（純記憶體暫存，不佔用 DOM）
-async function loadSfxBuffer(name, url) {
-    try {
-        const ctx = getAudioContext();
-        if (!ctx) return;
-        const res = await fetch(url);
-        const arrayBuf = await res.arrayBuffer();
-        sfxBuffers[name] = await ctx.decodeAudioData(arrayBuf);
-    } catch (e) {}
-}
-
-// 播放解碼音效（PC / 手機皆為 0ms 極致零延遲）
-function playSnd(name, vol = 1.0) {
-    const ctx = getAudioContext();
-    if (!ctx) return;
-    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
-    if (!sfxBuffers[name]) return;
-
-    try {
-        const src = ctx.createBufferSource();
-        const gain = ctx.createGain();
-        src.buffer = sfxBuffers[name];
-        gain.gain.value = Math.max(0, Math.min(1, currentSfxVolume * vol));
-        src.connect(gain);
-        gain.connect(ctx.destination);
-        src.start(0);
-    } catch (e) {}
-}
-
-function playClickSound() { playSnd('click', 1.0); }
-
-// 全局首度手勢解鎖（PC 滑鼠與手機螢幕觸碰均立即喚醒）
-function unlockAudioOnce() {
-    const ctx = getAudioContext();
-    if (ctx) {
-        if (ctx.state === 'suspended') ctx.resume().catch(() => {});
-        // 注入 1 sample 靜音緩衝區，徹底打通行動裝置的音訊硬體線路
-        try {
-            const buf = ctx.createBuffer(1, 1, 22050);
-            const src = ctx.createBufferSource();
-            src.buffer = buf;
-            src.connect(ctx.destination);
-            src.start(0);
-        } catch (e) {}
+    play(volumeScale = 1.0) {
+        const audio = this.pool[this.index];
+        if (audio) {
+            audio.volume = Math.max(0, Math.min(1, currentSfxVolume * volumeScale));
+            audio.currentTime = 0;
+            const p = audio.play();
+            if (p !== undefined) p.catch(() => {});
+            this.index = (this.index + 1) % this.size;
+        }
     }
+}
 
-    // 預載解碼遊戲常用音效
-    loadSfxBuffer('click', 'click.mp3');
-    loadSfxBuffer('punch', 'punch.mp3');
-    loadSfxBuffer('punch_hited', 'punch_hited.mp3');
-    loadSfxBuffer('hardpunch', 'hardpunch.mp3');
-    loadSfxBuffer('hardpunch_hited', 'hardpunch_hited.mp3');
-    loadSfxBuffer('victory', 'hardpunch.mp3');
+const sounds = {
+    click: new SoundPool('click.mp3', 6),
+    punch: new SoundPool('punch.mp3', 6),
+    punchHit: new SoundPool('punch_hited.mp3', 6),
+    hardpunch: new SoundPool('hardpunch.mp3', 4),
+    hardpunchHit: new SoundPool('hardpunch_hited.mp3', 4),
+    victory: new SoundPool('hardpunch.mp3', 2)
+};
 
+function playClickSound() { sounds.click.play(1.0); }
+function playSnd(name) { if (sounds[name]) sounds[name].play(1.0); }
+
+// 全局捕捉點擊事件：所有按鈕點擊必發出 click.mp3
+document.addEventListener('pointerdown', (e) => {
+    const target = e.target.closest('button, .btn, .btn-custom, .lobby-white-btn, .btn-sub-action, .load-btn-action, .stage-card');
+    if (target) {
+        playClickSound();
+    }
+}, true);
+
+// 首次點擊喚醒登入 BGM
+window.addEventListener('pointerdown', function initBgmOnce() {
     if (document.getElementById('login-screen').style.display !== 'none' && bgmList.login.paused) {
         switchBgm('login');
     }
-
-    ['pointerdown', 'touchstart', 'mousedown', 'keydown'].forEach(evt => {
-        window.removeEventListener(evt, unlockAudioOnce, true);
-    });
-}
-['pointerdown', 'touchstart', 'mousedown', 'keydown'].forEach(evt => {
-    window.addEventListener(evt, unlockAudioOnce, { capture: true, once: true });
-});
+    window.removeEventListener('pointerdown', initBgmOnce);
+}, { once: true });
 
 // 背景音樂管理
 const bgmList = {
@@ -1029,7 +1004,6 @@ async function openStageSelect() {
         if (isUnlocked) {
             card.onclick = () => {
                 if (stageMovedDistance > 8) return;
-                playClickSound();
                 playTransition(async () => startStageGame(stage));
             };
         }
@@ -1072,7 +1046,6 @@ function updateShopUI() {
 }
 
 function triggerNpcDialogue() {
-    playClickSound();
     const bubble = document.getElementById('shop-dialog-bubble');
     const textEl = document.getElementById('shop-dialog-text');
     if (typingInterval) clearInterval(typingInterval);
@@ -1096,21 +1069,18 @@ function triggerNpcDialogue() {
 function buyUpgrade(type) {
     let cost = currentGameData[`${type}Level`] * 50;
     if (currentGameData.gold >= cost) {
-        playClickSound();
         currentGameData.gold -= cost; 
         currentGameData[`${type}Level`] += 1;
         updateShopUI(); 
         triggerAutoSave();
         showToast(type === 'atk' ? "攻擊力升級成功！" : "生命上限提升成功！");
     } else { 
-        playClickSound();
         showToast("金幣不足，快去戰鬥收集吧！"); 
     }
 }
 
 function drawGacha() {
     if (currentGameData.gem >= 10) {
-        playClickSound();
         currentGameData.gem -= 10;
         const unowned = availablePartners.filter(p => !currentGameData.ownedPartners.includes(p.name));
         if (unowned.length > 0) {
@@ -1124,7 +1094,6 @@ function drawGacha() {
         updateShopUI(); 
         triggerAutoSave();
     } else { 
-        playClickSound();
         showToast("寶石不足！"); 
     }
 }
@@ -1143,7 +1112,7 @@ async function openLoadScreen() {
         slotDiv.className = 'load-slot-item';
         let slotTitle = slotKey === 'Auto' ? 'Auto (自動存檔)' : `存檔槽 ${slotKey}`;
         let slotText = slotData ? `${slotTitle} - 金幣:${slotData.gold||0} 寶石:${slotData.gem||0}` : `${slotTitle} (空)`;
-        slotDiv.innerHTML = `<div class="load-slot-text">${slotText}</div><button class="load-btn-action" onclick="playClickSound(); playTransition(async () => loadFromSlot('${slotKey}'))" ${slotData ? '' : 'disabled'}>Load</button>`;
+        slotDiv.innerHTML = `<div class="load-slot-text">${slotText}</div><button class="load-btn-action" onclick="playTransition(async () => loadFromSlot('${slotKey}'))" ${slotData ? '' : 'disabled'}>Load</button>`;
         container.appendChild(slotDiv);
     }
 }
@@ -1174,7 +1143,7 @@ function openSaveScreen() {
     ['Auto', '1', '2'].forEach(slotKey => {
         const slotDiv = document.createElement('div'); 
         slotDiv.className = 'slot-item';
-        slotDiv.innerHTML = `<div>${slotKey === 'Auto' ? 'Auto (自動存檔)' : `存檔槽 ${slotKey}`}</div><button class="btn" onclick="playClickSound(); saveToSlot('${slotKey}')">儲存</button>`;
+        slotDiv.innerHTML = `<div>${slotKey === 'Auto' ? 'Auto (自動存檔)' : `存檔槽 ${slotKey}`}</div><button class="btn" onclick="saveToSlot('${slotKey}')">儲存</button>`;
         container.appendChild(slotDiv);
     });
     document.getElementById('save-screen').style.display = 'flex';
@@ -1232,7 +1201,6 @@ async function openCharacterMenu() {
 function previewPartnerByIndex(targetIndex) {
     const ownedList = getOwnedPartnersList();
     if (!ownedList[targetIndex]) return;
-    playClickSound();
     previewPartnerIndex = targetIndex;
     updateCharacterInfoPanel();
     updateWheelPositions();
@@ -1268,7 +1236,6 @@ function handleLockDeployPartner() {
     const partnerToDeploy = ownedList[previewPartnerIndex];
     if (!partnerToDeploy || partnerToDeploy.name === currentGameData.selectedPartner) return;
 
-    playClickSound();
     currentGameData.selectedPartner = partnerToDeploy.name;
     updateLockDeployButton();
     showToast(`已鎖定【${partnerToDeploy.name}】為出戰夥伴！`);
@@ -1475,7 +1442,6 @@ async function startStageGame(stageConfig) {
     animFrameReq = requestAnimationFrame(gameLoop);
 }
 
-// 安全索引調用下一關，防止字串拼接語法錯誤
 function startStageByIndex(index) {
     if (STAGES_CONFIG[index]) {
         returnToStageSelectAfterVictory();
@@ -1552,8 +1518,8 @@ function executeAttack() {
     }
 
     if (hitAny) {
-        if (isHeavy) { playSnd('hardpunch_hited'); triggerScreenShake(16, 14); triggerHitStop(7); } 
-        else { playSnd('punch_hited'); triggerScreenShake(6, 8); triggerHitStop(3); }
+        if (isHeavy) { playSnd('hardpunchHit'); triggerScreenShake(16, 14); triggerHitStop(7); } 
+        else { playSnd('punchHit'); triggerScreenShake(6, 8); triggerHitStop(3); }
     }
 }
 
@@ -1861,8 +1827,8 @@ function finishLevelAndShowVictory(isDefeat = false) {
         badgeEl.style.display = 'none';
         gemBoxEl.style.display = 'none';
         btnGroup.innerHTML = `
-            <button class="btn" style="min-width: 11vw;" onclick="playClickSound(); playTransition(async () => startStageGame(currentActiveStage))">再次挑戰</button>
-            <button class="btn btn-danger" style="min-width: 11vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
+            <button class="btn" style="min-width: 11vw;" onclick="playTransition(async () => startStageGame(currentActiveStage))">再次挑戰</button>
+            <button class="btn btn-danger" style="min-width: 11vw;" onclick="playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
         `;
     } else {
         titleEl.className = 'victory-title';
@@ -1886,11 +1852,11 @@ function finishLevelAndShowVictory(isDefeat = false) {
         if (hasNextStage) {
             const nextIdx = curStageIdx + 1;
             btnGroup.innerHTML = `
-                <button class="btn btn-primary" style="min-width: 12vw;" onclick="playClickSound(); playTransition(async () => startStageByIndex(${nextIdx}))">繼續下一關 (${STAGES_CONFIG[nextIdx].id})</button>
-                <button class="btn" style="min-width: 11vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
+                <button class="btn btn-primary" style="min-width: 12vw;" onclick="playTransition(async () => startStageByIndex(${nextIdx}))">繼續下一關 (${STAGES_CONFIG[nextIdx].id})</button>
+                <button class="btn" style="min-width: 11vw;" onclick="playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>
             `;
         } else {
-            btnGroup.innerHTML = `<button class="btn" style="min-width: 14vw;" onclick="playClickSound(); playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>`;
+            btnGroup.innerHTML = `<button class="btn" style="min-width: 14vw;" onclick="playTransition(async () => returnToStageSelectAfterVictory())">返回關卡選擇</button>`;
         }
     }
 
