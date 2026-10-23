@@ -54,20 +54,29 @@
             overflow: hidden;
         }
 
-        canvas { width: 100%; height: 100%; display: block; }
+        /* 戰鬥畫布置於 Z-Index 2，讓動態 DOM 人物可靈活進行前後遮擋排序 */
+        canvas#gameCanvas { width: 100%; height: 100%; display: block; position: absolute; top: 0; left: 0; z-index: 2; }
 
-        /* 主角動態 GIF DOM 層 */
+        /* 主角動態 GIF DOM 層 (基準 144x144) */
         #player-gif-sprite {
-            position: absolute; width: 140px; height: 140px;
-            pointer-events: none; z-index: 5; display: none;
-            left: 0; top: 0; will-change: transform;
+            position: absolute; width: 144px; height: 144px;
+            pointer-events: none; display: none;
+            left: 0; top: 0; will-change: transform, z-index;
             transform-origin: center center;
         }
 
-        /* 出拳動態 DOM */
+        /* 夥伴動態 GIF DOM 層 (基準 128x128，保持原生尺寸無放大) */
+        #partner-gif-sprite {
+            position: absolute; width: 128px; height: 128px;
+            pointer-events: none; display: none;
+            left: 0; top: 0; will-change: transform, z-index;
+            transform-origin: center center;
+        }
+
+        /* 出拳動態 DOM (最高優先級特效) */
         .punch-gif-sprite {
             position: absolute; pointer-events: none;
-            z-index: 7; left: 0; top: 0; will-change: transform;
+            z-index: 5000; left: 0; top: 0; will-change: transform;
             transform-origin: center center;
         }
 
@@ -75,12 +84,12 @@
         .ui-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: rgba(15, 15, 25, 0.95); z-index: 10; transition: opacity 0.4s ease;
+            background: rgba(15, 15, 25, 0.95); z-index: 6000; transition: opacity 0.4s ease;
         }
 
         /* 右上角全螢幕按鈕 */
         #fullscreen-btn {
-            position: absolute; top: max(16px, 2.2%); right: var(--fs-right); z-index: 60;
+            position: absolute; top: max(16px, 2.2%); right: var(--fs-right); z-index: 7000;
             width: var(--fs-btn-size); height: var(--fs-btn-size);
             background: rgba(255, 255, 255, 0.92); color: #388099;
             border: 1.5px solid #dcdcdc; border-radius: 50%;
@@ -92,7 +101,7 @@
         #fullscreen-btn svg { width: 50%; height: 50%; fill: #388099; }
 
         #global-back-btn {
-            position: absolute; top: max(16px, 2.2%); left: max(16px, 2%); z-index: 50;
+            position: absolute; top: max(16px, 2.2%); left: max(16px, 2%); z-index: 6500;
             background: rgba(255, 255, 255, 0.92); color: #388099;
             border: 1.5px solid #dcdcdc; border-radius: 20px;
             padding: 0.45vw 1.2vw; font-size: clamp(13px, 1.1vw, 18px); font-weight: bold;
@@ -105,7 +114,7 @@
         /* 戰鬥中 UI */
         #in-game-ui {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 8; display: none;
+            pointer-events: none; z-index: 5500; display: none;
         }
 
         .btn-pause-game {
@@ -135,7 +144,7 @@
             width: 14vw; height: 14vw; min-width: 130px; min-height: 130px;
             border-radius: 50%; background: rgba(255, 255, 255, 0.15);
             border: 2px dashed rgba(255, 255, 255, 0.35);
-            pointer-events: auto; display: none; touch-action: none; z-index: 9;
+            pointer-events: auto; display: none; touch-action: none; z-index: 5501;
         }
         #joystick-knob {
             position: absolute; top: 50%; left: 50%;
@@ -146,7 +155,7 @@
             pointer-events: none; transform: translate3d(0, 0, 0);
         }
 
-        #pause-screen { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); z-index: 20; }
+        #pause-screen { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); z-index: 6100; }
         .pause-panel {
             background: #ffffff; border-radius: 24px; padding: 3vw 5vw;
             box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid #eef2f5;
@@ -294,11 +303,11 @@
         .goods-sub { font-size: 0.95vw; color: #78909c; margin-top: 0.25vw; }
 
         /* 浮動通知 Toast */
-        #game-toast { position: absolute; top: -60px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #388099; border: 2px solid #bce2ed; border-radius: 30px; padding: 0.6vw 2.2vw; font-size: 1.25vw; font-weight: bold; box-shadow: 0 8px 24px rgba(56, 128, 153, 0.25); z-index: 1000; pointer-events: none; opacity: 0; transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #game-toast { position: absolute; top: -60px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #388099; border: 2px solid #bce2ed; border-radius: 30px; padding: 0.6vw 2.2vw; font-size: 1.25vw; font-weight: bold; box-shadow: 0 8px 24px rgba(56, 128, 153, 0.25); z-index: 8000; pointer-events: none; opacity: 0; transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #game-toast.show { top: 5%; opacity: 1; }
 
         /* 結算畫面 */
-        #victory-screen { display: none; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(8px); z-index: 30; }
+        #victory-screen { display: none; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(8px); z-index: 6050; }
         .victory-panel { 
             background: #ffffff; border-radius: 28px; padding: 2.8vw 5.2vw; 
             box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18); border: 2px solid #eef2f5; 
@@ -314,7 +323,7 @@
         .first-clear-badge { background: #f0f9ff; color: #0284c7; border: 1.5px solid #bae6fd; border-radius: 20px; padding: 0.6vw 1.8vw; font-size: 1.15vw; font-weight: bold; display: flex; align-items: center; gap: 0.6vw; }
 
         /* 存讀檔 */
-        #load-screen-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; display: none; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.25); }
+        #load-screen-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 6200; display: none; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.25); }
         .load-game-card { width: 48vw; min-width: 420px; background: #ffffff; border-radius: 20px; padding: 2.5vw 3vw 1.8vw 3vw; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); color: #388099; display: flex; flex-direction: column; gap: max(20px, 1.2vw); }
         .load-slot-list { display: flex; flex-direction: column; gap: max(16px, 1vw); }
         .load-slot-item { background: #ffffff; border: 1.5px solid #dbe6ea; border-radius: 14px; padding: 0.9vw 1.8vw; display: flex; justify-content: space-between; align-items: center; }
@@ -328,7 +337,7 @@
         .slot-item { background: #ffffff; padding: 1.2vw 2vw; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eef2f5; color: #388099; }
 
         /* 轉場層 */
-        #transition-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; pointer-events: none; z-index: 999; opacity: 0; transition: opacity 0.2s ease; }
+        #transition-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; pointer-events: none; z-index: 9000; opacity: 0; transition: opacity 0.2s ease; }
         #transition-overlay.active { pointer-events: auto; opacity: 1; }
         #loading-corner-box { position: absolute; right: 3.5%; bottom: 3.5%; display: flex; align-items: baseline; gap: 4px; color: #ffffff; font-weight: bold; font-size: 1.35vw; letter-spacing: 2px; background: rgba(15, 23, 42, 0.72); padding: 0.45vw 1.1vw; border-radius: 16px; backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.22); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); pointer-events: none; animation: pulseGlow 1.2s ease-in-out infinite alternate; }
         @keyframes pulseGlow { 0% { transform: translateY(0px); opacity: 0.85; } 100% { transform: translateY(-2px); opacity: 1; box-shadow: 0 8px 22px rgba(72, 202, 228, 0.45); } }
@@ -372,8 +381,11 @@
             <div id="joystick-zone"><div id="joystick-knob"></div></div>
         </div>
 
+        <!-- 主角與夥伴 GIF DOM 圖層 (具有動態 zIndex 前後排序) -->
         <img id="player-gif-sprite" src="maincharacter_idle.gif" alt="Player Character">
-        <canvas id="clickEffectCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998;"></canvas>
+        <img id="partner-gif-sprite" src="sasako_idle.gif" alt="Partner Character">
+        
+        <canvas id="clickEffectCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5999;"></canvas>
         <canvas id="gameCanvas" width="1920" height="1080"></canvas>
 
         <div id="game-toast">已成功購買！</div>
@@ -425,7 +437,7 @@
 
         <!-- 2. 大廳介面 -->
         <div id="main-lobby-screen" class="ui-screen" style="display: none;">
-            <img id="lobby-character-img" class="lobby-character-portrait" src="characterA_lobby01.png" alt="Lobby Character">
+            <img id="lobby-character-img" class="lobby-character-portrait" src="sasako_lobby01.png" alt="Lobby Character">
             <div class="lobby-top-bar">
                 <div class="lobby-currency-container">
                     <div class="currency-box">
@@ -499,8 +511,8 @@
                 
                 <div class="char-detail-panel" id="char-detail-panel">
                     <div class="char-detail-header">
-                        <div class="char-detail-name" id="char-detail-name">托帕</div>
-                        <div class="char-detail-tag" id="char-detail-tag">近戰衝擊型夥伴</div>
+                        <div class="char-detail-name" id="char-detail-name">薩薩子</div>
+                        <div class="char-detail-tag" id="char-detail-tag">迅捷協戰型夥伴</div>
                     </div>
                     <div class="char-detail-body" id="char-detail-desc"></div>
                 </div>
@@ -591,7 +603,7 @@
     </div>
 
 <script>
-// ==================== 0. 原生高相容音訊池引擎 (PC + 手機必定發聲) ====================
+// ==================== 0. 原生高相容音訊池引擎 ====================
 let currentSfxVolume = 1.0, currentBgmVolume = 1.0;
 
 class SoundPool {
@@ -629,15 +641,11 @@ const sounds = {
 function playClickSound() { sounds.click.play(1.0); }
 function playSnd(name) { if (sounds[name]) sounds[name].play(1.0); }
 
-// 全局捕捉點擊事件：所有按鈕點擊必發出 click.mp3
 document.addEventListener('pointerdown', (e) => {
     const target = e.target.closest('button, .btn, .btn-custom, .lobby-white-btn, .btn-sub-action, .load-btn-action, .stage-card');
-    if (target) {
-        playClickSound();
-    }
+    if (target) playClickSound();
 }, true);
 
-// 首次點擊喚醒登入 BGM
 window.addEventListener('pointerdown', function initBgmOnce() {
     if (document.getElementById('login-screen').style.display !== 'none' && bgmList.login.paused) {
         switchBgm('login');
@@ -645,7 +653,6 @@ window.addEventListener('pointerdown', function initBgmOnce() {
     window.removeEventListener('pointerdown', initBgmOnce);
 }, { once: true });
 
-// 背景音樂管理
 const bgmList = {
     login: document.getElementById('bg-music-login'),
     lobby: document.getElementById('bg-music-lobby'),
@@ -656,15 +663,23 @@ const bgmList = {
 let currentBgmKey = null;
 
 function switchBgm(targetKey) {
-    if (currentBgmKey === targetKey) return;
+    if (currentBgmKey === targetKey) {
+        if (targetKey && bgmList[targetKey] && bgmList[targetKey].paused) {
+            bgmList[targetKey].play().catch(() => {});
+        }
+        return;
+    }
+
     Object.keys(bgmList).forEach(k => {
         if (k !== targetKey && !bgmList[k].paused) {
             bgmList[k].pause();
             bgmList[k].currentTime = 0;
         }
     });
+
     if (targetKey && bgmList[targetKey]) {
         bgmList[targetKey].volume = currentBgmVolume;
+        bgmList[targetKey].currentTime = 0;
         bgmList[targetKey].play().catch(() => {});
     }
     currentBgmKey = targetKey;
@@ -803,12 +818,20 @@ function toggleGoogleLogin() {
     }
 }
 
+// 角色列表：將薩薩子置頂並替換藍寶
 const availablePartners = [
+    { 
+        id: 'sasako', 
+        name: '薩薩子', 
+        tag: '迅捷協戰型夥伴', 
+        desc: '【角色介紹】\n元氣滿滿且無比可靠的戰鬥夥伴！在戰鬥中會寸步不離地跟隨並支援主角。\n\n【戰鬥特性】\n平時在主角 500px 範圍內漫遊跟隨，範圍內出現敵人時會迅速近身，每秒揮出威力十足的一拳（造成主角 50% 傷害），且身法靈動，絕不與主角或魔物相撞。', 
+        lobbyImage: 'sasako_lobby01.png', 
+        blockImage: 'sasako_block01.png' 
+    },
     { id: 'topaz', name: '托帕', tag: '近戰衝擊型夥伴', desc: '【角色介紹】\n個性元氣開朗的校園格鬥家，擅長以重拳破防並具備優異的擊退性能。\n\n【被動天賦】\n普通拳擊命中時，蓄力速度提升 15%，擊退距離略微加長。', lobbyImage: 'characterA_lobby01.png', blockImage: 'characterA_block01.png' },
     { id: 'blackthorn', name: '黑棘', tag: '迅捷穿透型夥伴', desc: '【角色介紹】\n身手敏捷的學生會執行部成員，攻擊步頻極高，擅長在敵群中靈活穿梭。\n\n【被動天賦】\n自身移動速度額外提升 10%，閃避間隔縮短。', lobbyImage: 'characterB_lobby01.png', blockImage: 'characterB_block01.png' },
     { id: 'larimar', name: '拉利瑪', tag: '強襲重裝型夥伴', desc: '【角色介紹】\n沉著冷靜的守護者，擁有強悍的生命力與不屈的防禦姿態。\n\n【被動天賦】\n受到碰撞傷害時硬直時間降低 25%，生命值上限提升 20 點。', lobbyImage: 'characterC_lobby01.png', blockImage: 'characterC_block01.png' },
-    { id: 'amber', name: '琥珀', tag: '機巧支援型 (未實裝)', desc: '【角色介紹】\n科研社的王牌發明家，擅長運用精密的校園戰術道具牽制對手。\n\n【被動天賦】\n每隔一段時間於周遭生成電磁脈衝，短暫麻痺靠近的敵人。', lobbyImage: 'characterA_lobby01.png', blockImage: 'characterA_block01.png' },
-    { id: 'sapphire', name: '藍寶', tag: '疾風連擊型 (未實裝)', desc: '【角色介紹】\n田徑部的主將，擁有校園內無人能及的極限爆發步速與連續打擊力。\n\n【被動天賦】\n擊殺敵人後 3 秒內移動速度大幅躍升 35%，並產生殘影障壁。', lobbyImage: 'characterB_lobby01.png', blockImage: 'characterB_block01.png' }
+    { id: 'amber', name: '琥珀', tag: '機巧支援型 (未實裝)', desc: '【角色介紹】\n科研社的王牌發明家，擅長運用精密的校園戰術道具牽制對手。\n\n【被動天賦】\n每隔一段時間於周遭生成電磁脈衝，短暫麻痺靠近的敵人。', lobbyImage: 'characterA_lobby01.png', blockImage: 'characterA_block01.png' }
 ];
 
 const STAGES_CONFIG = [
@@ -822,8 +845,8 @@ const STAGES_CONFIG = [
 const SAVE_PREFIX = "SCHOOL_KING_SAVE_SLOT_";
 let currentGameData = { 
     gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
-    ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
-    selectedPartner: '托帕',
+    ownedPartners: ['薩薩子', '托帕', '黑棘', '拉利瑪', '琥珀'], 
+    selectedPartner: '薩薩子',
     clearedStages: [],
     bgmVolume: 1.0,
     sfxVolume: 1.0
@@ -855,8 +878,8 @@ async function handleStartNewGame() {
     if (autoData && !confirm("開啟新遊戲將會覆蓋【存檔槽 Auto】的內容，確定要繼續嗎？")) return;
     currentGameData = { 
         gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
-        ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
-        selectedPartner: '托帕',
+        ownedPartners: ['薩薩子', '托帕', '黑棘', '拉利瑪', '琥珀'], 
+        selectedPartner: '薩薩子',
         clearedStages: [],
         bgmVolume: currentBgmVolume,
         sfxVolume: currentSfxVolume
@@ -912,11 +935,12 @@ async function playTransition(asyncAction) {
 function hideAllScreens() {
     ['login-screen', 'main-lobby-screen', 'settings-screen', 'stage-select-screen', 'character-menu-screen', 'shop-screen', 'save-screen', 'victory-screen', 'pause-screen', 'in-game-ui'].forEach(s => document.getElementById(s).style.display = 'none');
     document.getElementById('player-gif-sprite').style.display = 'none';
+    if (partnerSpriteImg) partnerSpriteImg.style.display = 'none';
     document.querySelectorAll('.punch-gif-sprite').forEach(el => el.remove());
 }
 
 async function enterMainLobby() {
-    const currentPartner = availablePartners.find(p => p.name === currentGameData.selectedPartner);
+    const currentPartner = availablePartners.find(p => p.name === currentGameData.selectedPartner) || availablePartners[0];
     await preloadMultipleAssets(['office.jpg', 'gold.png', 'gem.png', currentPartner ? currentPartner.lobbyImage : null]);
 
     hideAllScreens();
@@ -1122,8 +1146,8 @@ async function loadFromSlot(slotKey) {
     if (data) {
         currentGameData = Object.assign({ 
             gold: 50, gem: 30, atkLevel: 1, hpLevel: 1, 
-            ownedPartners: ['托帕', '黑棘', '拉利瑪', '琥珀', '藍寶'], 
-            selectedPartner: '托帕',
+            ownedPartners: ['薩薩子', '托帕', '黑棘', '拉利瑪', '琥珀'], 
+            selectedPartner: '薩薩子',
             clearedStages: [],
             bgmVolume: 1.0, sfxVolume: 1.0
         }, data);
@@ -1270,6 +1294,7 @@ function updateWheelPositions() {
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const playerSpriteImg = document.getElementById('player-gif-sprite');
+const partnerSpriteImg = document.getElementById('partner-gif-sprite');
 
 let isPlaying = false, isPaused = false, animFrameReq = null, sessionGold = 0;
 let currentMapImg = new Image(), enemyA01 = new Image(), enemyA02 = new Image(), goldCoinImg = new Image(), gemImg = new Image();
@@ -1296,10 +1321,28 @@ let bannerTimer = 0, bannerX = 2200, slomoTimer = 0, panTimer = 0;
 let lastKillPos = { x: 1920, y: 1080 };
 let isDefeated = false, isVictoryLocked = false;
 
+// 主角資料 (尺寸 144x144)
 const player = {
-    x: 1855, y: 1000, size: 64, width: 128, height: 128, baseSpeed: 5.25, speed: 5.25,
+    x: 1855, y: 1000, size: 72, width: 144, height: 144, baseSpeed: 5.25, speed: 5.25,
     hp: 100, maxHp: 100, atk: 10, facingRight: false, attackCooldown: 0, invuln: 0,
     kbVx: 0, kbVy: 0, kbTime: 0, chargeTime: 0, punchAnimTimer: 0, punchFacingRight: false
+};
+
+// 夥伴 (薩薩子) 實體狀態 (原始尺寸 128x128，無放大)
+const partner = {
+    active: false,
+    name: '',
+    x: 1800, y: 1000,
+    size: 64, width: 128, height: 128,
+    speed: 5.25,
+    facingRight: false,
+    facingCooldown: 0, // 防連續左右閃爍 (冷卻 1 秒 = 60 幀)
+    punchAnimTimer: 0,
+    punchFacingRight: false,
+    attackCooldown: 0,
+    roamTarget: { x: 1800, y: 1000 },
+    roamTimer: 0,
+    isMoving: false
 };
 
 let chargeParticles = [], droppedCoins = [], lastDropAngle = 0;
@@ -1409,16 +1452,29 @@ async function startStageGame(stageConfig) {
     totalWavesInStage = stageConfig.waves;
     currentWave = 1; isDefeated = false; isVictoryLocked = false;
 
+    // ==================== 音樂無縫處理 ====================
+    const battleAudio = bgmList.battle;
+    const targetBgmFile = stageConfig.bgm || "Victory Pixel.mp3";
+    const currentAudioFile = battleAudio.src.split('/').pop().split('?')[0];
+
+    if (decodeURIComponent(currentAudioFile) !== targetBgmFile) {
+        battleAudio.src = targetBgmFile;
+        battleAudio.currentTime = 0;
+        currentBgmKey = null;
+    }
+    switchBgm('battle');
+    // ======================================================
+
     const [loadedMap, loadedE1, loadedE2, loadedGold, loadedGem] = await Promise.all([
         preloadAsset(stageConfig.map), preloadAsset('enemyA_01.png'), preloadAsset('enemyA_02.png'),
         preloadAsset('gold.png'), preloadAsset('gem.png'), preloadAsset('maincharacter_idle.gif'),
-        preloadAsset('maincharacter_walk.gif'), preloadAsset('maincharacter_punch.gif'), preloadAsset('punch.gif')
+        preloadAsset('maincharacter_walk.gif'), preloadAsset('maincharacter_punch.gif'), preloadAsset('punch.gif'),
+        preloadAsset('sasako_idle.gif'), preloadAsset('sasako_walk.gif'), preloadAsset('sasako_punch.gif')
     ]);
 
     currentMapImg = loadedMap; enemyA01 = loadedE1; enemyA02 = loadedE2; goldCoinImg = loadedGold; gemImg = loadedGem;
 
     hideAllScreens(); 
-    switchBgm('battle');
     updateGlobalBackButton('in-game');
     
     camera.mapWidth = 3840; camera.mapHeight = 2160; camera.zoom = 1.0;
@@ -1426,6 +1482,26 @@ async function startStageGame(stageConfig) {
     player.maxHp = 100 + (currentGameData.hpLevel - 1) * 20; player.hp = player.maxHp;
     player.atk = 10 + (currentGameData.atkLevel - 1) * 5;
     player.x = 1855; player.y = 1000; player.facingRight = false; player.chargeTime = 0; player.invuln = 0; player.kbTime = 0; player.punchAnimTimer = 0;
+
+    // 初始化夥伴 (薩薩子)
+    partner.active = (currentGameData.selectedPartner === '薩薩子');
+    partner.name = currentGameData.selectedPartner;
+    partner.x = player.x - 90;
+    partner.y = player.y + 40;
+    partner.speed = player.baseSpeed;
+    partner.facingRight = false;
+    partner.facingCooldown = 0;
+    partner.punchAnimTimer = 0;
+    partner.attackCooldown = 30;
+    partner.roamTimer = 0;
+    partner.isMoving = false;
+
+    if (partner.active && partnerSpriteImg) {
+        partnerSpriteImg.src = 'sasako_idle.gif';
+        partnerSpriteImg.style.display = 'block';
+    } else if (partnerSpriteImg) {
+        partnerSpriteImg.style.display = 'none';
+    }
 
     screenShake = { time: 0, intensity: 0, offsetX: 0, offsetY: 0 };
     hitStopFrames = 0;
@@ -1444,11 +1520,17 @@ async function startStageGame(stageConfig) {
 
 function startStageByIndex(index) {
     if (STAGES_CONFIG[index]) {
-        returnToStageSelectAfterVictory();
+        isVictoryLocked = false; 
+        isDefeated = false;
+        document.getElementById('victory-screen').style.display = 'none';
+        playerSpriteImg.style.display = 'none';
+        if (partnerSpriteImg) partnerSpriteImg.style.display = 'none';
+        
         startStageGame(STAGES_CONFIG[index]);
     }
 }
 
+// 主角出拳
 function executeAttack() {
     if (isDefeated || isVictoryLocked || player.attackCooldown > 0 || player.punchAnimTimer > 0 || ['ready_sliding', 'victory_slowmo', 'victory_pan'].includes(waveState)) return;
     
@@ -1520,6 +1602,72 @@ function executeAttack() {
     if (hitAny) {
         if (isHeavy) { playSnd('hardpunchHit'); triggerScreenShake(16, 14); triggerHitStop(7); } 
         else { playSnd('punchHit'); triggerScreenShake(6, 8); triggerHitStop(3); }
+    }
+}
+
+// 夥伴 (薩薩子) 出拳
+function partnerExecuteAttack(targetEnemy) {
+    partner.attackCooldown = 60; // 每秒 1 次攻擊
+    partner.punchAnimTimer = 18;
+    partner.isMoving = false;
+
+    playSnd('punch');
+
+    let angle = Math.atan2(targetEnemy.y - partner.y, targetEnemy.x - partner.x);
+    let angleDeg = angle * (180 / Math.PI);
+    partner.punchFacingRight = (angleDeg >= -90 && angleDeg <= 90);
+    partner.facingRight = partner.punchFacingRight;
+    partner.facingCooldown = 60; // 攻擊後鎖定面向 1 秒防左右抽搐
+
+    const hitRadius = 160;
+    const basePunchSize = 128;
+    const punchScale = 1.1;
+
+    const worldHitX = partner.x + Math.cos(angle) * (partner.size + 35);
+    const worldHitY = partner.y + Math.sin(angle) * (partner.size + 35);
+
+    const punchImg = document.createElement('img');
+    punchImg.className = 'punch-gif-sprite';
+    punchImg.src = `punch.gif?t=${Date.now()}_partner`;
+    document.getElementById('game-container').appendChild(punchImg);
+
+    const punchObj = {
+        element: punchImg,
+        worldX: partner.x + Math.cos(angle) * 155,
+        worldY: partner.y + Math.sin(angle) * 155,
+        angle: angle, baseSize: basePunchSize, scale: punchScale
+    };
+    activePunchGifs.push(punchObj);
+
+    setTimeout(() => {
+        punchImg.remove();
+        const idx = activePunchGifs.indexOf(punchObj);
+        if (idx !== -1) activePunchGifs.splice(idx, 1);
+    }, 280);
+
+    // 傷害為主角 50%
+    let partnerDmg = Math.max(1, Math.round(player.atk * 0.5));
+    let hitAny = false;
+
+    for (let e of enemies) {
+        if (Math.hypot(e.x - worldHitX, e.y - worldHitY) <= hitRadius + e.size && e.invuln <= 0) {
+            hitAny = true;
+            let kbDist = 120;
+            let eAngle = Math.atan2(e.y - partner.y, e.x - partner.x);
+
+            e.hp -= partnerDmg; e.invuln = 8;
+            e.kbVx = Math.cos(eAngle) * (kbDist / 25);
+            e.kbVy = Math.sin(eAngle) * (kbDist / 25);
+            e.kbTime = 25; e.jumpTimer = 0; e.isJumping = false;
+
+            spawnDamageText(partnerDmg, e.x, e.y, false, false);
+        }
+    }
+
+    if (hitAny) {
+        playSnd('punchHit');
+        triggerScreenShake(4, 6);
+        triggerHitStop(2);
     }
 }
 
@@ -1654,6 +1802,124 @@ function updateLogic() {
     }
     
     clampToWalkableArea(player, 45);
+
+    // ==================== 夥伴 (薩薩子) AI 邏輯 ====================
+    if (partner.active && !isDefeated && !isVictoryLocked && !['ready_sliding', 'victory_slowmo', 'victory_pan'].includes(waveState)) {
+        if (partner.attackCooldown > 0) partner.attackCooldown--;
+        if (partner.punchAnimTimer > 0) partner.punchAnimTimer--;
+        if (partner.facingCooldown > 0) partner.facingCooldown--;
+
+        let moveVx = 0;
+        let moveVy = 0;
+
+        // 1. 索敵：主角 500px 範圍內最近的敵人
+        let targetEnemy = null;
+        let minEnemyDist = Infinity;
+        for (let e of enemies) {
+            let distToPlayer = Math.hypot(e.x - player.x, e.y - player.y);
+            if (distToPlayer <= 500) {
+                let distToPartner = Math.hypot(e.x - partner.x, e.y - partner.y);
+                if (distToPartner < minEnemyDist) {
+                    minEnemyDist = distToPartner;
+                    targetEnemy = e;
+                }
+            }
+        }
+
+        // 2. 移動決策
+        if (targetEnemy) {
+            let angleToEnemy = Math.atan2(targetEnemy.y - partner.y, targetEnemy.x - partner.x);
+            let dist = Math.hypot(targetEnemy.x - partner.x, targetEnemy.y - partner.y);
+
+            // 接近敵人至攻擊範圍
+            if (dist > 100) {
+                moveVx += Math.cos(angleToEnemy) * partner.speed;
+                moveVy += Math.sin(angleToEnemy) * partner.speed;
+            }
+
+            // 攻擊判定：進入射程且冷卻完畢時出拳 (每秒 1 次)
+            if (dist <= 135 && partner.attackCooldown <= 0 && partner.punchAnimTimer <= 0) {
+                partnerExecuteAttack(targetEnemy);
+            }
+        } else {
+            // 平時在主角 500px 範圍內漫遊跟隨
+            partner.roamTimer--;
+            let distToPlayer = Math.hypot(partner.x - player.x, partner.y - player.y);
+
+            if (distToPlayer > 480) {
+                let angleBack = Math.atan2(player.y - partner.y, player.x - partner.x);
+                moveVx += Math.cos(angleBack) * partner.speed;
+                moveVy += Math.sin(angleBack) * partner.speed;
+                partner.roamTimer = 60;
+            } else {
+                if (partner.roamTimer <= 0) {
+                    partner.roamTimer = Math.floor(Math.random() * 90) + 60;
+                    let rndAngle = Math.random() * Math.PI * 2;
+                    let rndR = Math.random() * 260 + 90;
+                    partner.roamTarget = {
+                        x: player.x + Math.cos(rndAngle) * rndR,
+                        y: player.y + Math.sin(rndAngle) * rndR
+                    };
+                }
+
+                let distToTarget = Math.hypot(partner.roamTarget.x - partner.x, partner.roamTarget.y - partner.y);
+                if (distToTarget > 20) {
+                    let angleRoam = Math.atan2(partner.roamTarget.y - partner.y, partner.roamTarget.x - partner.x);
+                    moveVx += Math.cos(angleRoam) * (partner.speed * 0.7);
+                    moveVy += Math.sin(angleRoam) * (partner.speed * 0.7);
+                }
+            }
+        }
+
+        // 3. 障礙排斥避讓 (防止與主角重疊、防止與怪物重疊)
+        let dPlayer = Math.hypot(partner.x - player.x, partner.y - player.y);
+        let minPlayerDist = 110;
+        if (dPlayer < minPlayerDist && dPlayer > 0.001) {
+            let repAngle = Math.atan2(partner.y - player.y, partner.x - player.x);
+            let force = (minPlayerDist - dPlayer) * 0.12;
+            moveVx += Math.cos(repAngle) * force;
+            moveVy += Math.sin(repAngle) * force;
+        }
+
+        for (let e of enemies) {
+            let dEnemy = Math.hypot(partner.x - e.x, partner.y - e.y);
+            let minEnemySpacing = 100;
+            if (dEnemy < minEnemySpacing && dEnemy > 0.001) {
+                let repAngle = Math.atan2(partner.y - e.y, partner.x - e.x);
+                let force = (minEnemySpacing - dEnemy) * 0.15;
+                moveVx += Math.cos(repAngle) * force;
+                moveVy += Math.sin(repAngle) * force;
+            }
+        }
+
+        // 4. 更新移動與冷卻保護下的朝向切換 (防止連續左右頻繁切換)
+        let totalSpeed = Math.hypot(moveVx, moveVy);
+        if (partner.punchAnimTimer <= 0) {
+            if (totalSpeed > 0.1) {
+                let actualSpeed = Math.min(partner.speed, totalSpeed);
+                partner.x += (moveVx / totalSpeed) * actualSpeed;
+                partner.y += (moveVy / totalSpeed) * actualSpeed;
+
+                // 只有當朝向與目標不同，且轉向冷卻已結束時才切換
+                const wantsRight = (moveVx > 0.2);
+                const wantsLeft = (moveVx < -0.2);
+                if (wantsRight && !partner.facingRight && partner.facingCooldown <= 0) {
+                    partner.facingRight = true;
+                    partner.facingCooldown = 60; // 鎖定 1 秒 (60 幀)
+                } else if (wantsLeft && partner.facingRight && partner.facingCooldown <= 0) {
+                    partner.facingRight = false;
+                    partner.facingCooldown = 60; // 鎖定 1 秒 (60 幀)
+                }
+                partner.isMoving = true;
+            } else {
+                partner.isMoving = false;
+            }
+        } else {
+            partner.isMoving = false;
+        }
+
+        clampToWalkableArea(partner, 45);
+    }
 
     let focusTargetX = (waveState === 'victory_slowmo') ? lastKillPos.x : player.x;
     let focusTargetY = (waveState === 'victory_slowmo') ? lastKillPos.y : player.y;
@@ -1893,8 +2159,16 @@ function renderGame() {
         ctx.fillStyle = '#1a1a24'; ctx.fillRect(-renderCamX, -renderCamY, camera.mapWidth, camera.mapHeight); 
     }
 
+    // 1. 繪製所有地面陰影
     drawShadow(player.x, player.y, player.size, renderCamX, renderCamY);
+    if (partner.active) {
+        drawShadow(partner.x, partner.y, partner.size, renderCamX, renderCamY);
+    }
+    for (let e of enemies) {
+        drawShadow(e.x, e.y, e.size, renderCamX, renderCamY);
+    }
 
+    // 蓄力粒子
     if (chargeParticles.length > 0) {
         ctx.save();
         for (let cp of chargeParticles) {
@@ -1905,6 +2179,7 @@ function renderGame() {
         ctx.restore();
     }
 
+    // 掉落金幣
     for (let c of droppedCoins) {
         const coinSize = 34;
         const screenX = c.x - renderCamX, screenY = (c.y - c.z) - renderCamY;
@@ -1929,44 +2204,56 @@ function renderGame() {
         ctx.restore();
     }
 
-    for (let e of enemies) {
-        drawShadow(e.x, e.y, e.size, renderCamX, renderCamY);
-        ctx.save();
-        ctx.translate(e.x - renderCamX, e.y - renderCamY);
-        if (!e.facingRight) ctx.scale(-1, 1);
+    // 2. Canvas 內部角色 Y-Sort (Y 軸深度排序)：由上而下繪製敵人與陣亡殘影，確保高度較低的在最上層
+    const renderEntities = [];
+    for (let e of enemies) renderEntities.push({ type: 'enemy', data: e, y: e.y });
+    for (let de of dyingEnemies) renderEntities.push({ type: 'dying', data: de, y: de.y });
+    renderEntities.sort((a, b) => a.y - b.y);
 
-        let imgToDraw = e.isJumping ? enemyA02 : enemyA01;
-        let baseAlpha = (e.spawnAlpha !== undefined) ? e.spawnAlpha : 1.0;
-        if (e.invuln > 0 && Math.floor(e.invuln / 2) % 2 === 0) baseAlpha *= 0.4;
-        ctx.globalAlpha = baseAlpha;
+    for (let item of renderEntities) {
+        if (item.type === 'enemy') {
+            let e = item.data;
+            ctx.save();
+            ctx.translate(e.x - renderCamX, e.y - renderCamY);
+            if (!e.facingRight) ctx.scale(-1, 1);
 
-        if (imgToDraw && imgToDraw.complete && imgToDraw.naturalWidth !== 0) {
-            ctx.drawImage(imgToDraw, -e.width / 2, -e.height / 2, e.width, e.height);
-        } else {
-            ctx.fillStyle = e.invuln > 0 ? '#ffffff' : '#2ed573';
-            ctx.beginPath(); ctx.arc(0, 0, e.size, 0, Math.PI * 2); ctx.fill();
+            let imgToDraw = e.isJumping ? enemyA02 : enemyA01;
+            let baseAlpha = (e.spawnAlpha !== undefined) ? e.spawnAlpha : 1.0;
+            if (e.invuln > 0 && Math.floor(e.invuln / 2) % 2 === 0) baseAlpha *= 0.4;
+            ctx.globalAlpha = baseAlpha;
+
+            if (imgToDraw && imgToDraw.complete && imgToDraw.naturalWidth !== 0) {
+                ctx.drawImage(imgToDraw, -e.width / 2, -e.height / 2, e.width, e.height);
+            } else {
+                ctx.fillStyle = e.invuln > 0 ? '#ffffff' : '#2ed573';
+                ctx.beginPath(); ctx.arc(0, 0, e.size, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.restore();
+        } else if (item.type === 'dying') {
+            let de = item.data;
+            ctx.save();
+            ctx.translate(de.x - renderCamX, de.y - renderCamY);
+            if (!de.facingRight) ctx.scale(-1, 1);
+
+            let alpha = de.life / de.maxLife;
+            if (Math.floor(de.life / 4) % 2 === 0) alpha *= 0.3; 
+            ctx.globalAlpha = Math.max(0, alpha);
+
+            if (enemyA01 && enemyA01.complete && enemyA01.naturalWidth !== 0) {
+                ctx.drawImage(enemyA01, -64, -64, 128, 128);
+            } else {
+                ctx.fillStyle = '#ff4757';
+                ctx.beginPath(); ctx.arc(0, 0, de.size, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.restore();
         }
-        ctx.restore();
     }
 
-    for (let de of dyingEnemies) {
-        ctx.save();
-        ctx.translate(de.x - renderCamX, de.y - renderCamY);
-        if (!de.facingRight) ctx.scale(-1, 1);
+    const rect = gameContainer.getBoundingClientRect();
+    const scaleX = rect.width / 1920; 
+    const scaleY = rect.height / 1080;
 
-        let alpha = de.life / de.maxLife;
-        if (Math.floor(de.life / 4) % 2 === 0) alpha *= 0.3; 
-        ctx.globalAlpha = Math.max(0, alpha);
-
-        if (enemyA01 && enemyA01.complete && enemyA01.naturalWidth !== 0) {
-            ctx.drawImage(enemyA01, -64, -64, 128, 128);
-        } else {
-            ctx.fillStyle = '#ff4757';
-            ctx.beginPath(); ctx.arc(0, 0, de.size, 0, Math.PI * 2); ctx.fill();
-        }
-        ctx.restore();
-    }
-
+    // ==================== 主角渲染 (144x144 原生尺寸 + Y-Sort 深度圖層) ====================
     let targetGif = 'maincharacter_idle.gif';
     let currentFacingRight = player.facingRight;
 
@@ -1981,22 +2268,56 @@ function renderGame() {
     if (playerSpriteImg.getAttribute('src') !== targetGif) playerSpriteImg.src = targetGif;
     playerSpriteImg.style.opacity = (player.invuln > 0 && Math.floor(player.invuln / 5) % 2 === 0) ? '0.3' : '1';
 
-    const rect = gameContainer.getBoundingClientRect();
-    const scaleX = rect.width / 1920; 
-    const scaleY = rect.height / 1080;
-    const w = 140 * scaleX * camera.zoom; 
-    const h = 140 * scaleY * camera.zoom;
-    playerSpriteImg.style.width = `${w}px`; 
-    playerSpriteImg.style.height = `${h}px`;
+    // 寬高保持主角 100% 原始尺寸 (144x144)
+    const playerW = 144 * scaleX * camera.zoom; 
+    const playerH = 144 * scaleY * camera.zoom;
+    playerSpriteImg.style.width = `${playerW}px`; 
+    playerSpriteImg.style.height = `${playerH}px`;
 
-    let screenPosX = (player.x - renderCamX) * scaleX - w / 2;
-    let screenPosY = (player.y - renderCamY) * scaleY - h / 2;
+    let screenPosX = (player.x - renderCamX) * scaleX - playerW / 2;
+    let screenPosY = (player.y - renderCamY) * scaleY - playerH / 2;
     if (camera.zoom !== 1.0) {
-        screenPosX = ((player.x - renderCamX - 960) * camera.zoom + 960) * scaleX - w / 2;
-        screenPosY = ((player.y - renderCamY - 540) * camera.zoom + 540) * scaleY - h / 2;
+        screenPosX = ((player.x - renderCamX - 960) * camera.zoom + 960) * scaleX - playerW / 2;
+        screenPosY = ((player.y - renderCamY - 540) * camera.zoom + 540) * scaleY - playerH / 2;
     }
-
     playerSpriteImg.style.transform = `translate3d(${screenPosX}px, ${screenPosY}px, 0) ${currentFacingRight ? 'scaleX(-1)' : 'scaleX(1)'}`;
+    
+    // 【重點 1】高度越低(Y 越大)，層級越高，使角色之間遮擋關係正確自然
+    playerSpriteImg.style.zIndex = Math.floor(player.y + player.size * 0.8);
+
+    // ==================== 薩薩子渲染 (128x128 原始圖檔尺寸 + Y-Sort 深度圖層) ====================
+    if (partner.active && partnerSpriteImg) {
+        let partnerTargetGif = 'sasako_idle.gif';
+        let partnerFacingRight = partner.facingRight;
+
+        if (partner.punchAnimTimer > 0) {
+            partnerTargetGif = 'sasako_punch.gif';
+            partnerFacingRight = partner.punchFacingRight;
+        } else {
+            partnerTargetGif = partner.isMoving ? 'sasako_walk.gif' : 'sasako_idle.gif';
+        }
+
+        if (partnerSpriteImg.getAttribute('src') !== partnerTargetGif) {
+            partnerSpriteImg.src = partnerTargetGif;
+        }
+
+        // 寬高保持薩薩子 100% 原始素材尺寸 (128x128，不再受主角尺寸影響而放大)
+        const partnerW = 128 * scaleX * camera.zoom;
+        const partnerH = 128 * scaleY * camera.zoom;
+        partnerSpriteImg.style.width = `${partnerW}px`;
+        partnerSpriteImg.style.height = `${partnerH}px`;
+
+        let pScreenPosX = (partner.x - renderCamX) * scaleX - partnerW / 2;
+        let pScreenPosY = (partner.y - renderCamY) * scaleY - partnerH / 2;
+        if (camera.zoom !== 1.0) {
+            pScreenPosX = ((partner.x - renderCamX - 960) * camera.zoom + 960) * scaleX - partnerW / 2;
+            pScreenPosY = ((partner.y - renderCamY - 540) * camera.zoom + 540) * scaleY - partnerH / 2;
+        }
+        partnerSpriteImg.style.transform = `translate3d(${pScreenPosX}px, ${pScreenPosY}px, 0) ${partnerFacingRight ? 'scaleX(-1)' : 'scaleX(1)'}`;
+
+        // 【重點 1】薩薩子腳底 Y 軸動態 z-index 前後景深排序
+        partnerSpriteImg.style.zIndex = Math.floor(partner.y + partner.size * 0.8);
+    }
 
     if (player.chargeTime >= 30) {
         const progress = Math.min(1.0, (player.chargeTime - 30) / 30.0);
@@ -2079,6 +2400,7 @@ function returnToStageSelectAfterVictory() {
     isVictoryLocked = false; isDefeated = false;
     document.getElementById('victory-screen').style.display = 'none';
     playerSpriteImg.style.display = 'none'; 
+    if (partnerSpriteImg) partnerSpriteImg.style.display = 'none';
     return openStageSelect();
 }
 </script>
