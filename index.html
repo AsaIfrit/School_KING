@@ -377,9 +377,12 @@
         <!-- 戰鬥 UI -->
         <div id="in-game-ui">
             <button class="btn-pause-game" onclick="togglePause()">暫停</button>
-            <div class="btn-mobile-attack" id="btn-mobile-attack">攻</div>
+            <div class="btn-mobile-attack" id="btn-mobile-attack">A</div>
             <div id="joystick-zone"><div id="joystick-knob"></div></div>
         </div>
+
+        <!-- 獨立全域戰鬥通告橫幅 (層級 z-index: 5500，保證在所有角色與特效之上) -->
+        <div id="battle-announcement-banner" style="position: absolute; top: 19%; left: 50%; transform: translate(-50%, -50%); min-width: 26vw; height: clamp(48px, 4.4vw, 76px); background: #ffffff; border: 3.5px solid #bce2ed; border-radius: 24px; display: none; align-items: center; justify-content: center; color: #388099; font-size: clamp(20px, 2vw, 36px); font-weight: bold; pointer-events: none; z-index: 5500; box-shadow: 0 8px 24px rgba(0,0,0,0.15); padding: 0 2vw; white-space: nowrap;"></div>
 
         <!-- 主角與夥伴 GIF DOM 圖層 (具有動態 zIndex 前後排序) -->
         <img id="player-gif-sprite" src="maincharacter_idle.gif" alt="Player Character">
@@ -936,6 +939,8 @@ function hideAllScreens() {
     ['login-screen', 'main-lobby-screen', 'settings-screen', 'stage-select-screen', 'character-menu-screen', 'shop-screen', 'save-screen', 'victory-screen', 'pause-screen', 'in-game-ui'].forEach(s => document.getElementById(s).style.display = 'none');
     document.getElementById('player-gif-sprite').style.display = 'none';
     if (partnerSpriteImg) partnerSpriteImg.style.display = 'none';
+    const bannerEl = document.getElementById('battle-announcement-banner');
+    if (bannerEl) bannerEl.style.display = 'none'; // 確保畫面切換時橫幅隱藏
     document.querySelectorAll('.punch-gif-sprite').forEach(el => el.remove());
 }
 
@@ -1336,7 +1341,8 @@ const partner = {
     size: 64, width: 128, height: 128,
     speed: 5.25,
     facingRight: false,
-    facingCooldown: 0, // 防連續左右閃爍 (冷卻 1 秒 = 60 幀)
+    facingCooldown: 0,
+    retreatTimer: 0, // <--- 加入此行
     punchAnimTimer: 0,
     punchFacingRight: false,
     attackCooldown: 0,
@@ -1803,114 +1809,147 @@ function updateLogic() {
     
     clampToWalkableArea(player, 45);
 
-    // ==================== 夥伴 (薩薩子) AI 邏輯 ====================
+// ==================== 夥伴 (薩薩子) AI 邏輯 (計時鎖定強制回防，徹底根絕抖動) ====================
     if (partner.active && !isDefeated && !isVictoryLocked && !['ready_sliding', 'victory_slowmo', 'victory_pan'].includes(waveState)) {
         if (partner.attackCooldown > 0) partner.attackCooldown--;
         if (partner.punchAnimTimer > 0) partner.punchAnimTimer--;
         if (partner.facingCooldown > 0) partner.facingCooldown--;
+        if (partner.retreatTimer > 0) partner.retreatTimer--; // 回防鎖定倒數
 
+        const partnerMargin = 55;
+
+        // 計算目前 Y 座標下的四方邊界極限
+        let curT = (partner.y - WALKABLE_AREA.topY) / (WALKABLE_AREA.bottomY - WALKABLE_AREA.topY);
+        curT = Math.max(0, Math.min(1, curT));
+        let curMinX = (WALKABLE_AREA.topLeftX + curT * (WALKABLE_AREA.bottomLeftX - WALKABLE_AREA.topLeftX)) + partnerMargin;
+        let curMaxX = (WALKABLE_AREA.topRightX + curT * (WALKABLE_AREA.bottomRightX - WALKABLE_AREA.topRightX)) - partnerMargin;
+        let curMinY = WALKABLE_AREA.topY + partnerMargin;
+        let curMaxY = WALKABLE_AREA.bottomY - partnerMargin;
+
+        // 1. 【碰壁檢測與鎖定】
+        const hitWall = (partner.x <= curMinX + 4 || partner.x >= curMaxX - 4 || partner.y <= curMinY + 4 || partner.y >= curMaxY - 4);
+
+        if (hitWall && partner.retreatTimer <= 0) {
+            // 強制開啟回防狀態，並鎖定 90 幀 (1.5 秒)，期間絕對不准反悔再次追敵
+            partner.retreatTimer = 90;
+            // 碰壁瞬間主動向主角方向脫離牆面 8px，防止卡在邊界判定線上
+            let escapeAngle = Math.atan2(player.y - partner.y, player.x - partner.x);
+            partner.x += Math.cos(escapeAngle) * 8;
+            partner.y += Math.sin(escapeAngle) * 8;
+        }
+
+        let distToPlayer = Math.hypot(partner.x - player.x, partner.y - player.y);
         let moveVx = 0;
         let moveVy = 0;
 
-        // 1. 索敵：主角 500px 範圍內最近的敵人
-        let targetEnemy = null;
-        let minEnemyDist = Infinity;
-        for (let e of enemies) {
-            let distToPlayer = Math.hypot(e.x - player.x, e.y - player.y);
-            if (distToPlayer <= 500) {
-                let distToPartner = Math.hypot(e.x - partner.x, e.y - partner.y);
-                if (distToPartner < minEnemyDist) {
-                    minEnemyDist = distToPartner;
-                    targetEnemy = e;
-                }
-            }
-        }
+        // 2. 行為模式切換
+        if (partner.retreatTimer > 0) {
+            // 【強制回防狀態】：鎖定期間只往主角身邊 100px 處走，無視所有怪物！
+            let angleToPlayer = Math.atan2(player.y - partner.y, player.x - partner.x);
+            let targetX = player.x - Math.cos(angleToPlayer) * 100;
+            let targetY = player.y - Math.sin(angleToPlayer) * 100;
 
-        // 2. 移動決策
-        if (targetEnemy) {
-            let angleToEnemy = Math.atan2(targetEnemy.y - partner.y, targetEnemy.x - partner.x);
-            let dist = Math.hypot(targetEnemy.x - partner.x, targetEnemy.y - partner.y);
-
-            // 接近敵人至攻擊範圍
-            if (dist > 100) {
-                moveVx += Math.cos(angleToEnemy) * partner.speed;
-                moveVy += Math.sin(angleToEnemy) * partner.speed;
-            }
-
-            // 攻擊判定：進入射程且冷卻完畢時出拳 (每秒 1 次)
-            if (dist <= 135 && partner.attackCooldown <= 0 && partner.punchAnimTimer <= 0) {
-                partnerExecuteAttack(targetEnemy);
+            let distToSafeSpot = Math.hypot(targetX - partner.x, targetY - partner.y);
+            if (distToSafeSpot > 15) {
+                let angleMove = Math.atan2(targetY - partner.y, targetX - partner.x);
+                moveVx = Math.cos(angleMove) * partner.speed;
+                moveVy = Math.sin(angleMove) * partner.speed;
             }
         } else {
-            // 平時在主角 500px 範圍內漫遊跟隨
-            partner.roamTimer--;
-            let distToPlayer = Math.hypot(partner.x - player.x, partner.y - player.y);
-
-            if (distToPlayer > 480) {
-                let angleBack = Math.atan2(player.y - partner.y, player.x - partner.x);
-                moveVx += Math.cos(angleBack) * partner.speed;
-                moveVy += Math.sin(angleBack) * partner.speed;
-                partner.roamTimer = 60;
-            } else {
-                if (partner.roamTimer <= 0) {
-                    partner.roamTimer = Math.floor(Math.random() * 90) + 60;
-                    let rndAngle = Math.random() * Math.PI * 2;
-                    let rndR = Math.random() * 260 + 90;
-                    partner.roamTarget = {
-                        x: player.x + Math.cos(rndAngle) * rndR,
-                        y: player.y + Math.sin(rndAngle) * rndR
-                    };
-                }
-
-                let distToTarget = Math.hypot(partner.roamTarget.x - partner.x, partner.roamTarget.y - partner.y);
-                if (distToTarget > 20) {
-                    let angleRoam = Math.atan2(partner.roamTarget.y - partner.y, partner.roamTarget.x - partner.x);
-                    moveVx += Math.cos(angleRoam) * (partner.speed * 0.7);
-                    moveVy += Math.sin(angleRoam) * (partner.speed * 0.7);
+            // 【一般作戰/跟隨狀態】
+            let targetEnemy = null;
+            let minEnemyDist = Infinity;
+            for (let e of enemies) {
+                let dP = Math.hypot(e.x - player.x, e.y - player.y);
+                if (dP <= 500) {
+                    let dPartner = Math.hypot(e.x - partner.x, e.y - partner.y);
+                    if (dPartner < minEnemyDist) {
+                        minEnemyDist = dPartner;
+                        targetEnemy = e;
+                    }
                 }
             }
-        }
 
-        // 3. 障礙排斥避讓 (防止與主角重疊、防止與怪物重疊)
-        let dPlayer = Math.hypot(partner.x - player.x, partner.y - player.y);
-        let minPlayerDist = 110;
-        if (dPlayer < minPlayerDist && dPlayer > 0.001) {
-            let repAngle = Math.atan2(partner.y - player.y, partner.x - player.x);
-            let force = (minPlayerDist - dPlayer) * 0.12;
-            moveVx += Math.cos(repAngle) * force;
-            moveVy += Math.sin(repAngle) * force;
-        }
+            if (targetEnemy) {
+                let distToEnemy = Math.hypot(targetEnemy.x - partner.x, targetEnemy.y - partner.y);
+                if (distToEnemy > 105) {
+                    let angleToEnemy = Math.atan2(targetEnemy.y - partner.y, targetEnemy.x - partner.x);
+                    moveVx += Math.cos(angleToEnemy) * partner.speed;
+                    moveVy += Math.sin(angleToEnemy) * partner.speed;
+                }
 
-        for (let e of enemies) {
-            let dEnemy = Math.hypot(partner.x - e.x, partner.y - e.y);
-            let minEnemySpacing = 100;
-            if (dEnemy < minEnemySpacing && dEnemy > 0.001) {
-                let repAngle = Math.atan2(partner.y - e.y, partner.x - e.x);
-                let force = (minEnemySpacing - dEnemy) * 0.15;
+                if (distToEnemy <= 135 && partner.attackCooldown <= 0 && partner.punchAnimTimer <= 0) {
+                    partnerExecuteAttack(targetEnemy);
+                }
+            } else {
+                partner.roamTimer--;
+                if (distToPlayer > 480) {
+                    let angleBack = Math.atan2(player.y - partner.y, player.x - partner.x);
+                    moveVx += Math.cos(angleBack) * partner.speed;
+                    moveVy += Math.sin(angleBack) * partner.speed;
+                    partner.roamTimer = 60;
+                } else {
+                    if (partner.roamTimer <= 0) {
+                        partner.roamTimer = Math.floor(Math.random() * 90) + 60;
+                        let rndAngle = Math.random() * Math.PI * 2;
+                        let rndR = Math.random() * 240 + 90;
+                        let candTarget = {
+                            x: player.x + Math.cos(rndAngle) * rndR,
+                            y: player.y + Math.sin(rndAngle) * rndR
+                        };
+                        clampToWalkableArea(candTarget, 70);
+                        partner.roamTarget = candTarget;
+                    }
+
+                    let dTarget = Math.hypot(partner.roamTarget.x - partner.x, partner.roamTarget.y - partner.y);
+                    if (dTarget > 30) {
+                        let angleRoam = Math.atan2(partner.roamTarget.y - partner.y, partner.roamTarget.x - partner.x);
+                        moveVx += Math.cos(angleRoam) * (partner.speed * 0.7);
+                        moveVy += Math.sin(angleRoam) * (partner.speed * 0.7);
+                    }
+                }
+            }
+
+            // 避讓主角與魔物
+            if (distToPlayer < 95 && distToPlayer > 0.001) {
+                let repAngle = Math.atan2(partner.y - player.y, partner.x - player.x);
+                let force = (95 - distToPlayer) * 0.12;
                 moveVx += Math.cos(repAngle) * force;
                 moveVy += Math.sin(repAngle) * force;
             }
+
+            for (let e of enemies) {
+                let dEnemy = Math.hypot(partner.x - e.x, partner.y - e.y);
+                if (dEnemy < 100 && dEnemy > 0.001) {
+                    let repAngle = Math.atan2(partner.y - e.y, partner.x - e.x);
+                    let force = (100 - dEnemy) * 0.15;
+                    moveVx += Math.cos(repAngle) * force;
+                    moveVy += Math.sin(repAngle) * force;
+                }
+            }
         }
 
-        // 4. 更新移動與冷卻保護下的朝向切換 (防止連續左右頻繁切換)
+        // 3. 移動執行與轉向冷卻
         let totalSpeed = Math.hypot(moveVx, moveVy);
         if (partner.punchAnimTimer <= 0) {
-            if (totalSpeed > 0.1) {
-                let actualSpeed = Math.min(partner.speed, totalSpeed);
-                partner.x += (moveVx / totalSpeed) * actualSpeed;
-                partner.y += (moveVy / totalSpeed) * actualSpeed;
+            if (totalSpeed > 0.2) {
+                let norm = Math.min(partner.speed, totalSpeed);
+                let stepX = (moveVx / totalSpeed) * norm;
+                let stepY = (moveVy / totalSpeed) * norm;
 
-                // 只有當朝向與目標不同，且轉向冷卻已結束時才切換
-                const wantsRight = (moveVx > 0.2);
-                const wantsLeft = (moveVx < -0.2);
+                partner.x += stepX;
+                partner.y += stepY;
+                partner.isMoving = true;
+
+                const wantsRight = (stepX > 0.2);
+                const wantsLeft = (stepX < -0.2);
                 if (wantsRight && !partner.facingRight && partner.facingCooldown <= 0) {
                     partner.facingRight = true;
-                    partner.facingCooldown = 60; // 鎖定 1 秒 (60 幀)
+                    partner.facingCooldown = 60;
                 } else if (wantsLeft && partner.facingRight && partner.facingCooldown <= 0) {
                     partner.facingRight = false;
-                    partner.facingCooldown = 60; // 鎖定 1 秒 (60 幀)
+                    partner.facingCooldown = 60;
                 }
-                partner.isMoving = true;
             } else {
                 partner.isMoving = false;
             }
@@ -1918,7 +1957,7 @@ function updateLogic() {
             partner.isMoving = false;
         }
 
-        clampToWalkableArea(partner, 45);
+        clampToWalkableArea(partner, partnerMargin);
     }
 
     let focusTargetX = (waveState === 'victory_slowmo') ? lastKillPos.x : player.x;
@@ -2358,27 +2397,25 @@ function renderGame() {
 
     ctx.restore();
 
-    // 通告橫幅
-    if (['ready_sliding', 'fight_sliding', 'wave_banner_sliding'].includes(waveState)) {
-        ctx.save();
-        let bannerText = '', bW = 780, bH = 80, bannerY = 205;
-        if (waveState === 'ready_sliding') { bannerText = 'READY...'; bW = 560; } 
-        else if (waveState === 'fight_sliding') { bannerText = 'FIGHT!'; bW = 500; } 
-        else if (waveState === 'wave_banner_sliding') { bannerText = `下一波敵人即將出現！ (${currentWave + 1}/${totalWavesInStage})`; bW = 780; }
+    // ==================== 全域通告橫幅 (DOM 高優先級圖層更新) ====================
+    const bannerEl = document.getElementById('battle-announcement-banner');
+    if (bannerEl) {
+        if (['ready_sliding', 'fight_sliding', 'wave_banner_sliding'].includes(waveState)) {
+            let bannerText = '';
+            if (waveState === 'ready_sliding') bannerText = 'READY...';
+            else if (waveState === 'fight_sliding') bannerText = 'FIGHT!';
+            else if (waveState === 'wave_banner_sliding') bannerText = `下一波敵人即將出現！ (${currentWave + 1}/${totalWavesInStage})`;
 
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(bannerX - bW / 2, bannerY, bW, bH, [24]);
-        ctx.fill();
-        ctx.strokeStyle = '#bce2ed';
-        ctx.lineWidth = 3.5;
-        ctx.stroke();
-
-        ctx.fillStyle = '#388099';
-        ctx.font = 'bold 36px jf-openhuninn, sans-serif';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(bannerText, bannerX, bannerY + bH / 2);
-        ctx.restore();
+            bannerEl.innerText = bannerText;
+            bannerEl.style.display = 'flex';
+            
+            // 依據原始比例精確將世界座標轉為容器座標
+            const bannerScaleX = rect.width / 1920;
+            const bannerPosX = bannerX * bannerScaleX;
+            bannerEl.style.left = `${bannerPosX}px`;
+        } else {
+            bannerEl.style.display = 'none';
+        }
     }
 
     // 戰鬥 HUD
